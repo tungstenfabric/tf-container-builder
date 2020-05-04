@@ -122,7 +122,7 @@ They consist of:
 Kubernetes directory contains manifests which allow to deploy various layouts of Contrail with Kubernetes.
 They use corresponding config files stored in sample_config_files.
 There is also a helper script setup-k8s.sh which allows setting up kubernetes.
-Each manifest is a template which can be resolved by script ./manifests/resolve-manifest.sh. Also scripts apply.sh and delete.sh can be used to deploy or delete Contrail with automatic resolution of the template. There is a separate readme (https://github.com/Juniper/contrail-container-builder/tree/master/kubernetes/manifests) describing this in more details.
+Each manifest is a template which can be resolved by script ./manifests/resolve-manifest.sh. Also scripts apply.sh and delete.sh can be used to deploy or delete Contrail with automatic resolution of the template. There is a separate readme (https://github.com/tungstenfabric/tf-container-builder/tree/master/kubernetes/manifests) describing this in more details.
 
 Manifests are designed in a way prescribing kubernetes to lay out Contrail roles according to labels specified in the manifest.
 
