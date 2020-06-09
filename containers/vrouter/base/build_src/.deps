@@ -1,0 +1,9 @@
+ethtool
+initscripts
+pciutils
+sudo
+hwdata
+libpcap
+pciutils-libs
+sysvinit-tools
+tcpdump
