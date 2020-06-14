@@ -7,11 +7,9 @@ LABEL name=$CONTAINER_NAME \
       summary="Mesosphere Manager" \
       description="Contrail Mesosphere Manager."
 
-RUN   yum install -y python-eventlet python-kazoo \
-                     python-bitarray python-pycassa python-bitstring \
-                     contrail-mesos-manager python-enum34 && \
-      yum clean all -y && \
-      rm -rf /var/cache/yum
+RUN yum install -y contrail-mesos-manager && \
+    yum clean all -y && \
+    rm -rf /var/cache/yum
 
 COPY entrypoint.sh /
 
