@@ -65,6 +65,8 @@ EOM
 
 [ -n "${ZOO_MAX_SESSION_TIMEOUT}" ] && echo "maxSessionTimeout=${ZOO_MAX_SESSION_TIMEOUT}" >> ${CONFIG}
 
+[ -n "${ZOO_FSYNC_THRESHOLD}" ] && echo "fsync.warningthresholdms=${ZOO_FSYNC_THRESHOLD}" >> ${CONFIG}
+
 for server in $ZOO_SERVERS; do
     echo "$server" >> "$CONFIG"
 done

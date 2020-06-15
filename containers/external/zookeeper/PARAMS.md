@@ -23,3 +23,4 @@
 | ZOO_SYNC_LIMIT          |                                                |
 | ZOO_TICK_TIME           |                                                |
 | ZOO_MAX_SESSION_TIMEOUT | 120000                                         |
+| ZOO_FSYNC_THRESHOLD     |                                                |
