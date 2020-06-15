@@ -28,7 +28,7 @@ RUN pip install --no-compile \
         "selectors2==2.0.1" \
         "timeout-decorator==0.4.1" && \
     yum install -y git iputils && \
-    ansible-galaxy install Juniper.junos,2.3.0 && \
+    ansible-galaxy install Juniper.junos,2.3.2 && \
     yum clean all -y && \
     rm -rf /var/cache/yum
 
