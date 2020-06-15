@@ -10,8 +10,8 @@ LABEL name=$CONTAINER_NAME \
 
 ENV ZOO_CONF_DIR=/conf \
     ZOO_DATA_DIR=/data \
-    ZOO_DATA_LOG_DIR=/datalog \
-    ZOO_LOG_DIR=/logs \
+    ZOO_DATA_LOG_DIR=/var/log/zookeeper/datalog \
+    ZOO_LOG_DIR=/var/log/zookeeper/logs \
     ZOO_TICK_TIME=2000 \
     ZOO_INIT_LIMIT=5 \
     ZOO_SYNC_LIMIT=2 \
