@@ -119,15 +119,15 @@ spec:
             name: kube-manager-config
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: kube-manager-logs
+          name: contrail-logs
         - mountPath: /tmp/serviceaccount
           name: pod-secret
       imagePullSecrets:
       - name: {{ KUBERNETES_SECRET_CONTRAIL_REPO }}
       volumes:
-      - name: kube-manager-logs
+      - name: contrail-logs
         hostPath:
-          path: /var/log/contrail/kube-manager
+          path: /var/log/contrail
       - name: pod-secret
         secret:
           secretName: contrail-kube-manager-token
@@ -197,7 +197,7 @@ spec:
         - mountPath: /host/bin
           name: host-bin
         - mountPath: /var/log/contrail
-          name: agent-logs
+          name: contrail-logs
         - mountPath: /etc/contrail
           name: etc-contrail
         - mountPath: /etc/sysconfig/network-scripts
@@ -218,7 +218,7 @@ spec:
         - mountPath: /host/log_cni
           name: var-log-contrail-cni
         - mountPath: /var/log/contrail
-          name: agent-logs
+          name: contrail-logs
       containers:
       - name: contrail-vrouter-agent
         image: "{{CONTRAIL_REGISTRY}}/contrail-vrouter-agent:{{CONTRAIL_CONTAINER_TAG}}"
@@ -234,7 +234,7 @@ spec:
             name: env
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: agent-logs
+          name: contrail-logs
         - mountPath: /var/crashes
           name: var-crashes
         - mountPath: /tmp/serviceaccount
@@ -277,11 +277,9 @@ spec:
 #   type: Socket
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: agent-logs
+          name: contrail-logs
         - mountPath: /mnt
           name: docker-unix-socket
-        - mountPath: /var/lib/contrail/loadbalancer
-          name: lb-nodemgr
       imagePullSecrets:
       - name: {{ KUBERNETES_SECRET_CONTRAIL_REPO }}
       volumes:
@@ -311,13 +309,10 @@ spec:
           path: /etc/cni
       - name: opt-cni-bin
         hostPath:
-          path: /opt/cni/bin
-      - name: var-log-contrail-cni
+          path: /opt/cni/bin      
+      - name: contrail-logs
         hostPath:
-          path: /var/log/contrail/cni
-      - name: agent-logs
-        hostPath:
-          path: /var/log/contrail/agent
+          path: /var/log/contrail
       - name: host-bin
         hostPath:
           path: /bin
@@ -333,9 +328,6 @@ spec:
       - name: host-usr-bin
         hostPath:
           path: /usr/bin
-      - name: lb-nodemgr
-        hostPath:
-          path: /var/lib/contrail/loadbalancer
 
 # Meta information section
 ---
