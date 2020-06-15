@@ -103,3 +103,7 @@
 | ZOOKEEPER_SERVERS_SPACE_DELIM      | $ZOOKEEPER_NODES with $ZOOKEEPER_PORT                                   |
 | *ZOOKEEPER_NODES*                  | $CONFIG_NODES                                                           |
 | *ZOOKEEPER_PORT*                   | 2181                                                                    |
+| ZOOKEEPER_CA_CERTFILE              | $SERVER_CA_CERTFILE                                                     |
+| ZOOKEEPER_CERTFILE                 | $SERVER_CERTFILE                                                        |
+| ZOOKEEPER_KEYFILE                  | $SERVER_KEYFILE                                                         |
+| ZOOKEEPER_SSL_ENABLE               | $SSL_ENABLE                                                             |

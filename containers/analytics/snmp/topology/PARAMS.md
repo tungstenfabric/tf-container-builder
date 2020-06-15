@@ -59,7 +59,7 @@
 | RABBITMQ_CLIENT_SSL_CERTFILE      | $RABBITMQ_SSL_CERTFILE                         |
 | RABBITMQ_CLIENT_SSL_KEYFILE       | $RABBITMQ_SSL_KEYFILE                          |
 | RABBITMQ_PASSWORD                 | guest                                          |
-| RABBITMQ_SERVERS                  | $RABBITMQ_NODES with $RABBITMQ_NODE_PORT,"     |
+| RABBITMQ_SERVERS                  | $RABBITMQ_NODES with $RABBITMQ_NODE_PORT,      |
 | RABBITMQ_SSL_VER                  | sslv23                                         |
 | RABBITMQ_USER                     | guest                                          |
 | RABBITMQ_USE_SSL                  | False                                          |
@@ -84,3 +84,7 @@
 | ZOOKEEPER_SERVERS                 | ZOOKEEPER_NODES with $ZOOKEEPER_PORT           |
 | *ZOOKEEPER_NODES*                 | $CONFIGDB_NODES                                |
 | *ZOOKEEPER_PORT*                  | 2181                                           |
+| ZOOKEEPER_CA_CERTFILE             | $SERVER_CA_CERTFILE                            |
+| ZOOKEEPER_CERTFILE                | $SERVER_CERTFILE                               |
+| ZOOKEEPER_KEYFILE                 | $SERVER_KEYFILE                                |
+| ZOOKEEPER_SSL_ENABLE              | $SSL_ENABLE                                    |

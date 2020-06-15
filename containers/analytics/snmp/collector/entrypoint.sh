@@ -4,6 +4,7 @@ source /common.sh
 export SNMPCONFPATH=${SNMPCONFPATH:-/etc/contrail}
 
 pre_start_init
+wait_zookeeper_certs_if_ssl_enabled
 
 host_ip=$(get_listen_ip_for_node ANALYTICS_SNMP)
 rabbitmq_server_list=$(echo $RABBITMQ_SERVERS | sed 's/,/ /g')
@@ -39,6 +40,10 @@ $rabbitmq_ssl_config
 $sandesh_client_config
 
 $collector_stats_config
+
+[ZOOKEEPER]
+zookeeper_ssl_enable=$ZOOKEEPER_SSL_ENABLE
+${zookeeper_ssl_config}
 EOM
 
 add_ini_params_from_env SNMP_COLLECTOR /etc/contrail/contrail-snmp-collector.conf
