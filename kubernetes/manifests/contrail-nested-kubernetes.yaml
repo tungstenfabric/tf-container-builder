@@ -91,15 +91,15 @@ spec:
             name: kube-manager-config
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: kube-manager-logs
+          name: contrail-logs
         - mountPath: /tmp/serviceaccount
           name: pod-secret
       imagePullSecrets:
       - name: {{ KUBERNETES_SECRET_CONTRAIL_REPO }}
       volumes:
-      - name: kube-manager-logs
+      - name: contrail-logs
         hostPath:
-          path: /var/log/contrail/kube-manager
+          path: /var/log/contrail
       - name: pod-secret
         secret:
           secretName: contrail-kube-manager-token
