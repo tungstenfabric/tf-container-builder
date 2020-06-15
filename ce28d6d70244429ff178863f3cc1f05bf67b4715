@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "93bdcad7_5c706fab",
+        "filename": "kubernetes/manifests/contrail-dpdk-standalone-kubernetes.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 1534,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-06-15T11:47:40Z",
+      "side": 0,
+      "message": "revert back",
+      "range": {
+        "startLine": 1533,
+        "startChar": 0,
+        "endLine": 1534,
+        "endChar": 26
+      },
+      "revId": "ce28d6d70244429ff178863f3cc1f05bf67b4715",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "149d84cf_deaa011a",
+        "filename": "kubernetes/manifests/contrail-dpdk-standalone-kubernetes.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 1598,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-06-15T11:47:40Z",
+      "side": 0,
+      "message": "revert back",
+      "range": {
+        "startLine": 1596,
+        "startChar": 0,
+        "endLine": 1598,
+        "endChar": 46
+      },
+      "revId": "ce28d6d70244429ff178863f3cc1f05bf67b4715",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7e7ccf2d_d7774750",
+        "filename": "kubernetes/manifests/contrail-non-nested-kubernetes.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-06-15T11:47:40Z",
+      "side": 0,
+      "message": "revert back",
+      "range": {
+        "startLine": 283,
+        "startChar": 0,
+        "endLine": 284,
+        "endChar": 26
+      },
+      "revId": "ce28d6d70244429ff178863f3cc1f05bf67b4715",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3690f1ef_9cf09a37",
+        "filename": "kubernetes/manifests/contrail-non-nested-kubernetes.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-06-15T11:47:40Z",
+      "side": 0,
+      "message": "revert back",
+      "range": {
+        "startLine": 336,
+        "startChar": 0,
+        "endLine": 338,
+        "endChar": 46
+      },
+      "revId": "ce28d6d70244429ff178863f3cc1f05bf67b4715",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e68e0b92_303ab1cd",
+        "filename": "kubernetes/manifests/contrail-standalone-kubernetes.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 1549,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-06-15T11:47:40Z",
+      "side": 0,
+      "message": "revert back",
+      "range": {
+        "startLine": 1547,
+        "startChar": 0,
+        "endLine": 1549,
+        "endChar": 46
+      },
+      "revId": "ce28d6d70244429ff178863f3cc1f05bf67b4715",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
