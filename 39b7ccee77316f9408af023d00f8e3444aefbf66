@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eaa38084_489ccda7",
+        "filename": "containers/vrouter/agent-dpdk/entrypoint.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-06-15T14:27:17Z",
+      "side": 1,
+      "message": "please use \u0027is_enabled\u0027",
+      "revId": "39b7ccee77316f9408af023d00f8e3444aefbf66",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
