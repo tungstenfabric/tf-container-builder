@@ -12,3 +12,4 @@
 | HUGE_PAGES                   | ""              |
 | HUGE_PAGES_DIR               | /dev/hugepages  |
 | NIC_OFFLOAD_ENABLE           | False           |
+| DPDK_ENABLE_VLAN_FWRD        | False           |
