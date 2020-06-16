@@ -144,7 +144,11 @@ fi
 if [[ -n "$vlan_data" ]] ; then
     vlan_id=$(echo "$vlan_data" | cut -d ' ' -f 1)
     vlan_parent=$(echo "$vlan_data" | cut -d ' ' -f 2)
-    cmd+=" --vlan_tci ${vlan_id} --vlan_fwd_intf_name ${vlan_parent}"
+    cmd+=" --vlan_tci ${vlan_id} "
+    if is_enabled "$DPDK_ENABLE_VLAN_FWRD" ; then
+      echo "INFO: VLAN forwarding is enabled and causing performance impact on the system"
+      cmd+=" --vlan_fwd_intf_name ${vlan_parent}"
+    fi
     [ -e "/sys/class/net/${phys_int}" ] && {
         echo "INFO: down $phys_int"
         ifdown $phys_int
