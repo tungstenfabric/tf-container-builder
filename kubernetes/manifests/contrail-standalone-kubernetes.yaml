@@ -1247,6 +1247,10 @@ spec:
         env:
         - name: NODE_TYPE
           value: config-database
+        - name: RABBITMQ_LOGS
+          value: '/var/log/rabbitmq/rabbitmq.log'
+        - name: RABBITMQ_SASL_LOGS
+          value: '/var/log/rabbitmq/rabbitmq_sasl.log'
         envFrom:
         - configMapRef:
             name: env
