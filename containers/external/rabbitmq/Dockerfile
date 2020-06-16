@@ -31,8 +31,8 @@ CMD ["rabbitmq-server"]
 
 ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG \
     SERVICE_NAME=rabbitmq \
-    RABBITMQ_LOGS=- \
-    RABBITMQ_SASL_LOGS=-
+    RABBITMQ_LOGS='/var/log/rabbitmq/rabbitmq.log' \
+    RABBITMQ_SASL_LOGS='/var/log/rabbitmq/rabbitmq_sasl.log'
 
 LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
