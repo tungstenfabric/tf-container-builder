@@ -314,6 +314,13 @@ fi
 log "starting build from $my_dir with relative path $path"
 pushd $my_dir &>/dev/null
 
+# To build containers with a different license than repo
+# please ensure adding __artifact_license
+if [[ ! -f $my_dir/../__artifact_license ]]; then
+  log "artifact license not available using repo license as artifact license"
+  rsync $my_dir/../LICENSE $my_dir/../__artifact_license
+fi
+
 case $op in
   'build_parallel')
     log "prepare Contrail repo file in base image"
