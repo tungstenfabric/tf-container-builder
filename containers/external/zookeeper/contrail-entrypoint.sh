@@ -35,13 +35,16 @@ export ZOO_MY_ID=$my_ord
 
 echo "INFO: ZOO_MY_ID=$ZOO_MY_ID, ZOO_PORT=$ZOO_PORT"
 echo "INFO: ZOO_SERVERS=$ZOO_SERVERS"
-echo "INFO: /docker-entrypoint.sh $@"
+echo "INFO: do_run_service $@"
 
 # Zookeeper has a check to validate dataDir and dataLogDir parameters at startup
 # if they are different. So, keeping them same. Details - CEM-9153, CEM-9150
 export ZOO_DATA_DIR=${CONTRAIL_ZOOKEEPER_DATA:-'/data'}
 export ZOO_DATA_LOG_DIR=${CONTRAIL_ZOOKEEPER_DATALOG:-'/data'}
-
+#setup log directory
+export ZOO_LOG_DIR=${CONTRAIL_ZOOKEEPER_LOG_DIRECTORY:-'/var/log/zookeeper'}
+#setup log policy
+export ZOO_LOG4J_PROP=${CONTRAIL_ZOOKEEPER_LOG_POLICY:-'INFO, CONSOLE, ROLLINGFILE'}
 # Generate the config file
 CONFIG="$ZOO_CONF_DIR/zoo.cfg"
 
