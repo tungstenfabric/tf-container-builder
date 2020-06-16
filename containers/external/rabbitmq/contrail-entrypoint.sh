@@ -214,24 +214,24 @@ if is_enabled $RABBITMQ_USE_SSL && [[ "$1" == rabbitmq* ]]; then
 fi
 mkdir -p /var/log/rabbitmq
 chown -R rabbitmq:rabbitmq /var/log/rabbitmq
-if [[ -n "$RABBITMQ_LOGS" && "$RABBITMQ_LOGS" != '-' ]] ; then
-  log_dir=$(dirname $RABBITMQ_LOGS)
-  mkdir -p $log_dir
-  # move old logs if any to new folder
-  log_name=$(basename $RABBITMQ_LOGS)
-  mv $(dirname $log_dir)/${log_name}* ${log_dir}/ 2>/dev/null
-  touch "$RABBITMQ_LOGS"
-  chown rabbitmq:rabbitmq "$RABBITMQ_LOGS"
-fi
-if [[ -n "$RABBITMQ_SASL_LOGS" && "$RABBITMQ_SASL_LOGS" != '-' ]] ; then
-  log_dir=$(dirname "$RABBITMQ_SASL_LOGS")
-  mkdir -p $log_dir
-  # move old logs if any to new folder
-  log_name=$(basename $RABBITMQ_SASL_LOGS)
-  mv $(dirname $log_dir)/${log_name}* ${log_dir}/ 2>/dev/null
-  touch "$RABBITMQ_SASL_LOGS"
-  chown rabbitmq:rabbitmq "$RABBITMQ_SASL_LOGS"
-fi
+function setup_log_dir() {
+
+  local path=$1
+  local log_dir
+  local log_name
+  if [[ -n "$path" && "$path" != '-' ]] ; then
+    log_dir=$(dirname $path)
+    mkdir -p $log_dir
+    # move old logs if any to new folder
+    log_name=$(basename $path)
+    mv $(dirname $log_dir)/${log_name}* ${log_dir}/ 2>/dev/null
+    touch "$path"
+    chown rabbitmq:rabbitmq "$path"
+  fi
+}
+
+setup_log_dir $RABBITMQ_LOGS
+setup_log_dir "$RABBITMQ_SASL_LOGS"
 
 echo "INFO: $(date): /docker-entrypoint.sh $@"
 exec  /docker-entrypoint.sh "$@"
