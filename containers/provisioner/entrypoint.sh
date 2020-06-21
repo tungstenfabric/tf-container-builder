@@ -1,5 +1,10 @@
 #!/bin/bash
 
+LOG_DIR=${LOG_DIR:-"/var/log/contrail"}
+mkdir -p $LOG_DIR
+exec &> >(tee -a "$LOG_DIR/provisioner-$NODE_TYPE.log")
+echo "INFO: =================== $(date) ==================="
+
 source /common.sh
 
 if ! is_enabled ${APPLY_DEFAULTS} ; then
