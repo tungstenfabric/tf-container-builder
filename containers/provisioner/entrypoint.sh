@@ -1,5 +1,9 @@
 #!/bin/bash
 
+mkdir -p /var/log/contrail
+exec &> >(tee -a "/var/log/contrail/provisioner-$NODE_TYPE.log")
+echo "INFO: =================== $(date) ==================="
+
 source /common.sh
 
 if ! is_enabled ${APPLY_DEFAULTS} ; then
