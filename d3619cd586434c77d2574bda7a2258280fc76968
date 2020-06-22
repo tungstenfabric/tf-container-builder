@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "af50aa2a_f744ac25",
+        "filename": "containers/provisioner/entrypoint.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-06-22T11:17:32Z",
+      "side": 1,
+      "message": "LOG_DIR ?",
+      "range": {
+        "startLine": 3,
+        "startChar": 8,
+        "endLine": 3,
+        "endChar": 26
+      },
+      "revId": "d3619cd586434c77d2574bda7a2258280fc76968",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a5f7f38e_152d2150",
+        "filename": "containers/provisioner/entrypoint.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-06-22T11:17:32Z",
+      "side": 1,
+      "message": "hm.. what you think of\n${LOG_DIR}/provisioning/${NODE_TYPE}.log\n?",
+      "range": {
+        "startLine": 4,
+        "startChar": 18,
+        "endLine": 4,
+        "endChar": 63
+      },
+      "revId": "d3619cd586434c77d2574bda7a2258280fc76968",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
