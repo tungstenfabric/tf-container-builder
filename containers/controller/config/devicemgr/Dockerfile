@@ -18,7 +18,7 @@ RUN pip install --no-compile \
         "inflection==0.3.1" \
         "jinja2==2.11.1" \
         "jsnapy==1.3.2" \
-        "junos-eznc==2.2.0" \
+        "junos-eznc==2.4.1" \
         "jxmlease==1.0.1" \
         "lxml==4.5.0" \
         "ncclient==0.6.3" \
@@ -28,7 +28,7 @@ RUN pip install --no-compile \
         "selectors2==2.0.1" \
         "timeout-decorator==0.4.1" && \
     yum install -y git iputils && \
-    ansible-galaxy install Juniper.junos,2.3.0 && \
+    ansible-galaxy install Juniper.junos,2.3.2 && \
     yum clean all -y && \
     rm -rf /var/cache/yum
 
