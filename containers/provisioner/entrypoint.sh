@@ -7,11 +7,6 @@ echo "INFO: =================== $(date) ==================="
 
 source /common.sh
 
-if ! is_enabled ${APPLY_DEFAULTS} ; then
-  exec $@
-  exit $?
-fi
-
 pre_start_init
 
 # Env variables:
