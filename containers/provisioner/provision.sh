@@ -49,39 +49,42 @@ config)
   host_name=$(resolve_hostname_by_ip $host_ip)
   provision_node provision_config_node.py $host_ip ${host_name:-$default_hostname}
 
-  if [[ -n "$IPFABRIC_SERVICE_HOST" ]]; then
-    fabric_host_arg=''
-    if [[ $IPFABRIC_SERVICE_HOST =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-      fabric_host_arg="--ipfabric_service_ip $IPFABRIC_SERVICE_HOST"
-    else
-      fabric_host_arg="--ipfabric_dns_service_name $IPFABRIC_SERVICE_HOST"
+  if ! is_enabled ${APPLY_DEFAULTS} ; then
+    if [[ -n "$IPFABRIC_SERVICE_HOST" ]]; then
+      fabric_host_arg=''
+      if [[ $IPFABRIC_SERVICE_HOST =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        fabric_host_arg="--ipfabric_service_ip $IPFABRIC_SERVICE_HOST"
+      else
+        fabric_host_arg="--ipfabric_dns_service_name $IPFABRIC_SERVICE_HOST"
+      fi
+      provision provision_linklocal.py --oper add \
+        --linklocal_service_name $LINKLOCAL_SERVICE_NAME \
+        --linklocal_service_ip $LINKLOCAL_SERVICE_IP \
+        --linklocal_service_port $LINKLOCAL_SERVICE_PORT \
+        $fabric_host_arg \
+        --ipfabric_service_port $IPFABRIC_SERVICE_PORT
     fi
-    provision provision_linklocal.py --oper add \
-      --linklocal_service_name $LINKLOCAL_SERVICE_NAME \
-      --linklocal_service_ip $LINKLOCAL_SERVICE_IP \
-      --linklocal_service_port $LINKLOCAL_SERVICE_PORT \
-      $fabric_host_arg \
-      --ipfabric_service_port $IPFABRIC_SERVICE_PORT
-  fi
-  provision provision_alarm.py
-  provision provision_encap.py --encap_priority $ENCAP_PRIORITY --vxlan_vn_id_mode $VXLAN_VN_ID_MODE
-  dist_snat_list=""
-  dist_snat_params=""
-  if [[ -n "${DIST_SNAT_PROTO_PORT_LIST}" ]]; then
-    proto_port_list=''
-    IFS=',' read -ra proto_port_list <<< "${DIST_SNAT_PROTO_PORT_LIST}"
-    for elem in "${proto_port_list[@]}"; do
-      dist_snat_list+="$(echo "${elem}") "
-    done
-  fi
-  if [[ -n "${dist_snat_list}" ]]; then
-    dist_snat_params="--snat_list ${dist_snat_list}"
-  fi
+    provision provision_alarm.py
+    provision provision_encap.py --encap_priority $ENCAP_PRIORITY --vxlan_vn_id_mode $VXLAN_VN_ID_MODE
+    dist_snat_list=""
+    dist_snat_params=""
+    if [[ -n "${DIST_SNAT_PROTO_PORT_LIST}" ]]; then
+      proto_port_list=''
+      IFS=',' read -ra proto_port_list <<< "${DIST_SNAT_PROTO_PORT_LIST}"
+      for elem in "${proto_port_list[@]}"; do
+        dist_snat_list+="$(echo "${elem}") "
+      done
+    fi
+    if [[ -n "${dist_snat_list}" ]]; then
+      dist_snat_params="--snat_list ${dist_snat_list}"
+    fi
 
-  provision provision_global_vrouter_config.py --oper add \
-    --flow_export_rate $FLOW_EXPORT_RATE \
-    ${dist_snat_params}
+    provision provision_global_vrouter_config.py --oper add \
+      --flow_export_rate $FLOW_EXPORT_RATE \
+      ${dist_snat_params}
+  fi
   ;;
+
 
 database)
   host_ip=$(get_listen_ip_for_node ANALYTICSDB)
@@ -130,39 +133,41 @@ control)
   # This call must be separate due to provision_control.py implementation
   provision provision_control.py --router_asn ${BGP_ASN} $bgp_opts
 
-  subcluster_name=''
-  if [[ -n ${SUBCLUSTER} ]]; then
-    subcluster_name="--sub_cluster_name ${SUBCLUSTER}"
-    subcluster_option="$subcluster_name --sub_cluster_asn ${BGP_ASN}"
-    provision_subcluster provision_sub_cluster.py ${subcluster_option}
+  if is_enabled ${APPLY_DEFAULTS} ; then
+
+    subcluster_name=''
+    if [[ -n ${SUBCLUSTER} ]]; then
+      subcluster_name="--sub_cluster_name ${SUBCLUSTER}"
+      subcluster_option="$subcluster_name --sub_cluster_asn ${BGP_ASN}"
+      provision_subcluster provision_sub_cluster.py ${subcluster_option}
+    fi
+
+    host_ip=$(get_listen_ip_for_node CONTROL)
+    host_name=$(resolve_hostname_by_ip $host_ip)
+    provision_node provision_control.py $host_ip \
+      ${CONTROL_HOSTNAME:-${host_name:-${default_hostname}}} \
+      --router_asn ${BGP_ASN} \
+      --bgp_server_port ${BGP_PORT} ${subcluster_name}
+
+    external_routers_list=""
+    external_router=""
+    external_router_name=""
+    external_router_ip=""
+    provision_mx_params=""
+
+    if [[ -n "${EXTERNAL_ROUTERS}" ]]; then
+      IFS=",", read -ra external_routers_list <<< "${EXTERNAL_ROUTERS}"
+      for elem in "${external_routers_list[@]}"; do
+        if [[ $elem == *:* ]]; then
+          IFS=":", read -ra external_router <<< "${elem}"
+          external_router_name=${external_router[0]}
+          external_router_ip=${external_router[1]}
+          provision_mx_params="--router_name ${external_router_name} --router_ip ${external_router_ip} --router_asn ${BGP_ASN}"
+          provision provision_mx.py $provision_mx_params
+        fi
+      done
+    fi
   fi
-
-  host_ip=$(get_listen_ip_for_node CONTROL)
-  host_name=$(resolve_hostname_by_ip $host_ip)
-  provision_node provision_control.py $host_ip \
-    ${CONTROL_HOSTNAME:-${host_name:-${default_hostname}}} \
-    --router_asn ${BGP_ASN} \
-    --bgp_server_port ${BGP_PORT} ${subcluster_name}
-
-  external_routers_list=""
-  external_router=""
-  external_router_name=""
-  external_router_ip=""
-  provision_mx_params=""
-
-  if [[ -n "${EXTERNAL_ROUTERS}" ]]; then
-    IFS=",", read -ra external_routers_list <<< "${EXTERNAL_ROUTERS}"
-    for elem in "${external_routers_list[@]}"; do
-      if [[ $elem == *:* ]]; then
-        IFS=":", read -ra external_router <<< "${elem}"
-        external_router_name=${external_router[0]}
-        external_router_ip=${external_router[1]}
-        provision_mx_params="--router_name ${external_router_name} --router_ip ${external_router_ip} --router_asn ${BGP_ASN}"
-        provision provision_mx.py $provision_mx_params
-      fi
-    done
-  fi
-
   ;;
 
 vrouter)
