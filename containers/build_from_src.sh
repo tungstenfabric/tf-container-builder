@@ -63,9 +63,9 @@ function pip_libs_install() {
   local file_with_libs=$2
   local opt="--no-compile --no-cache-dir"
   local libs=""
-  while read lib; do    
+  while read lib; do
     libs="${libs} ${lib}"
-  done < "${file_with_libs}"  
+  done < "${file_with_libs}"
   if [[ $( echo $libs | trim ) == "" ]] ; then
     log "The list of libs is empty. Continue... "
   else
