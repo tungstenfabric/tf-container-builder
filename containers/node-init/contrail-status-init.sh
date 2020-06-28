@@ -34,7 +34,9 @@ fi
 # cause multiple instances can generate this at one moment - this operation should be atomic
 # TODO: it is expected that ssl dirs are byt default, it is needed to detect dirs and
 # do mount volumes appropriately
-tmp_suffix="--rm --pid host --net host --privileged ${CONTRAIL_STATUS_IMAGE} /root/contrail-status.py ${cmd_args} \$@"
+
+tmp_argv="/root/contrail-status.py ${cmd_args} \$@"
+tmp_suffix="--rm --pid host --net host --privileged ${CONTRAIL_STATUS_IMAGE} ${tmp_argv}"
 tmp_file=/host/usr/bin/contrail-status.tmp.${RANDOM}
 cat > $tmp_file << EOM
 #!/bin/bash
@@ -50,6 +52,17 @@ if ((\$? == 0)); then
     r+=' --volume=/sys/fs:/sys/fs'
     r+=' --cap-add=ALL --security-opt seccomp=unconfined'
     \$r $tmp_suffix
+    exit \$?
+fi
+u=\$(which ctr 2>/dev/null)
+if ((\$? == 0)); then
+    U=\$(python -c "import uuid; print(str(uuid.uuid1()).replace('-', ''))")
+    r="\$u --namespace k8s.io run --rm --privileged"
+    r+=' --mount type=bind,src=/etc/localtime,dst=/etc/localtime,options=rbind:ro'
+    r+=' --mount type=bind,src=/etc/hosts,dst=/etc/hosts,options=rbind:ro'
+    r+=' --mount type=bind,src=/run/containerd,dst=/run/containerd,options=rbind:rw'
+    r+=' --mount type=bind,src=/sys/fs/cgroup,dst=/sys/fs/cgroup,options=rbind:rw'
+    \$r ${CONTRAIL_STATUS_IMAGE} \$U ${tmp_argv}
     exit \$?
 fi
 EOM

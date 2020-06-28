@@ -16,6 +16,7 @@ from sandesh_common.vns import constants as vns_constants
 import six
 from urllib3.exceptions import SubjectAltNameWarning
 import yaml
+from nodemgr.common import utils as utils
 from nodemgr.common import cri_containers as cri
 
 warnings.filterwarnings('ignore', category=SubjectAltNameWarning)
@@ -174,13 +175,9 @@ class PodmanContainersInterface:
 
         return None
 
-class CriOContainersInterface:
-    def __init__(self):
-        self._cri = cri.CriOContainersInterface()
-
-    @staticmethod
-    def get_channel_path():
-        return '/var/run/crio/crio.sock'
+class CriContainersInterface:
+    def __init__(self, cri_):
+        self._cri = cri_
 
     def list(self, filter_):
         x = self._cri.list(True)
@@ -607,6 +604,20 @@ def print_containers(containers):
     print_msg('')
 
 
+def craft_client():
+    if utils.is_running_in_docker():
+        return DockerContainersInterface()
+
+    if not os.path.exists('/run/.containerenv'):
+        return CriContainersInterface(cri.CriContainersInterface
+            .craft_containerd_peer())
+
+    try:
+        return CriContainersInterface(cri.CriContainersInterface
+            .craft_crio_peer())
+    except LookupError:
+        return PodmanContainersInterface()
+
 def parse_args():
     parser = optparse.OptionParser()
     parser.add_option('-d', '--detail', dest='detail',
@@ -643,13 +654,7 @@ def main():
     debug_output = options.debug
     output_format = options.format
 
-    if not os.path.exists('/run/.containerenv'):
-        client = DockerContainersInterface()
-    elif os.path.exists(CriOContainersInterface.get_channel_path()):
-        client = CriOContainersInterface()
-    else:
-        client = PodmanContainersInterface()
-
+    client = craft_client()
     containers = get_containers()
     print_containers(containers)
     json_output['containers'] = containers
