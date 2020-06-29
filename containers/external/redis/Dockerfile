@@ -10,14 +10,16 @@ LABEL name=$CONTAINER_NAME \
 
 COPY *.sh hostname_to_ip /
 
-RUN set -eux && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
-    yum install https://repo.ius.io/ius-release-el7.rpm \
-    https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y && \
-    yum install redis40u.x86_64 perl -y && \
-    usermod -a -G $CONTRAIL_GID redis && \
-    yum remove epel-release ius-release -y && \
+RUN set -eux && for item in `ls /__*` ; do mv $item /${item:3} ; done && \    
+    yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y && \
+    yum install git -y && \
+    git clone  https://github.com/tungstenfabric/tf-third-party-cache && \
+    pushd tf-third-party-cache/redis && \
+    yum install redis40u-4.0.14-2.el7.ius.x86_64.rpm -y && \
+    popd && rm -rf tf-third-party-cache && \
+    usermod -a -G $CONTRAIL_GID redis && \    
+    yum remove epel-release -y && \
     yum clean all -y && rm -rf /var/cache/yum
-
 
 RUN mkdir /data && chown redis:redis /data
 VOLUME /data
