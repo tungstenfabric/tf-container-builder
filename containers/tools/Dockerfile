@@ -8,7 +8,7 @@ LABEL name=$CONTAINER_NAME \
       summary="A common tool for debugging" \
       description="The image contains scripts to debug Contrail processes."
 
-RUN yum install -y python-paramiko python-yaml python-crypto sudo openssh-clients && \
+RUN yum install -y python-paramiko python-yaml python-crypto sudo openssh-clients tcpdump && \
     yum clean all -y && \
     rm -rf /var/cache/yum
 
