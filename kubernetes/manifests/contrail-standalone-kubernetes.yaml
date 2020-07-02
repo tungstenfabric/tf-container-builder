@@ -266,6 +266,8 @@ spec:
           name: contrail-logs
       - name: contrail-analyticsdb
         image: "{{CONTRAIL_REGISTRY}}/contrail-external-cassandra:{{CONTRAIL_CONTAINER_TAG}}"
+        cap_add:
+          - SYS_NICE
         imagePullPolicy: ""
         env:
         - name: NODE_TYPE
@@ -347,6 +349,8 @@ spec:
       containers:
       - name: contrail-configdb
         image: "{{CONTRAIL_REGISTRY}}/contrail-external-cassandra:{{CONTRAIL_CONTAINER_TAG}}"
+        cap_add:
+          - SYS_NICE
         imagePullPolicy: ""
         env:
         - name: NODE_TYPE

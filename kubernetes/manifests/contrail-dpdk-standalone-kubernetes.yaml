@@ -281,6 +281,8 @@ spec:
           name: analyticsdb-logs
       - name: contrail-analyticsdb
         image: "{{CONTRAIL_REGISTRY}}/contrail-external-cassandra:{{CONTRAIL_CONTAINER_TAG}}"
+        cap_add:
+          - SYS_NICE
         imagePullPolicy: ""
         env:
         - name: NODE_TYPE
@@ -360,9 +362,11 @@ spec:
       - name: contrail-configdb
         image: "{{CONTRAIL_REGISTRY}}/contrail-external-cassandra:{{CONTRAIL_CONTAINER_TAG}}"
         imagePullPolicy: ""
+        cap_add:
+          - SYS_NICE
         env:
         - name: NODE_TYPE
-          value: config-database
+          value: config-databaseconfig-database
         envFrom:
         - configMapRef:
             name: contrail-configdb-config
