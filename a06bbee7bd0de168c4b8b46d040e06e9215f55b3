@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2d761a4b_c3a75e12",
+        "filename": "containers/node-init/contrail-status-init.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-07-06T13:04:14Z",
+      "side": 1,
+      "message": "is it a just a kind of unique name?  \nwhy not just bash pseudo random $RANDOM ?\npersonally i\u0027d not use python here as on some OSes there might not be default python cmd... only specific names like python3 / python2.7 be available (it depends on a distrib).\n?",
+      "range": {
+        "startLine": 59,
+        "startChar": 9,
+        "endLine": 59,
+        "endChar": 75
+      },
+      "revId": "a06bbee7bd0de168c4b8b46d040e06e9215f55b3",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
