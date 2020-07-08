@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "9e26617a_518958e1",
+        "filename": "containers/external/kafka/docker-entrypoint.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 750
+      },
+      "writtenOn": "2020-07-08T08:19:04Z",
+      "side": 1,
+      "message": "Kafka connects to zookeeper. So inorder to connect to zookeeper kafka needs zookeeper keystore and trustore files. Hence creating them here. It also need some jvm flags to be enabled and that\u0027s what we are doing",
+      "parentUuid": "f9588575_6f4f6936",
+      "revId": "6ba97b18fb70dc1a7a840bf28e5ac03da58e7a06",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "375b7f7d_feb4673f",
         "filename": "containers/external/kafka/docker-entrypoint.sh",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "a54ee212_b24c1015",
+        "filename": "containers/external/kafka/docker-entrypoint.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 750
+      },
+      "writtenOn": "2020-07-08T08:19:04Z",
+      "side": 1,
+      "message": "Will do",
+      "parentUuid": "375b7f7d_feb4673f",
+      "revId": "6ba97b18fb70dc1a7a840bf28e5ac03da58e7a06",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "15ad46bb_36687e7e",
         "filename": "containers/external/zookeeper/contrail-entrypoint.sh",
         "patchSetId": 1
@@ -47,6 +83,24 @@
       "writtenOn": "2020-06-26T15:45:37Z",
       "side": 1,
       "message": "please reduce copy-paste.\n- leave common params outside condition\n- put only specific under condition\n\nplease do not use indentation for config itself\nplease use 2 spaces as indentation (as above)",
+      "revId": "6ba97b18fb70dc1a7a840bf28e5ac03da58e7a06",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0b9a02cc_2ff9976b",
+        "filename": "containers/external/zookeeper/contrail-entrypoint.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 750
+      },
+      "writtenOn": "2020-07-08T08:19:04Z",
+      "side": 1,
+      "message": "Ok will do",
+      "parentUuid": "15ad46bb_36687e7e",
       "revId": "6ba97b18fb70dc1a7a840bf28e5ac03da58e7a06",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
