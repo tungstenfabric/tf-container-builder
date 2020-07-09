@@ -64,6 +64,7 @@ maxClientCnxns=${ZOO_MAX_CLIENT_CNXNS}
 admin.enableServer=false
 4lw.commands.whitelist=*
 
+snapshot.trust.emptry=true
 EOM
 
 [ -n "${ZOO_MAX_SESSION_TIMEOUT}" ] && echo "maxSessionTimeout=${ZOO_MAX_SESSION_TIMEOUT}" >> ${CONFIG}
@@ -78,6 +79,9 @@ done
 if [[ ! -f "$ZOO_DATA_DIR/myid" ]]; then
     echo "${ZOO_MY_ID}" > "$ZOO_DATA_DIR/myid"
 fi
+#w/a for upgrade from 3.4 to 3.6 zookeeper
+#hhttps://issues.apache.org/jira/browse/ZOOKEEPER-3056
+touch ${ZOO_DATA_DIR}/snapshot.0
 
 chown -R ${ZOO_USER}:${ZOO_GROUP}  "$ZOO_DATA_DIR" "$ZOO_DATA_LOG_DIR" "$ZOO_LOG_DIR" "$ZOO_CONF_DIR"
 CONTRAIL_UID=$( id -u ${ZOO_USER} )
