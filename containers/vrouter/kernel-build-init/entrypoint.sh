@@ -38,6 +38,17 @@ depmod -a
 # check vrouter.ko was built
 ls -l /lib/modules/$kver/updates/dkms/vrouter.ko || exit 1
 
+kernel_modules=$(ls /lib/modules)
+for kver in $kernel_modules ; do
+    # vrouter doesn't support kernels version 5, remove check after fix
+    if ! [[ "$kver" =~ ^5. ]] ; then
+        if [ ! -f "/lib/modules/$kver/updates/dkms/vrouter.ko" ]; then
+            echo "DKMS auto installing for kernel $kver"
+            dkms autoinstall -k $kver
+        fi
+    fi
+done
+
 touch $vrouter_dir/module_compiled
 
 # copy vif util to host
