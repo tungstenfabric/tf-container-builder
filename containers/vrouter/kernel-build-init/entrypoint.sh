@@ -33,10 +33,24 @@ dkms --verbose add -m vrouter -v "${contrail_version}"
 dkms --verbose build -m vrouter -v "${contrail_version}"
 cat /var/lib/dkms/vrouter/${contrail_version}/build/make.log
 dkms --verbose install -m vrouter -v "${contrail_version}"
-depmod -a
 
 # check vrouter.ko was built
 ls -l /lib/modules/$kver/updates/dkms/vrouter.ko || exit 1
+
+kernel_modules=$(ls /lib/modules)
+for kver in $kernel_modules ; do
+    # vrouter doesn't support kernels version 5, remove check after fix
+    if ! [[ "$kver" =~ ^5. ]] ; then
+        if [ ! -f "/lib/modules/$kver/updates/dkms/vrouter.ko" ]; then
+            echo "DKMS auto installing for kernel $kver"
+            dkms autoinstall -k $kver
+
+            # check vrouter.ko was built
+            ls -l /lib/modules/$kver/updates/dkms/vrouter.ko || exit 1
+        fi
+    fi
+done
+depmod -a
 
 touch $vrouter_dir/module_compiled
 
