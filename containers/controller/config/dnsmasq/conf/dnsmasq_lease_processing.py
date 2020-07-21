@@ -52,7 +52,7 @@ def main():
                 device_obj.get_physical_router_management_ip()))
     elif sys.argv[1] == 'write':
         # write to the DB dummy PR with mac:ip
-        fq_name = ['default-global-system-config', sys.argv[3]]
+        fq_name = ['default-global-system-config', sys.argv[4]]
         physicalrouter = PhysicalRouter(
             parent_type='global-system-config',
             fq_name=fq_name,
@@ -77,7 +77,7 @@ def main():
                                                          sys.argv[3]))
         logger.info("Router created id: %s" % pr_uuid)
     elif sys.argv[1] == 'delete':
-        fq_name = ['default-global-system-config', sys.argv[2]]
+        fq_name = ['default-global-system-config', sys.argv[4]]
         try:
             vnc_api.physical_router_delete(fq_name=fq_name)
         except Exception:
