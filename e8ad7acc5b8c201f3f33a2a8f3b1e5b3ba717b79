@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "906bc70e_6ebc003a",
+        "filename": "containers/controller/config/dnsmasq/conf/dnsmasq_lease_processing.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 843
+      },
+      "writtenOn": "2020-07-22T02:20:25Z",
+      "side": 1,
+      "message": "can you update this comment as well, instead of ip - serialnumber/hostname?",
+      "revId": "e8ad7acc5b8c201f3f33a2a8f3b1e5b3ba717b79",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
