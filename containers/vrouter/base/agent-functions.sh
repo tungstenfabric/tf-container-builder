@@ -879,3 +879,23 @@ function check_physical_mtu() {
        ip link set dev $phys_int mtu $mtu
     fi
 }
+
+function trap_vrouter_agent_quit() {
+    local res=0
+    if ! term_process $vrouter_agent_process ; then
+        echo "ERROR: Failed to stop agent process"
+        res=1
+    fi
+    remove_vhost0
+    cleanup_vrouter_agent_files
+    exit $res
+}
+
+function trap_vrouter_agent_term() {
+    term_process $vrouter_agent_process
+    exit $?
+}
+
+function trap_vrouter_agent_hub() {
+    send_sighup_child_process $vrouter_agent_process
+}
