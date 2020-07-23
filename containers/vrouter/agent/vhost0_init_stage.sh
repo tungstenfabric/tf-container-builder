@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 source /common.sh
 source /agent-functions.sh
@@ -38,4 +38,5 @@ trap 'trap_vrouter_agent_hub' SIGHUP
 
 vhost0_init_stage $@
 
-wait $(run_agent_stage $@)
+# We need this container after vhost0 setup for run next stage
+tail -f /dev/null
