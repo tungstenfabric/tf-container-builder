@@ -5,8 +5,7 @@ source /agent-functions.sh
 
 echo "INFO: agent started in $AGENT_MODE mode"
 
-set_traps
-
 vhost0_init $@
 
-wait $(run_agent $@)
+# We need this container after vhost0 setup for run next stage
+tail -f /dev/null
