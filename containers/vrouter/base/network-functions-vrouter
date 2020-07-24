@@ -223,6 +223,11 @@ function wait_vhost0() {
     local max=${1:-60}
     local pause=${2:-5}
     local i=0
+
+    if ! is_dpdk ; then
+        return 0
+    fi
+
     for (( i=0; i<max; i+=1 )) ; do
         echo "INFO: wait vhost0 to be initilaized... ${i}/${max}"
         if ip addr show dev vhost0 2>/dev/null | grep -q "inet " ; then
