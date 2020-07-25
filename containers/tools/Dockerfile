@@ -31,3 +31,5 @@ RUN yum install -y python-paramiko python-yaml python-crypto sudo openssh-client
 
 ENV PS1="\033[1m($CONTAINER_NAME)\033[m\017[$(id -un)@$(hostname -s) $(pwd)]$ "
 LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
+
+ENTRYPOINT ["/bin/bash"]
