@@ -16,17 +16,13 @@ RUN yum install -y python-paramiko python-yaml python-crypto sudo openssh-client
     tar --skip-old-files -xvf /tmp/tshark3_2.tar.bz2 && \
     ln -s /lib64/libssh.so.4.4.0 /lib64/libssh.so.4 && \
     ln -s /lib64/libwsutil.so.11.0.0 /lib64/libwsutil.so.11 && \
-    ln -s /lib64/libsmi.so.2.0.27 /lib64/libsmi.so.2 && \
     ln -s /lib64/libbrotlicommon.so.1.0.7 /lib64/libbrotlicommon.so.1 && \
     ln -s /lib64/libwiretap.so.10.0.2 /lib64/libwiretap.so.10 && \
     ln -s /lib64/libsnappy.so.1.1.4 /lib64/libsnappy.so.1 && \
     ln -s /lib64/libzstd.so.1.4.5 /lib64/libzstd.so.1 && \
     ln -s /lib64/libnghttp2.so.14.16.1 /lib64/libnghttp2.so.14 && \
     ln -s /lib64/libwireshark.so.13.0.2 /lib64/libwireshark.so.13 && \
-    ln -s /lib64/libbrotlidec.so.1.0.7 /lib64/libbrotlidec.so.1 && \
-    ln -s /lib64/libhogweed.so.2.5 /lib64/libhogweed.so.2 && \
-    ln -s /lib64/libgnutls.so.28.43.3 /lib64/libgnutls.so.28 && \
-    ln -s /lib64/libnettle.so.4.7 /lib64/libnettle.so.4
+    ln -s /lib64/libbrotlidec.so.1.0.7 /lib64/libbrotlidec.so.1
 
 
 ENV PS1="\033[1m($CONTAINER_NAME)\033[m\017[$(id -un)@$(hostname -s) $(pwd)]$ "
