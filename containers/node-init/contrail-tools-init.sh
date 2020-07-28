@@ -29,33 +29,35 @@ if [[ -n "${SERVER_CA_CERTFILE}" ]] ; then
   fi
 fi
 
+
 image=$(echo ${CONTRAIL_STATUS_IMAGE} | sed 's/contrail-status:/contrail-tools:/')
-tmp_suffix="--rm --pid host --net host --privileged ${image} \$@"
+tmp_suffix="-it --rm --pid host --net host --privileged ${image}"
 tmp_file=/host/usr/bin/contrail-tools.tmp.${RANDOM}
 cat > $tmp_file << EOM
 #!/bin/bash
+
+if [[ -n "\$@" ]]; then
+  entrypoint=\$(mktemp)
+  echo '#!/bin/bash -e' > \$entrypoint
+  echo "\$@" >> \$entrypoint
+  chmod a+x \$entrypoint
+  entrypoint_arg="-v \$entrypoint:\$entrypoint --entrypoint \$entrypoint"
+fi
+
 u=\$(which docker 2>/dev/null)
 if pidof dockerd >/dev/null 2>&1 || pidof dockerd-current >/dev/null 2>&1 ; then
-    \$u run $vol_opts $tmp_suffix
+    \$u run $vol_opts \$entrypoint_arg $tmp_suffix
+    rm -f \$entrypoint
     exit \$?
 fi
 u=\$(which podman 2>/dev/null)
 if ((\$? == 0)); then
-    r="\$u run $vol_opts "
+    r="\$u run $vol_opts \$entrypoint_arg "
     r+=' --volume=/run/runc:/run/runc'
     r+=' --volume=/sys/fs:/sys/fs'
     r+=' --cap-add=ALL --security-opt seccomp=unconfined'
     \$r $tmp_suffix
-    exit \$?
-fi
-u=\$(which ctr 2>/dev/null)
-if ((\$? == 0)); then
-    r="\$u --namespace k8s.io run --rm --privileged"
-    r+=' --mount type=bind,src=/etc/localtime,dst=/etc/localtime,options=rbind:ro'
-    r+=' --mount type=bind,src=/etc/hosts,dst=/etc/hosts,options=rbind:ro'
-    r+=' --mount type=bind,src=/run/containerd,dst=/run/containerd,options=rbind:rw'
-    r+=' --mount type=bind,src=/sys/fs/cgroup,dst=/sys/fs/cgroup,options=rbind:rw'
-    \$r ${image} \$RANDOM ${tmp_argv}
+    rm -f \$entrypoint
     exit \$?
 fi
 EOM

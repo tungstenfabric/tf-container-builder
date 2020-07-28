@@ -13,7 +13,7 @@ RUN yum install -y python-paramiko python-yaml python-crypto sudo openssh-client
     yum clean all -y && \
     rm -rf /var/cache/yum && \
     wget -nv -c --tries=3 -O /tmp/tshark3_2.tar.bz2 https://github.com/tungstenfabric/tf-third-party-cache/raw/master/tshark/tshark3_2.tar.bz2 && \
-    tar -xkf /tmp/tshark3_2.tar.bz2 && \
+    tar --skip-old-files -xvf /tmp/tshark3_2.tar.bz2 && \
     ln -s /lib64/libssh.so.4.4.0 /lib64/libssh.so.4 && \
     ln -s /lib64/libwsutil.so.11.0.0 /lib64/libwsutil.so.11 && \
     ln -s /lib64/libsmi.so.2.0.27 /lib64/libsmi.so.2 && \
