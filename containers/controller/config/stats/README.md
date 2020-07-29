@@ -1,3 +1,5 @@
+## This service is deprecated, not for production.
+
 Effort to massively offer Tungsten Fabric as an open-source SDN standard is quite new and require measuring the progress of “conquering” the market - growth rate, community “health”.
 
 The service collects statistics information and sends it to statistics server.
@@ -17,4 +19,3 @@ To enable(edit) sending:
 In order to disable sending just remove tags.
 In case there are few tags (misconfiguration) the service picks a tag with the least frequency
 "stats_monthly" is the least frequency tag.
-
