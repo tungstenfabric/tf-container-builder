@@ -77,7 +77,7 @@ def main():
                                                          sys.argv[3]))
         logger.info("Router created id: %s" % pr_uuid)
     elif sys.argv[1] == 'delete':
-        fq_name = ['default-global-system-config', sys.argv[4]]
+        fq_name = ['default-global-system-config', sys.argv[2]]
         try:
             vnc_api.physical_router_delete(fq_name=fq_name)
         except Exception:
