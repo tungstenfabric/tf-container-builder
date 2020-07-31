@@ -75,6 +75,9 @@ for server in $ZOO_SERVERS; do
     echo "$server" >> "$CONFIG"
 done
 
+# to prevent errors if some folder are absent (not mounted or not created)
+mkdir -p "$ZOO_DATA_DIR" "$ZOO_DATA_LOG_DIR" "$ZOO_LOG_DIR"
+
 # Write myid only if it doesn't exist
 if [[ ! -f "$ZOO_DATA_DIR/myid" ]]; then
     echo "${ZOO_MY_ID}" > "$ZOO_DATA_DIR/myid"
