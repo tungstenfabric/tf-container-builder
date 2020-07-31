@@ -83,6 +83,8 @@ fi
 #hhttps://issues.apache.org/jira/browse/ZOOKEEPER-3056
 touch ${ZOO_DATA_DIR}/snapshot.0
 
+# to prevent errors if some folder are absent (not mounted or not created)
+mkdir -p "$ZOO_DATA_DIR" "$ZOO_DATA_LOG_DIR" "$ZOO_LOG_DIR" "$ZOO_CONF_DIR"
 chown -R ${ZOO_USER}:${ZOO_GROUP}  "$ZOO_DATA_DIR" "$ZOO_DATA_LOG_DIR" "$ZOO_LOG_DIR" "$ZOO_CONF_DIR"
 CONTRAIL_UID=$( id -u ${ZOO_USER} )
 CONTRAIL_GID=$( id -g ${ZOO_GROUP} )
