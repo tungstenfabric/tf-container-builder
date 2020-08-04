@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5d03d561_7c81cb4f",
+        "filename": "containers/external/kafka/docker-entrypoint.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-08-04T15:09:00Z",
+      "side": 1,
+      "message": "are you sure that sed is not required here? will we have two lines with this option?",
+      "revId": "9972f629417133db49fecb56eab99429c9c59c83",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
