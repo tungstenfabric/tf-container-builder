@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ad30bd40_14bee16e",
+        "filename": "containers/vrouter/agent/collect_host_data.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 872
+      },
+      "writtenOn": "2020-08-06T09:14:25Z",
+      "side": 1,
+      "message": "missprint\nRESULTFILE\u003d${RESULTFILE:-\u0027/var/run/hostdata\u0027}",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 45
+      },
+      "revId": "fd7eb0391f8f7059bec9172ed0aa88320a31e024",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
