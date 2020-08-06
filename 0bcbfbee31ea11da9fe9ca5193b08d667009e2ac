@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "40e995c8_311cf711",
+        "filename": "containers/vrouter/agent/collect_host_data.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 980
+      },
+      "writtenOn": "2020-08-06T10:22:32Z",
+      "side": 1,
+      "message": "Also this means we must have not more than 1 agent container per host",
+      "parentUuid": "50412c4f_627a6dd8",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 35
+      },
+      "revId": "0bcbfbee31ea11da9fe9ca5193b08d667009e2ac",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e93f21b0_f91d63f4",
         "filename": "containers/vrouter/agent/collect_host_data.sh",
         "patchSetId": 1
