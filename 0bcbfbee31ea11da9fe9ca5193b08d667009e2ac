@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5c0ea052_c91215e5",
+        "filename": "containers/vrouter/agent/collect_host_data.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 872
+      },
+      "writtenOn": "2020-08-06T07:25:19Z",
+      "side": 1,
+      "message": "#!/bin/bash looks more appropriate for this container",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 19
+      },
+      "revId": "0bcbfbee31ea11da9fe9ca5193b08d667009e2ac",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c88f73b2_c180808f",
+        "filename": "containers/vrouter/agent/collect_host_data.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 872
+      },
+      "writtenOn": "2020-08-06T07:25:19Z",
+      "side": 1,
+      "message": "RESULTFILE\u003d{$RESULTFILE:-\u0027/var/run/hostdata\u0027}",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 35
+      },
+      "revId": "0bcbfbee31ea11da9fe9ca5193b08d667009e2ac",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e93f21b0_f91d63f4",
+        "filename": "containers/vrouter/agent/collect_host_data.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 872
+      },
+      "writtenOn": "2020-08-06T07:25:19Z",
+      "side": 1,
+      "message": "Is this something to do?",
+      "range": {
+        "startLine": 60,
+        "startChar": 19,
+        "endLine": 60,
+        "endChar": 50
+      },
+      "revId": "0bcbfbee31ea11da9fe9ca5193b08d667009e2ac",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76b339e0_2520ca40",
+        "filename": "containers/vrouter/agent/collect_host_data.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 872
+      },
+      "writtenOn": "2020-08-06T07:25:19Z",
+      "side": 1,
+      "message": "It doesn\u0027t look these two vars have been used below",
+      "range": {
+        "startLine": 67,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 25
+      },
+      "revId": "0bcbfbee31ea11da9fe9ca5193b08d667009e2ac",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1125230c_d9d22ca3",
+        "filename": "containers/vrouter/agent/collect_host_data.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 872
+      },
+      "writtenOn": "2020-08-06T07:25:19Z",
+      "side": 1,
+      "message": "Where HYPERVISOR_TYPE is used below?",
+      "range": {
+        "startLine": 71,
+        "startChar": 4,
+        "endLine": 71,
+        "endChar": 19
+      },
+      "revId": "0bcbfbee31ea11da9fe9ca5193b08d667009e2ac",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
