@@ -16,6 +16,24 @@
       "revId": "9972f629417133db49fecb56eab99429c9c59c83",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce320cc1_e03e4b69",
+        "filename": "containers/external/kafka/docker-entrypoint.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 705
+      },
+      "writtenOn": "2020-08-10T12:12:08Z",
+      "side": 1,
+      "message": "I have addressed your comments. Please check.",
+      "parentUuid": "5d03d561_7c81cb4f",
+      "revId": "9972f629417133db49fecb56eab99429c9c59c83",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
     }
   ]
 }
