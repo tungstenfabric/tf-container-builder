@@ -150,6 +150,7 @@ spec:
     metadata:
       labels:
         app: contrail-agent
+    spec:
       #Disable affinity for single node setup
       affinity:
         nodeAffinity:
