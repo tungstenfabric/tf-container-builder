@@ -26,6 +26,7 @@ http_server_ip=$(get_introspect_listen_ip_for_node KUBEMANAGER)
 kubernetes_api_server=${KUBERNETES_API_SERVER:-${DEFAULT_LOCAL_IP}}
 kubernetes_api_port=${KUBERNETES_API_PORT:-8080}
 kubernetes_api_secure_port=${KUBERNETES_API_SECURE_PORT:-6443}
+kubernetes_cluster_domain=${KUBERNETES_CLUSTER_DOMAIN:-}
 cluster_name=${KUBERNETES_CLUSTER_NAME}
 cluster_project=${KUBERNETES_CLUSTER_PROJECT:-"{}"}
 cluster_network=${KUBERNETES_CLUSTER_NETWORK:-"{}"}
