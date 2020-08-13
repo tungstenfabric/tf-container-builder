@@ -51,6 +51,7 @@
 | KUBERNETES_API_PORT               | 8080                                                |
 | KUBERNETES_API_SECURE_PORT        | 6443                                                |
 | KUBERNETES_API_SERVER             | IP address of the NIC performs default routing      |
+| KUBERNETES_CLUSTER_DOMAIN         |                                                     |
 | KUBERNETES_CLUSTER_NAME           | k8s                                                 |
 | KUBERNETES_CLUSTER_NETWORK        | {}                                                  |
 | KUBERNETES_CLUSTER_PROJECT        | {}                                                  |
