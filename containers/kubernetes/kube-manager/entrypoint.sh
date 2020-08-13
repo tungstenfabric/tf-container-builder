@@ -10,6 +10,11 @@ K8S_TOKEN=${K8S_TOKEN:-"$(cat $K8S_TOKEN_FILE)"}
 host_ip=$(get_listen_ip_for_node KUBEMANAGER)
 cassandra_server_list=$(echo $CONFIGDB_SERVERS | sed 's/,/ /g')
 
+if [[ -n "$KUBERNETES_CLUSTER_DOMAIN" ]]
+then
+    cluster_domain="kubernetes_cluster_domain=$KUBERNETES_CLUSTER_DOMAIN"
+fi
+
 mkdir -p /etc/contrail
 cat > /etc/contrail/contrail-kubernetes.conf << EOM
 [DEFAULTS]
@@ -35,6 +40,7 @@ service_subnets=${KUBERNETES_SERVICE_SUBNETS:-"10.96.0.0/12"}
 ip_fabric_forwarding=${KUBERNETES_IP_FABRIC_FORWARDING:-"false"}
 ip_fabric_snat=${KUBERNETES_IP_FABRIC_SNAT:-"false"}
 host_network_service=${KUBERNETES_HOST_NETWORK_SERVICE:-"false"}
+$cluster_domain
 
 [VNC]
 public_fip_pool=${KUBERNETES_PUBLIC_FIP_POOL:-"{}"}
