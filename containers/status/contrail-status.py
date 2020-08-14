@@ -100,6 +100,7 @@ INDEXED_SERVICES = [
     'tor-agent',
 ]
 
+
 class DockerContainersInterface:
     def __init__(self):
         self._client = docker.from_env()
@@ -108,7 +109,7 @@ class DockerContainersInterface:
 
     def list(self, filter_):
         f = {'label': [filter_]}
-        return self._client.containers(all = True, filters = f)
+        return self._client.containers(all=True, filters=f)
 
     def inspect(self, id_):
         try:
@@ -117,14 +118,15 @@ class DockerContainersInterface:
             logging.exception('docker')
             return None
 
+
 class PodmanContainersInterface:
-    def _execute(self, arguments_, timeout_ = 10):
+    def _execute(self, arguments_, timeout_=10):
         a = ["podman"]
         a.extend(arguments_)
-        p = subprocess.Popen(a, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+        p = subprocess.Popen(a, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         try:
             o, e = p.communicate(timeout_)
-        except TimeoutExpired:
+        except subprocess.TimeoutExpired:
             p.kill()
             o, e = p.communicate()
         p.wait()
@@ -154,13 +156,15 @@ class PodmanContainersInterface:
                 container_['Id'] = container_['ID']
             if 'State' in container_:
                 s = container_['State']
-                container_['State'] = ['unknown', 'configured', 'created',
-                        'running', 'stopped', 'paused', 'exited', 'removing'][s]
+                container_['State'] = [
+                    'unknown', 'configured', 'created',
+                    'running', 'stopped', 'paused', 'exited', 'removing'][s]
 
         return container_
 
     def list(self, filter_):
-        _, output = self._parse_json(["ps", "-a", "--filter",
+        _, output = self._parse_json([
+            "ps", "-a", "--filter",
             '"label={0}"'.format(filter_)])
         if output:
             for i in output:
@@ -175,6 +179,7 @@ class PodmanContainersInterface:
 
         return None
 
+
 class CriContainersInterface:
     def __init__(self, cri_):
         self._cri = cri_
@@ -186,15 +191,19 @@ class CriContainersInterface:
     def inspect(self, id_):
         return self._cri.inspect(id_)
 
+
 debug_output = False
 # docker client is used in several places - just cache it at start
 client = None
+ssl_enabled = False
 
-json_output = {'containers': {}, 'pods': {}, 'msgs':[]}
+json_output = {'containers': {}, 'pods': {}, 'msgs': []}
+
 
 def print_msg(msg):
-  if output_format == 'text':
+    if output_format == 'text':
         print(msg)
+
 
 def print_debug(str):
     if debug_output:
@@ -206,7 +215,6 @@ class EtreeToDict(object):
 
     def __init__(self, xpath):
         self.xpath = xpath
-    #end __init__
 
     def _handle_list(self, elems):
         """Handles the list object in etree."""
@@ -221,7 +229,6 @@ class EtreeToDict(object):
                 a_list.append(rval)
 
         return a_list if a_list else None
-    #end _handle_list
 
     def _get_one(self, xp, a_list=None):
         """Recrusively looks for the entry in etree and converts to dictionary.
@@ -245,7 +252,6 @@ class EtreeToDict(object):
                 else:
                     val.update({elem.tag: rval})
         return val
-    #end _get_one
 
     def get_all_entry(self, path):
         """All entries in the etree is converted to the dictionary
@@ -261,7 +267,6 @@ class EtreeToDict(object):
         for xp in xps:
             val.append(self._get_one(xp))
         return val
-    #end get_all_entry
 
     def find_entry(self, path, match):
         """Looks for a particular entry in the etree.
@@ -270,8 +275,6 @@ class EtreeToDict(object):
         xp = path.xpath(self.xpath)
         f = filter(lambda x: x.text == match, xp)
         return f[0].text if len(f) else None
-    #end find_entry
-#end class EtreeToDict
 
 
 class IntrospectUtil(object):
@@ -281,13 +284,11 @@ class IntrospectUtil(object):
         self._certfile = options.certfile
         self._keyfile = options.keyfile
         self._cacert = options.cacert
-    #end __init__
 
     def _mk_url_str(self, path, secure=False):
         proto = "https" if secure else "http"
         ip = self._get_addr_to_connect()
         return "%s://%s:%d/%s" % (proto, ip, self._port, path)
-    #end _mk_url_str
 
     def _get_addr_to_connect(self):
         default_addr = socket.getfqdn()
@@ -310,26 +311,28 @@ class IntrospectUtil(object):
             pass
         return default_addr
 
+    def _make_request(self, path, secure):
+        url = self._mk_url_str(path, secure=secure)
+        if not secure:
+            return requests.get(url, timeout=self._timeout)
+        return requests.get(
+            url, timeout=self._timeout,
+            verify=self._cacert, cert=(self._certfile, self._keyfile))
+
     def _load(self, path):
-        url = self._mk_url_str(path)
         try:
-            resp = requests.get(url, timeout=self._timeout)
+            resp = self._make_request(path, ssl_enabled)
         except requests.ConnectionError:
-            url = self._mk_url_str(path, True)
-            resp = requests.get(
-                url, timeout=self._timeout,
-                verify=self._cacert, cert=(self._certfile, self._keyfile))
+            resp = self._make_request(path, not ssl_enabled)
         if resp.status_code != requests.codes.ok:
             print_debug('URL: %s : HTTP error: %s' % (url, str(resp.status_code)))
             return None
 
         return etree.fromstring(resp.text)
-    #end _load
 
     def get_uve(self, tname):
         path = 'Snh_SandeshUVECacheReq?x=%s' % (tname)
         return self.get_data(path, tname)
-    #end get_uve
 
     def get_data(self, path, tname):
         xpath = './/' + tname
@@ -338,8 +341,6 @@ class IntrospectUtil(object):
             return EtreeToDict(xpath).get_all_entry(p)
         print_debug('UVE: %s : not found' % (path))
         return None
-    #end get_uve
-#end class IntrospectUtil
 
 
 def get_http_server_port(svc_name, env, port_env_key):
@@ -389,8 +390,8 @@ def get_svc_uve_info(svc_name, container, port_env_key, options):
         return svc_status
     # Extract UVE state only for running processes
     svc_uve_description = None
-    if (svc_name not in vns_constants.NodeUVEImplementedServices
-            and svc_name.rsplit('-', 1)[0] not in vns_constants.NodeUVEImplementedServices):
+    if (svc_name not in vns_constants.NodeUVEImplementedServices and
+            svc_name.rsplit('-', 1)[0] not in vns_constants.NodeUVEImplementedServices):
         return svc_status
 
     svc_uve_status = None
@@ -420,7 +421,7 @@ def get_svc_uve_info(svc_name, container, port_env_key, options):
             svc_status = 'timeout'
     else:
         svc_status = 'initializing'
-    if svc_uve_description is not None and svc_uve_description is not '':
+    if svc_uve_description is not None and svc_uve_description != '':
         svc_status = svc_status + ' (' + svc_uve_description + ')'
     return svc_status
 
@@ -609,14 +610,15 @@ def craft_client():
         return DockerContainersInterface()
 
     if not os.path.exists('/run/.containerenv'):
-        return CriContainersInterface(cri.CriContainersInterface
-            .craft_containerd_peer())
+        return CriContainersInterface(
+            cri.CriContainersInterface.craft_containerd_peer())
 
     try:
-        return CriContainersInterface(cri.CriContainersInterface
-            .craft_crio_peer())
+        return CriContainersInterface(
+            cri.CriContainersInterface.craft_crio_peer())
     except LookupError:
         return PodmanContainersInterface()
+
 
 def parse_args():
     parser = optparse.OptionParser()
@@ -649,10 +651,15 @@ def main():
     global debug_output
     global client
     global output_format
+    global ssl_enabled
 
     options = parse_args()
     debug_output = options.debug
     output_format = options.format
+
+    ssl_enabled = yaml.load(os.getenv('INTROSPECT_SSL_ENABLE', 'False'))
+    if not isinstance(ssl_enabled, bool):
+        ssl_enabled = False
 
     client = craft_client()
     containers = get_containers()
@@ -674,9 +681,9 @@ def main():
         if not pod and v['Original Name'] in SHARED_SERVICES:
             continue
         msg = ("WARNING: container with original name '{}' "
-              "have Pod or Service empty. Pod: '{}' / Service: '{}'. "
-              "Please pass NODE_TYPE with pod name to container's env".format(
-                  v['Original Name'], v['Pod'], v['Service']))
+               "have Pod or Service empty. Pod: '{}' / Service: '{}'. "
+               "Please pass NODE_TYPE with pod name to container's env".format(
+                   v['Original Name'], v['Pod'], v['Service']))
         print_msg(msg)
         json_output['msgs'].append(msg)
         fail = True

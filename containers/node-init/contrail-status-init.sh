@@ -13,6 +13,7 @@ if [[ -z "$CONTRAIL_STATUS_IMAGE" ]]; then
 fi
 
 vol_opts=''
+env_opts="--env INTROSPECT_SSL_ENABLE=$INTROSPECT_SSL_ENABLE"
 cmd_args=''
 # ssl folder is always to mounted: in case of IPA init container
 # should not generate cert and is_ssl_enabled is false for this container,
@@ -42,12 +43,12 @@ cat > $tmp_file << EOM
 #!/bin/bash
 u=\$(which docker 2>/dev/null)
 if pidof dockerd >/dev/null 2>&1 || pidof dockerd-current >/dev/null 2>&1 ; then
-    \$u run $vol_opts $tmp_suffix
+    \$u run $vol_opts $env_opts $tmp_suffix
     exit \$?
 fi
 u=\$(which podman 2>/dev/null)
 if ((\$? == 0)); then
-    r="\$u run $vol_opts "
+    r="\$u run $vol_opts $env_opts "
     r+=' --volume=/run/runc:/run/runc'
     r+=' --volume=/sys/fs:/sys/fs'
     r+=' --cap-add=ALL --security-opt seccomp=unconfined'
