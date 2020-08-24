@@ -200,12 +200,13 @@ function stop_docker_container() {
     local container=$1
     local signal=$2
     [ -z "$container" ] && { echo "ERROR: container id/name must be provided" && return 1 ; }
-    if docker inspect "$container" >/dev/null 2>&1 ; then
+    local cmd=$(which podman 2>/dev/null || echo docker)
+    if $cmd inspect "$container" >/dev/null 2>&1 ; then
         if [ -n "$signal" ] ; then
             echo "INFO: send $signal to the container $container"
-            docker kill --signal $signal "$container"
+            $cmd kill --signal $signal "$container"
             echo "INFO: wait container $container finishes"
-            docker wait "$container"
+            $cmd wait "$container"
         fi
     fi
 }
@@ -215,7 +216,8 @@ function remove_docker_container() {
     local signal=$2
     if stop_docker_container $container $signal ; then
         echo "INFO: remove the container $container"
-        docker rm --force "$container"
+        local cmd=$(which podman 2>/dev/null || echo docker)
+        $cmd rm --force "$container"
     fi
 }
 
