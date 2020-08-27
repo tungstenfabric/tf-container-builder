@@ -593,7 +593,7 @@ function init_vhost0() {
         fi
         ip link set dev vhost0 down
         ifup vhost0 || { echo "ERROR: failed to ifup vhost0." && ret=1; }
-        check_physical_mtu ${mtu} ${phys_int}
+        [ -n "$mtu" ] && check_physical_mtu ${mtu} ${phys_int}
     else
         echo "INFO: there is no ifcfg-$phys_int and ifcfg-vhost0, so initialize vhost0 manually"
         if ! is_dpdk ; then
@@ -613,7 +613,7 @@ function init_vhost0() {
             echo "INFO: set mtu"
             ip link set dev vhost0 mtu $mtu
         fi
-        check_physical_mtu ${mtu} ${phys_int}
+        [ -n "$mtu" ] && check_physical_mtu ${mtu} ${phys_int}
         set_dev_routes vhost0 "$routes"
     fi
     # Remove all routes from phys iface if any.
@@ -874,7 +874,7 @@ function check_physical_mtu() {
     local mtu=$1
     local phys_int=$2
     local mtu_after_vhost=$(cat "/sys/class/net/${phys_int}/mtu")
-    if [ "$mtu_after_vhost" -ne "$mtu" ] ; then
+    if [[ "$mtu_after_vhost" != "$mtu" ]] ; then
        echo "INFO: reset MTU of $phys_int"
        ip link set dev $phys_int mtu $mtu
     fi

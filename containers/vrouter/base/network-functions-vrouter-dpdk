@@ -112,7 +112,8 @@ function start_dpdk_container() {
     local node_type=${NODE_TYPE:-'vrouter'}
     local service_name=${SERVICE_NAME:-'agent-dpdk'}
     mkdir -p /var/lib/contrail
-    mkdir -p /var/log/containers/contrail
+    mkdir -p /var/log/containers/contrail/dpdk
+    mkdir -p /var/crashes
     eval "$cmd run \
         --detach \
         --name ${container_name} \
