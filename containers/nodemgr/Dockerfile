@@ -13,7 +13,7 @@ LABEL name=$CONTAINER_NAME \
 RUN   yum install -y contrail-nodemgr python2-docker chrony ntp python3-contrail podman && \
       yum clean all -y && \
       rm -rf /var/cache/yum && \
-      pip2 install --no-compile grpc==0.3.post19 grpcio==1.29.0 protobuf==3.12.1
+      pip2 install --no-compile grpcio==1.29.0 protobuf==3.12.1
 
 COPY *.sh /
 ENTRYPOINT ["/entrypoint.sh"]
