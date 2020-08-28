@@ -464,3 +464,23 @@ function set_traps() {
     # Send SIGHUP signal to child process
     trap 'trap_vrouter_agent_hub' SIGHUP
 }
+
+# Create fifo pipe and pause the process until some input
+# Used for k8s contrail operator can prepare config after vhost0 setup
+function wait_for_config() {
+    if ls -l config_is_ready; then
+        echo "ERROR: pipe config_is_ready has been already created"
+        exit 1
+    fi
+    mkfifo config_is_ready
+    read $line <config_is_ready
+}
+
+# This function run the container paused by wait_for_config after config is ready for the vrouter-agent
+function config_ready() {
+    if ! ls -l config_is_ready; then
+        echo "ERROR: pipe config_is_ready not found"
+        exit 1
+    fi
+    echo "yes" > config_is_ready
+}
