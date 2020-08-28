@@ -464,3 +464,23 @@ function set_traps() {
     # Send SIGHUP signal to child process
     trap 'trap_vrouter_agent_hub' SIGHUP
 }
+
+# Create fifo pipe and pause the container until some input
+# Used for k8s contrail operator
+function pause_container() {
+    if ls -l pause_container_pipe; then
+        echo "ERROR: pipe pause_container_pipe has been already created"
+        exit 1
+    fi
+    mkfifo pause_container_pipe
+    read $line <pause_container_pipe
+}
+
+# This function run the container paused by pause_container
+function resume_container() {
+    if ! ls -l pause_container_pipe; then
+        echo "ERROR: pipe pause_container_pipe not found"
+        exit 1
+    fi
+    echo "yes" > pause_container_pipe
+}
