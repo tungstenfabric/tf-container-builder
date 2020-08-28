@@ -10,7 +10,7 @@ LABEL name=$CONTAINER_NAME \
       description="Contrail Node Manager is a monitor process per contrail virtual node that tracks the running state of the processes."
 # for building from rpms
 # install chrony, ntp and iputils-clockdiff to enable checking time sync by nodemgr
-RUN   yum install -y contrail-nodemgr python2-docker chrony ntp python3-contrail podman && \
+RUN   yum install -y contrail-nodemgr python2-docker-2.4.2-1.2.el7 chrony ntp python3-contrail podman && \
       yum clean all -y && \
       rm -rf /var/cache/yum && \
       pip2 install --no-compile grpcio==1.29.0 protobuf==3.12.1
