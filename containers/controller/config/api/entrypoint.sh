@@ -5,7 +5,11 @@ source /common.sh
 pre_start_init
 wait_config_api_certs_if_ssl_enabled
 
-host_ip=$(get_listen_ip_for_node CONFIG)
+host_ip='0.0.0.0'
+if ! is_enabled ${CONFIG_API_LISTEN_ALL}; then
+  host_ip=$(get_listen_ip_for_node CONFIG)
+fi
+
 cassandra_server_list=$(echo $CONFIGDB_SERVERS | sed 's/,/ /g')
 if is_enabled ${CONFIG_API_SSL_ENABLE} ; then
   read -r -d '' config_api_certs_config << EOM || true
