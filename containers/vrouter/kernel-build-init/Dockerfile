@@ -32,7 +32,7 @@ RUN mkdir -p /opt/contrail/src /contrail_tools /vrouter_src && \
     export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
     apt-get install -y --no-install-recommends dkms && \
-    apt-get install -y --no-install-recommends yum yum-utils rpm2cpio cpio && \
+    apt-get install -y --no-install-recommends yum yum-utils rpm2cpio cpio ca-certificates && \
     yum install -y contrail-vrouter-source && \
     mv /usr/src/* /opt/contrail/src/ && \
     vrouter_path=$(find /opt/contrail/src -type f -name "contrail-vrouter-*.tar.gz") && \
@@ -45,7 +45,7 @@ RUN mkdir -p /opt/contrail/src /contrail_tools /vrouter_src && \
     cd .. && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
-    apt-get purge -y yum yum-utils rpm2cpio cpio && \
+    apt-get purge -y yum yum-utils rpm2cpio cpio ca-certificates && \
     apt-get autoremove -y
 
 COPY dkms.conf /opt/contrail/src/
