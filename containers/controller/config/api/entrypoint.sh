@@ -10,7 +10,8 @@ if ! is_enabled ${CONFIG_API_LISTEN_ALL}; then
   host_ip=$(get_listen_ip_for_node CONFIG)
 fi
 
-cassandra_server_list=$(echo $CONFIGDB_SERVERS | sed 's/,/ /g')
+cassandra_driver='cql'
+cassandra_server_list=$(echo $CONFIGDB_CQL_SERVERS | sed 's/,/ /g')
 if is_enabled ${CONFIG_API_SSL_ENABLE} ; then
   read -r -d '' config_api_certs_config << EOM || true
 config_api_ssl_enable=${CONFIG_API_SSL_ENABLE}
@@ -64,6 +65,9 @@ $sandesh_client_config
 $collector_stats_config
 
 $neutron_section
+
+[CASSANDRA]
+cassandra_driver=$cassandra_driver
 EOM
 
 add_ini_params_from_env API /etc/contrail/contrail-api.conf
