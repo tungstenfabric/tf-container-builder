@@ -10,7 +10,8 @@ if ! is_enabled ${CONFIG_API_LISTEN_ALL}; then
   host_ip=$(get_listen_ip_for_node CONFIG)
 fi
 
-cassandra_server_list=$(echo $CONFIGDB_SERVERS | sed 's/,/ /g')
+cassandra_driver='cql'
+cassandra_server_list=$(echo $CONFIGDB_CQL_SERVERS | sed 's/,/ /g')
 if is_enabled ${CONFIG_API_SSL_ENABLE} ; then
   read -r -d '' config_api_certs_config << EOM || true
 config_api_ssl_enable=${CONFIG_API_SSL_ENABLE}
@@ -47,6 +48,7 @@ aaa_mode=$AAA_MODE
 cloud_admin_role=$CLOUD_ADMIN_ROLE
 global_read_only_role=$GLOBAL_READ_ONLY_ROLE
 cassandra_server_list=$cassandra_server_list
+cassandra_driver=$cassandra_driver
 cassandra_use_ssl=${CASSANDRA_SSL_ENABLE,,}
 cassandra_ca_certs=$CASSANDRA_SSL_CA_CERTFILE
 zk_server_ip=$ZOOKEEPER_SERVERS
