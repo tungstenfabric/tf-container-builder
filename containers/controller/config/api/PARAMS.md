@@ -18,6 +18,7 @@
 | CASSANDRA_SSL_CA_CERTFILE            | $SERVER_CA_CERTFILE                            |
 | CASSANDRA_SSL_ENABLE                 | false                                          |
 | CONFIGDB_SERVERS                     | $CONFIGDB_NODES with $CONFIGDB_PORT            |
+| CONFIGDB_CASSANDRA_DRVIER            | cql                                            |
 | CONFIG_API_INTROSPECT_PORT           | 8084                                           |
 | CONFIG_API_LISTEN_ALL                | False                                          |
 | CONFIG_API_LIST_OPTIMIZATION_ENABLED | True                                           |
