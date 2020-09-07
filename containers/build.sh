@@ -36,6 +36,10 @@ function append_log_file() {
   done
 }
 
+if [[ "$LINUX_DISTR" =~ 'ubi' ]] ; then
+  LINUX_DISTR="registry.access.redhat.com/$LINUX_DISTR"
+fi
+
 log "Target platform: $LINUX_DISTR:$LINUX_DISTR_VER"
 [[ "${CONTRAIL_BUILD_FROM_SOURCE}" == 'true' ]] && log "Contrail source root: $CONTRAIL_SOURCE"
 log "Contrail container tag: $CONTRAIL_CONTAINER_TAG"
