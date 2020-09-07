@@ -6,7 +6,6 @@ if [[ -n "$YUM_ENABLE_REPOS" ]] ; then
     yum clean metadata
 fi
 yum update -y
-yum install -y yum-plugin-priorities
 GENERAL_EXTRA_RPMS=$(echo $GENERAL_EXTRA_RPMS | tr -d '"' | tr ',' ' ')
 if [[ -n "$GENERAL_EXTRA_RPMS" ]] ; then \
     echo "INFO: contrail-general-base: install $GENERAL_EXTRA_RPMS"

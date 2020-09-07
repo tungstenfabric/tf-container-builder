@@ -3,7 +3,6 @@ ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
 ARG VENDOR_DOMAIN
 ARG CONTAINER_NAME
-ARG LINUX_DISTR
 
 LABEL name=$CONTAINER_NAME \
       summary="Init container for OpenStack neutron-server" \
