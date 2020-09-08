@@ -5,7 +5,7 @@
 
 # Preapare config for agent process and start the process. Return agent PID
 function run_agent {
-    echo "INFO: Start run_agent"
+    echo "INFO: Start run_agent" > agent_log
 
     # TODO: avoid duplication of reading parameters with init_vhost0
     if ! is_dpdk ; then
@@ -337,8 +337,12 @@ EOM
       $@ &
     fi
 
+    echo "DEBUG: Just before start agent process"  >> agent_log
+
     $@ &
     vrouter_agent_process=$!
+
+    echo "DEBUG: Just after start agent process $vrouter_agent_process"  >> agent_log
 
     # This is to ensure decrypt interface is
     # plumbed on vrouter for processing.
@@ -353,6 +357,8 @@ EOM
     else
         echo "INFO: Kernel version does not support vrouter to vrouter encryption - Not adding $VROUTER_DECRYPT_INTERFACE to vrouter"
     fi
+
+    echo "DEBUG: first vrouter_agent_process = $vrouter_agent_process" >> agent_log
 
     # Wait for vrouter-agent process to complete
     echo $vrouter_agent_process
@@ -426,27 +432,6 @@ function vhost0_init {
     fi
 
     init_sriov
-}
-
-# Three trap handlers required for set_traps
-function trap_vrouter_agent_quit() {
-    local res=0
-    if ! term_process $vrouter_agent_process ; then
-        echo "ERROR: Failed to stop agent process"
-        res=1
-    fi
-    remove_vhost0
-    cleanup_vrouter_agent_files
-    exit $res
-}
-
-function trap_vrouter_agent_term() {
-    term_process $vrouter_agent_process
-    exit $?
-}
-
-function trap_vrouter_agent_hub() {
-    send_sighup_child_process $vrouter_agent_process
 }
 
 # Setup sys signal listeners
