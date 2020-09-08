@@ -61,7 +61,7 @@ CONTRAIL_SERVICES_TO_SANDESH_SVC = {
     },
     'analytics-snmp': {
         'nodemgr': 'contrail-analytics-snmp-nodemgr',
-        'snmp-collector': 'contrail-snmp-collector',
+        'snmp-collector': 'tf-snmp-collector',
         'topology': 'contrail-topology',
     },
     'kubernetes': {

@@ -1,4 +1,4 @@
 build/production/opserver
 build/production/utils/contrail-cli/contrail_analytics_cli
-build/production/contrail-snmp-collector
+build/production/tf-snmp-collector
 build/production/contrail-topology
