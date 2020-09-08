@@ -2,6 +2,27 @@
 
 source /network-functions-vrouter-${AGENT_MODE}
 
+# Three signal handlers for vrouter-agent container
+function trap_vrouter_agent_quit() {
+    local res=0
+    if ! term_process $vrouter_agent_process ; then
+        echo "ERROR: Failed to stop agent process"
+        res=1
+    fi
+    remove_vhost0
+    cleanup_vrouter_agent_files
+    exit $res
+}
+
+function trap_vrouter_agent_term() {
+    term_process $vrouter_agent_process
+    exit $?
+}
+
+function trap_vrouter_agent_hub() {
+    send_sighup_child_process $vrouter_agent_process
+}
+
 #Agents constants
 REQUIRED_KERNEL_VROUTER_ENCRYPTION='4.4.0'
 
