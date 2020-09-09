@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "30261fd4_a4806e8b",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 6
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-09T11:23:12Z",
+      "side": 1,
+      "message": "lets dont use global variable at all in trap functions..\nso here\nlocal vrouter_agent_process\u003d...\n\nin other places\n$(cat /var/run/vrouter-agent.pid)",
+      "range": {
+        "startLine": 341,
+        "startChar": 4,
+        "endLine": 341,
+        "endChar": 28
+      },
+      "revId": "ad0b5031635ff243777bac1b401422beaec1d439",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
