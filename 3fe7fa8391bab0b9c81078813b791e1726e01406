@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "27e9ba0c_67ae8987",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-10T12:38:37Z",
+      "side": 1,
+      "message": "bad thing is that in first function some global vars are created and in this function are used, e.g. compute_node_address , introspect_ip etc..",
+      "range": {
+        "startLine": 206,
+        "startChar": 0,
+        "endLine": 209,
+        "endChar": 32
+      },
+      "revId": "3fe7fa8391bab0b9c81078813b791e1726e01406",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6fed1373_61dc355d",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 473,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-10T12:38:37Z",
+      "side": 1,
+      "message": "too generic name, this is bint from host and better to use more tf specific",
+      "range": {
+        "startLine": 473,
+        "startChar": 47,
+        "endLine": 473,
+        "endChar": 55
+      },
+      "revId": "3fe7fa8391bab0b9c81078813b791e1726e01406",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
