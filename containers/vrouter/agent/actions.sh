@@ -3,10 +3,8 @@
 # or directly.
 # To run these functions, source agent_functions.sh and common.sh before
 
-# Preapare config for agent process and start the process. Return agent PID
-function run_agent {
-    echo "INFO: Start run_agent"
-
+function prepare_agent_config_vars {
+    echo "INFO: Start prepare_agent_config_vars"
     # TODO: avoid duplication of reading parameters with init_vhost0
     if ! is_dpdk ; then
         IFS=' ' read -r phys_int phys_int_mac <<< $(get_physical_nic_and_mac)
@@ -206,7 +204,9 @@ EOM
     fi
 
     compute_node_address=${VROUTER_COMPUTE_NODE_ADDRESS:-$vrouter_ip}
+}
 
+function create_agent_config() {
     echo "INFO: Preparing /etc/contrail/contrail-vrouter-agent.conf"
     upgrade_old_logs "vrouter-agent"
     mkdir -p /etc/contrail
@@ -327,6 +327,10 @@ kubernetes_api_port=${KUBERNETES_API_PORT:-8080}
 kubernetes_api_secure_port=${KUBERNETES_API_SECURE_PORT:-6443}
 
 EOM
+}
+
+function start_agent() {
+    echo "INFO: Run start_agent"
 
     # spin up vrouter-agent as a child process
     if [[ $# == "0" ]]; then
@@ -356,7 +360,6 @@ EOM
     fi
 
     echo "INFO: vrouter agent process PID: $vrouter_agent_process"
-
 }
 
 # Setup kernel module and settins needed for start vhost0 network interface
@@ -462,4 +465,42 @@ function resume_container() {
         exit 1
     fi
     echo "yes" > pause_container_pipe
+}
+
+
+function collect_host_data() {
+    RESULTFILE=${RESULTFILE:-'/var/run/hostdata'}
+
+    declare -A config
+
+    config["vrouter_cidr"]=$vrouter_cidr
+    config["vrouter_ip"]=$vrouter_ip
+    config["vrouter_gateway"]=$vrouter_gateway
+    config["agent_name"]=$agent_name
+    config["service_name"]=$SERVICE_NAME
+    config["node_type"]=$NODE_TYPE
+    config["pci_address"]=$pci_address
+    config["phys_int"]=$phys_int
+    config["phys_int_mac"]=$phys_int_mac
+    config["control_network_ip"]=$control_network_ip
+if [ "$CLOUD_ORCHESTRATOR" == "vcenter" ] && ! is_tsn; then
+    config["vmware_phys_int"]=$vmware_phys_int
+    config["vmware_mode"]=$vmware_mode
+fi
+
+if (( HUGE_PAGES_1GB > 0 )) ; then
+
+    config["huge_page_1G"]=$huge_page_1G
+elif (( HUGE_PAGES_2MB > 0 )) ; then
+    config["huge_page_2M"]=$huge_page_2M
+fi
+
+config["k8s_token"]=$K8S_TOKEN
+
+if [ -f $RESULTFILE ]; then
+  rm -f $RESULTFILE
+fi
+for key in ${!config[@]}; do
+  echo "$key=${config[$key]}" >> $RESULTFILE
+done
 }
