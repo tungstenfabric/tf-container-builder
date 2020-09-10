@@ -3,10 +3,8 @@
 # or directly.
 # To run these functions, source agent_functions.sh and common.sh before
 
-# Preapare config for agent process and start the process. Return agent PID
-function run_agent {
-    echo "INFO: Start run_agent"
-
+function prepare_agent_config_vars {
+    echo "INFO: Start prepare_agent_config_vars"
     # TODO: avoid duplication of reading parameters with init_vhost0
     if ! is_dpdk ; then
         IFS=' ' read -r phys_int phys_int_mac <<< $(get_physical_nic_and_mac)
@@ -206,7 +204,9 @@ EOM
     fi
 
     compute_node_address=${VROUTER_COMPUTE_NODE_ADDRESS:-$vrouter_ip}
+}
 
+function create_agent_config() {
     echo "INFO: Preparing /etc/contrail/contrail-vrouter-agent.conf"
     upgrade_old_logs "vrouter-agent"
     mkdir -p /etc/contrail
@@ -327,6 +327,10 @@ kubernetes_api_port=${KUBERNETES_API_PORT:-8080}
 kubernetes_api_secure_port=${KUBERNETES_API_SECURE_PORT:-6443}
 
 EOM
+}
+
+function start_agent() {
+    echo "INFO: Run start_agent"
 
     # spin up vrouter-agent as a child process
     if [[ $# == "0" ]]; then
@@ -356,7 +360,6 @@ EOM
     fi
 
     echo "INFO: vrouter agent process PID: $vrouter_agent_process"
-
 }
 
 # Setup kernel module and settins needed for start vhost0 network interface
@@ -462,4 +465,19 @@ function resume_container() {
         exit 1
     fi
     echo "yes" > pause_container_pipe
+}
+
+# Export local variables to file
+function collect_host_data() {
+    local variable
+    HOST_DATA_FILE=${HOST_DATA_FILE:-'/var/run/hostdata'}
+     # All variables from this list will be saved as key=value to file. As the key well be used variable name
+    local vars_to_export="vrouter_cidr vrouter_ip vrouter_gateway agent_name SERVICE_NAME NODE_TYPE pci_address phys_int
+      phys_int_mac control_network_ip CLOUD_ORCHESTRATOR is_tsn vmware_phys_int vmware_mode HUGE_PAGES_1GB HUGE_PAGES_2MB K8S_TOKEN"
+    if [ -f $HOST_DATA_FILE ]; then
+        rm -f $HOST_DATA_FILE
+    fi
+    for variable in $vars_to_export; do
+        echo "$variable=${!variable}" >> $HOST_DATA_FILE
+    done
 }

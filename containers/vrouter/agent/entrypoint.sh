@@ -10,6 +10,10 @@ set_traps
 
 vhost0_init $@
 
-run_agent $@
+prepare_agent_config_vars $@
+
+create_agent_config $@
+
+start_agent $@
 
 wait $(cat /var/run/vrouter-agent.pid)
