@@ -3,6 +3,8 @@
 # or directly.
 # To run these functions, source agent_functions.sh and common.sh before
 
+HOST_DATA_FILE=${HOST_DATA_FILE:-'/container_agent_vars'}
+
 function prepare_agent_config_vars {
     echo "INFO: Start prepare_agent_config_vars"
     # TODO: avoid duplication of reading parameters with init_vhost0
@@ -31,10 +33,6 @@ function prepare_agent_config_vars {
         vmware_phys_int=$(get_vmware_physical_iface)
         disable_chksum_offload $phys_int
         disable_lro_offload $vmware_phys_int
-        read -r -d '' vmware_options << EOM || true
-vmware_physical_interface = $vmware_phys_int
-vmware_mode = vcenter
-EOM
     else
         HYPERVISOR_TYPE=${HYPERVISOR_TYPE:-'kvm'}
     fi
@@ -61,13 +59,71 @@ EOM
         done
     fi
 
-    vrouter_gateway_opts=''
-    if [[ -n "$VROUTER_GATEWAY" ]] ; then
-        vrouter_gateway_opts="gateway=$VROUTER_GATEWAY"
+    if is_vlan $phys_int; then
+        is_vlan_enable="true"
+    else
+        is_vlan_enable="false"
+    fi
+
+    if is_encryption_supported ; then
+        is_encryption_supported_flag="true"
+    else
+        is_encryption_supported_flag="false"
+    fi
+
+    hugepages_option=""
+    if (( HUGE_PAGES_1GB > 0 )) ; then
+        hp_dir=${HUGE_PAGES_1GB_DIR:-${HUGE_PAGES_DIR}}
+        ensure_hugepages ${hp_dir}
+        allocated_pages_1GB=$(cat /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages)
+        echo "INFO: Requested HP1GB $HUGE_PAGES_1GB available $allocated_pages_1GB"
+        if  (( HUGE_PAGES_1GB > allocated_pages_1GB )) ; then
+            echo "INFO: Requested HP1GB  $HUGE_PAGES_1GB more then available $allocated_pages_1GB.. try to allocate"
+            echo $HUGE_PAGES_1GB > /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
+        fi
+EOM
+    elif (( HUGE_PAGES_2MB > 0 )) ; then
+        hp_dir=${HUGE_PAGES_2MB_DIR:-${HUGE_PAGES_DIR}}
+        ensure_hugepages ${hp_dir}
+        allocated_pages_2MB=$(cat /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages)
+        echo "INFO: Requested HP2MB  $HUGE_PAGES_2MB available $allocated_pages_2MB"
+        if  (( HUGE_PAGES_2MB > allocated_pages_2MB )) ; then
+            echo "INFO: Requested HP2MB  $HUGE_PAGES_2MB more then available $allocated_pages_2MB.. try to allocate"
+            echo $HUGE_PAGES_2MB > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+        fi
+    fi
+
+    introspect_ip='0.0.0.0'
+    if ! is_enabled ${INTROSPECT_LISTEN_ALL} ; then
+    introspect_ip=$vrouter_ip
+    fi
+
+    compute_node_address=${VROUTER_COMPUTE_NODE_ADDRESS:-$vrouter_ip}
+
+    xmpp_servers_list=${XMPP_SERVERS:-`get_server_list CONTROL ":$XMPP_SERVER_PORT "`}
+    control_network_ip=$(get_ip_for_vrouter_from_control)
+    dns_servers_list=${DNS_SERVERS:-`get_server_list DNS ":$DNS_SERVER_PORT "`}
+
+    collect_host_data
+}
+
+function create_agent_config() {
+    echo "INFO: Preparing /etc/contrail/contrail-vrouter-agent.conf"
+
+    if ! [[  -f  $HOST_DATA_FILE ]]; then
+      echo "ERROR: Can\'t find params file $HOST_DATA_FILE"
+      exit 1
+    fi
+
+    if [ "$CLOUD_ORCHESTRATOR" == "vcenter" ] && ! [[ -n "$TSN_AGENT_MODE" ]]; then
+        read -r -d '' vmware_options << EOM || true
+vmware_physical_interface = $vmware_phys_int
+vmware_mode = vcenter
+EOM
     fi
 
     agent_mode_options="physical_interface_mac = $phys_int_mac"
-    if is_dpdk ; then
+    if [[ "$AGENT_MODE" == 'dpdk' ]]; then
         read -r -d '' agent_mode_options << EOM || true
 platform=${AGENT_MODE}
 physical_interface_mac=$phys_int_mac
@@ -77,10 +133,15 @@ EOM
     fi
 
     tsn_agent_mode=""
-    if is_tsn ; then
+    if [[ -n "$TSN_AGENT_MODE" ]] ; then
         read -r -d '' tsn_agent_mode << EOM || true
 agent_mode = ${TSN_AGENT_MODE}
 EOM
+    fi
+
+    vrouter_gateway_opts=''
+    if [[ -n "$VROUTER_GATEWAY" ]] ; then
+        vrouter_gateway_opts="gateway=$VROUTER_GATEWAY"
     fi
 
     subcluster_option=""
@@ -95,7 +156,7 @@ tsn_servers = `echo ${TSN_NODES} | tr ',' ' '`
 EOM
 
     priority_group_option=""
-    if [[ -n "${PRIORITY_ID}" ]] && ! is_dpdk; then
+    if [[ -n "${PRIORITY_ID}" ]] && [[ "$AGENT_MODE" != 'dpdk' ]]; then
         priority_group_option="[QOS-NIANTIC]"
         IFS=',' read -ra priority_id_list <<< "${PRIORITY_ID}"
         IFS=',' read -ra priority_bandwidth_list <<< "${PRIORITY_BANDWIDTH}"
@@ -109,14 +170,14 @@ bandwidth=${priority_bandwidth_list[${index}]}
 EOM
             priority_group_option+=$'\n'"${qos_niantic}"
         done
-        if is_vlan $phys_int; then
+        if [[ $is_vlan_enable == "true" ]]; then
             echo "ERROR: qos scheduling not supported for vlan interface skipping ."
             priority_group_option=""
         fi
     fi
 
     qos_queueing_option=""
-    if [[ -n "${QOS_QUEUE_ID}" ]] && ! is_dpdk; then
+    if [[ -n "${QOS_QUEUE_ID}" ]] && [[ "$AGENT_MODE" != 'dpdk' ]]; then
         qos_queueing_option="[QOS]"$'\n'"priority_tagging=${PRIORITY_TAGGING}"
         IFS=',' read -ra qos_queue_id <<< "${QOS_QUEUE_ID}"
         IFS=';' read -ra qos_logical_queue <<< "${QOS_LOGICAL_QUEUES}"
@@ -163,56 +224,31 @@ EOM
     fi
 
     crypt_interface_option=""
-    if is_encryption_supported ; then
+    if [[ "$is_encryption_supported_flag" == "true" ]]; then
         read -r -d '' crypt_interface_option << EOM || true
 [CRYPT]
 crypt_interface=$VROUTER_CRYPT_INTERFACE
 EOM
     fi
+
     hugepages_option=""
     if (( HUGE_PAGES_1GB > 0 )) ; then
-        hp_dir=${HUGE_PAGES_1GB_DIR:-${HUGE_PAGES_DIR}}
-        ensure_hugepages ${hp_dir}
-        allocated_pages_1GB=$(cat /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages)
-        echo "INFO: Requested HP1GB $HUGE_PAGES_1GB available $allocated_pages_1GB"
-        if  (( HUGE_PAGES_1GB > allocated_pages_1GB )) ; then
-            echo "INFO: Requested HP1GB  $HUGE_PAGES_1GB more then available $allocated_pages_1GB.. try to allocate"
-            echo $HUGE_PAGES_1GB > /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
-        fi
-        read -r -d '' hugepages_option << EOM || true
+    read -r -d '' hugepages_option << EOM || true
 [RESTART]
 huge_page_1G=${hp_dir}/bridge ${hp_dir}/flow
 EOM
     elif (( HUGE_PAGES_2MB > 0 )) ; then
-        hp_dir=${HUGE_PAGES_2MB_DIR:-${HUGE_PAGES_DIR}}
-        ensure_hugepages ${hp_dir}
-        allocated_pages_2MB=$(cat /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages)
-        echo "INFO: Requested HP2MB  $HUGE_PAGES_2MB available $allocated_pages_2MB"
-        if  (( HUGE_PAGES_2MB > allocated_pages_2MB )) ; then
-            echo "INFO: Requested HP2MB  $HUGE_PAGES_2MB more then available $allocated_pages_2MB.. try to allocate"
-            echo $HUGE_PAGES_2MB > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
-        fi
-        read -r -d '' hugepages_option << EOM || true
+    read -r -d '' hugepages_option << EOM || true
 [RESTART]
 huge_page_2M=${hp_dir}/bridge ${hp_dir}/flow
 EOM
     fi
 
-    introspect_ip='0.0.0.0'
-    if ! is_enabled ${INTROSPECT_LISTEN_ALL} ; then
-    introspect_ip=$vrouter_ip
-    fi
-
-    compute_node_address=${VROUTER_COMPUTE_NODE_ADDRESS:-$vrouter_ip}
-}
-
-function create_agent_config() {
-    echo "INFO: Preparing /etc/contrail/contrail-vrouter-agent.conf"
     upgrade_old_logs "vrouter-agent"
     mkdir -p /etc/contrail
     cat << EOM > /etc/contrail/contrail-vrouter-agent.conf
 [CONTROL-NODE]
-servers=${XMPP_SERVERS:-`get_server_list CONTROL ":$XMPP_SERVER_PORT "`}
+servers=$xmpp_servers_list
 $subcluster_option
 
 [DEFAULT]
@@ -236,10 +272,10 @@ $tsn_server_list
 $sandesh_client_config
 
 [NETWORKS]
-control_network_ip=$(get_ip_for_vrouter_from_control)
+control_network_ip=$control_network_ip
 
 [DNS]
-servers=${DNS_SERVERS:-`get_server_list DNS ":$DNS_SERVER_PORT "`}
+servers=$dns_servers_list
 
 [METADATA]
 metadata_proxy_secret=${METADATA_PROXY_SECRET}
@@ -469,10 +505,10 @@ function resume_container() {
 # Export local variables to file
 function collect_host_data() {
     local variable
-    HOST_DATA_FILE=${HOST_DATA_FILE:-'/var/run/hostdata'}
      # All variables from this list will be saved as key=value to file. As the key well be used variable name
     local vars_to_export="vrouter_cidr vrouter_ip vrouter_gateway agent_name SERVICE_NAME NODE_TYPE pci_address phys_int
-      phys_int_mac control_network_ip CLOUD_ORCHESTRATOR is_tsn vmware_phys_int vmware_mode HUGE_PAGES_1GB HUGE_PAGES_2MB K8S_TOKEN"
+      phys_int_mac control_network_ip CLOUD_ORCHESTRATOR vmware_phys_int vmware_mode HUGE_PAGES_1GB HUGE_PAGES_2MB K8S_TOKEN
+      xmpp_servers_list control_network_ip dns_servers_list"
     if [ -f $HOST_DATA_FILE ]; then
         rm -f $HOST_DATA_FILE
     fi
