@@ -31,10 +31,6 @@ function prepare_agent_config_vars {
         vmware_phys_int=$(get_vmware_physical_iface)
         disable_chksum_offload $phys_int
         disable_lro_offload $vmware_phys_int
-        read -r -d '' vmware_options << EOM || true
-vmware_physical_interface = $vmware_phys_int
-vmware_mode = vcenter
-EOM
     else
         HYPERVISOR_TYPE=${HYPERVISOR_TYPE:-'kvm'}
     fi
@@ -61,58 +57,10 @@ EOM
         done
     fi
 
-    vrouter_gateway_opts=''
-    if [[ -n "$VROUTER_GATEWAY" ]] ; then
-        vrouter_gateway_opts="gateway=$VROUTER_GATEWAY"
+    if is_vlan $phys_int; then
+        is_vlan_enable="true"
     fi
-
-    agent_mode_options="physical_interface_mac = $phys_int_mac"
-    if is_dpdk ; then
-        read -r -d '' agent_mode_options << EOM || true
-platform=${AGENT_MODE}
-physical_interface_mac=$phys_int_mac
-physical_interface_address=$pci_address
-physical_uio_driver=${DPDK_UIO_DRIVER}
-EOM
-    fi
-
-    tsn_agent_mode=""
-    if is_tsn ; then
-        read -r -d '' tsn_agent_mode << EOM || true
-agent_mode = ${TSN_AGENT_MODE}
-EOM
-    fi
-
-    subcluster_option=""
-    if [[ -n ${SUBCLUSTER} ]]; then
-    read -r -d '' subcluster_option << EOM || true
-subcluster_name=${SUBCLUSTER}
-EOM
-    fi
-
-    read -r -d '' tsn_server_list << EOM || true
-tsn_servers = `echo ${TSN_NODES} | tr ',' ' '`
-EOM
-
-    priority_group_option=""
-    if [[ -n "${PRIORITY_ID}" ]] && ! is_dpdk; then
-        priority_group_option="[QOS-NIANTIC]"
-        IFS=',' read -ra priority_id_list <<< "${PRIORITY_ID}"
-        IFS=',' read -ra priority_bandwidth_list <<< "${PRIORITY_BANDWIDTH}"
-        IFS=',' read -ra priority_scheduling_list <<< "${PRIORITY_SCHEDULING}"
-        for index in ${!priority_id_list[@]}; do
-            read -r -d '' qos_niantic << EOM
-[PG-${priority_id_list[${index}]}]
-scheduling=${priority_scheduling_list[${index}]}
-bandwidth=${priority_bandwidth_list[${index}]}
-
-EOM
-            priority_group_option+=$'\n'"${qos_niantic}"
-        done
-        if is_vlan $phys_int; then
-            echo "ERROR: qos scheduling not supported for vlan interface skipping ."
-            priority_group_option=""
-        fi
+        is_vlan_enable="false"
     fi
 
     qos_queueing_option=""
@@ -204,15 +152,81 @@ EOM
     fi
 
     compute_node_address=${VROUTER_COMPUTE_NODE_ADDRESS:-$vrouter_ip}
+
+    xmpp_servers_list=${XMPP_SERVERS:-`get_server_list CONTROL ":$XMPP_SERVER_PORT "`}
+    control_network_ip=$(get_ip_for_vrouter_from_control)
+    dns_servers_list=${DNS_SERVERS:-`get_server_list DNS ":$DNS_SERVER_PORT "`}
 }
 
 function create_agent_config() {
     echo "INFO: Preparing /etc/contrail/contrail-vrouter-agent.conf"
+
+    if [ "$CLOUD_ORCHESTRATOR" == "vcenter" ] && ! [[ -n "$TSN_AGENT_MODE" ]]; then
+        read -r -d '' vmware_options << EOM || true
+vmware_physical_interface = $vmware_phys_int
+vmware_mode = vcenter
+EOM
+    fi
+
+    agent_mode_options="physical_interface_mac = $phys_int_mac"
+    if [[ "$AGENT_MODE" == 'dpdk' ]]; then
+        read -r -d '' agent_mode_options << EOM || true
+platform=${AGENT_MODE}
+physical_interface_mac=$phys_int_mac
+physical_interface_address=$pci_address
+physical_uio_driver=${DPDK_UIO_DRIVER}
+EOM
+    fi
+
+    tsn_agent_mode=""
+    if [[ -n "$TSN_AGENT_MODE" ]] ; then
+        read -r -d '' tsn_agent_mode << EOM || true
+agent_mode = ${TSN_AGENT_MODE}
+EOM
+    fi
+
+    vrouter_gateway_opts=''
+    if [[ -n "$VROUTER_GATEWAY" ]] ; then
+        vrouter_gateway_opts="gateway=$VROUTER_GATEWAY"
+    fi
+
+    subcluster_option=""
+    if [[ -n ${SUBCLUSTER} ]]; then
+    read -r -d '' subcluster_option << EOM || true
+subcluster_name=${SUBCLUSTER}
+EOM
+    fi
+
+    read -r -d '' tsn_server_list << EOM || true
+tsn_servers = `echo ${TSN_NODES} | tr ',' ' '`
+EOM
+
+    priority_group_option=""
+    if [[ -n "${PRIORITY_ID}" ]] && [[ "$AGENT_MODE" != 'dpdk']]; then
+        priority_group_option="[QOS-NIANTIC]"
+        IFS=',' read -ra priority_id_list <<< "${PRIORITY_ID}"
+        IFS=',' read -ra priority_bandwidth_list <<< "${PRIORITY_BANDWIDTH}"
+        IFS=',' read -ra priority_scheduling_list <<< "${PRIORITY_SCHEDULING}"
+        for index in ${!priority_id_list[@]}; do
+            read -r -d '' qos_niantic << EOM
+[PG-${priority_id_list[${index}]}]
+scheduling=${priority_scheduling_list[${index}]}
+bandwidth=${priority_bandwidth_list[${index}]}
+
+EOM
+            priority_group_option+=$'\n'"${qos_niantic}"
+        done
+        if [[ is_vlan_enable == "true" ]] then
+            echo "ERROR: qos scheduling not supported for vlan interface skipping ."
+            priority_group_option=""
+        fi
+    fi
+
     upgrade_old_logs "vrouter-agent"
     mkdir -p /etc/contrail
     cat << EOM > /etc/contrail/contrail-vrouter-agent.conf
 [CONTROL-NODE]
-servers=${XMPP_SERVERS:-`get_server_list CONTROL ":$XMPP_SERVER_PORT "`}
+servers=$xmpp_servers_list
 $subcluster_option
 
 [DEFAULT]
@@ -236,10 +250,10 @@ $tsn_server_list
 $sandesh_client_config
 
 [NETWORKS]
-control_network_ip=$(get_ip_for_vrouter_from_control)
+control_network_ip=$control_network_ip
 
 [DNS]
-servers=${DNS_SERVERS:-`get_server_list DNS ":$DNS_SERVER_PORT "`}
+servers=$dns_servers_list
 
 [METADATA]
 metadata_proxy_secret=${METADATA_PROXY_SECRET}
@@ -469,10 +483,11 @@ function resume_container() {
 # Export local variables to file
 function collect_host_data() {
     local variable
-    HOST_DATA_FILE=${HOST_DATA_FILE:-'/var/run/hostdata'}
+    HOST_DATA_FILE=${HOST_DATA_FILE:-'/container_agent_vars'}
      # All variables from this list will be saved as key=value to file. As the key well be used variable name
     local vars_to_export="vrouter_cidr vrouter_ip vrouter_gateway agent_name SERVICE_NAME NODE_TYPE pci_address phys_int
-      phys_int_mac control_network_ip CLOUD_ORCHESTRATOR is_tsn vmware_phys_int vmware_mode HUGE_PAGES_1GB HUGE_PAGES_2MB K8S_TOKEN"
+      phys_int_mac control_network_ip CLOUD_ORCHESTRATOR vmware_phys_int vmware_mode HUGE_PAGES_1GB HUGE_PAGES_2MB K8S_TOKEN
+      xmpp_servers_list control_network_ip dns_servers_list"
     if [ -f $HOST_DATA_FILE ]; then
         rm -f $HOST_DATA_FILE
     fi
