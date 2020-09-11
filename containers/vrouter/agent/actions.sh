@@ -3,17 +3,20 @@
 # or directly.
 # To run these functions, source agent_functions.sh and common.sh before
 
+parameters_file='/parameters.sh'
+
 function prepare_agent_config_vars {
     echo "INFO: Start prepare_agent_config_vars"
     # TODO: avoid duplication of reading parameters with init_vhost0
+    local PHYS_INT_MAC phys_int is_dpdk PCI_ADDRESS
     if ! is_dpdk ; then
-        IFS=' ' read -r phys_int phys_int_mac <<< $(get_physical_nic_and_mac)
-        pci_address=$(get_pci_address_for_nic $phys_int)
+        IFS=' ' read -r phys_int PHYS_INT_MAC <<< $(get_physical_nic_and_mac)
+        PCI_ADDRESS=$(get_pci_address_for_nic $phys_int)
     else
         binding_data_dir='/var/run/vrouter'
         phys_int=`cat $binding_data_dir/nic`
-        phys_int_mac=`cat $binding_data_dir/${phys_int}_mac`
-        pci_address=`cat $binding_data_dir/${phys_int}_pci`
+        PHYS_INT_MAC=`cat $binding_data_dir/${phys_int}_mac`
+        PCI_ADDRESS=`cat $binding_data_dir/${phys_int}_pci`
     fi
 
     if [ "$CLOUD_ORCHESTRATOR" == "kubernetes" ] && [ ! -z $VROUTER_GATEWAY ]; then
@@ -22,65 +25,153 @@ function prepare_agent_config_vars {
     fi
 
     VROUTER_GATEWAY=${VROUTER_GATEWAY:-`get_default_vrouter_gateway`}
-    vrouter_cidr=$(get_cidr_for_nic 'vhost0')
-    echo "INFO: Physical interface: $phys_int, mac=$phys_int_mac, pci=$pci_address"
-    echo "INFO: vhost0 cidr $vrouter_cidr, gateway $VROUTER_GATEWAY"
+    local VROUTER_CIDR=$(get_cidr_for_nic 'vhost0')
+    echo "INFO: Physical interface: $phys_int, mac=$PHYS_INT_MAC, pci=$PCI_ADDRESS"
+    echo "INFO: vhost0 cidr $VROUTER_CIDR, gateway $VROUTER_GATEWAY"
 
     if [ "$CLOUD_ORCHESTRATOR" == "vcenter" ] && ! is_tsn; then
         HYPERVISOR_TYPE=${HYPERVISOR_TYPE:-'vmware'}
-        vmware_phys_int=$(get_vmware_physical_iface)
+        VMWARE_PHYS_INT=$(get_vmware_physical_iface)
         disable_chksum_offload $phys_int
-        disable_lro_offload $vmware_phys_int
-        read -r -d '' vmware_options << EOM || true
-vmware_physical_interface = $vmware_phys_int
-vmware_mode = vcenter
-EOM
+        disable_lro_offload $VMWARE_PHYS_INT
     else
         HYPERVISOR_TYPE=${HYPERVISOR_TYPE:-'kvm'}
     fi
 
-    if [[ -z "$vrouter_cidr" ]] ; then
+    if [[ -z "$VROUTER_CIDR" ]] ; then
         echo "ERROR: vhost0 interface is down or has no assigned IP"
         exit 1
     fi
-    vrouter_ip=${vrouter_cidr%/*}
-    agent_name=${VROUTER_HOSTNAME:-"$(resolve_hostname_by_ip $vrouter_ip)"}
-    [ -z "$agent_name" ] && agent_name="$(get_default_hostname)"
+    local vrouter_ip=${VROUTER_CIDR%/*}
+    local AGENT_NAME=${VROUTER_HOSTNAME:-"$(resolve_hostname_by_ip $vrouter_ip)"}
+    [ -z "$AGENT_NAME" ] && AGENT_NAME="$(get_default_hostname)"
 
     # Google has point to point DHCP address to the VM, but we need to initialize
     # with the network address mask. This is needed for proper forwarding of pkts
     # at the vrouter interface
-    gcp=$(cat /sys/devices/virtual/dmi/id/chassis_vendor)
+    local gcp=$(cat /sys/devices/virtual/dmi/id/chassis_vendor)
     if [ "$gcp" == "Google" ]; then
-        intfs=$(curl -s http://metadata.google.internal/computeMetadata/v1beta1/instance/network-interfaces/)
+        local intfs=$(curl -s http://metadata.google.internal/computeMetadata/v1beta1/instance/network-interfaces/)
+        local intf mask
         for intf in $intfs ; do
-            if [[ $phys_int_mac == "$(curl -s http://metadata.google.internal/computeMetadata/v1beta1/instance/network-interfaces/${intf}/mac)" ]]; then
+            if [[ $PHYS_INT_MAC == "$(curl -s http://metadata.google.internal/computeMetadata/v1beta1/instance/network-interfaces/${intf}/mac)" ]]; then
                 mask=$(curl -s http://metadata.google.internal/computeMetadata/v1beta1/instance/network-interfaces/${intf}/subnetmask)
-                vrouter_cidr=$vrouter_ip/$(mask2cidr $mask)
+                VROUTER_CIDR=$vrouter_ip/$(mask2cidr $mask)
             fi
         done
     fi
 
-    vrouter_gateway_opts=''
-    if [[ -n "$VROUTER_GATEWAY" ]] ; then
-        vrouter_gateway_opts="gateway=$VROUTER_GATEWAY"
+    local IS_VLAN_ENABLED IS_ENCRYPTION_SUPPORTED_FLAG
+    if is_vlan $phys_int; then
+        IS_VLAN_ENABLED="true"
+    else
+        IS_VLAN_ENABLED="false"
     fi
 
-    agent_mode_options="physical_interface_mac = $phys_int_mac"
-    if is_dpdk ; then
+    if is_encryption_supported ; then
+        IS_ENCRYPTION_SUPPORTED_FLAG="true"
+    else
+        IS_ENCRYPTION_SUPPORTED_FLAG="false"
+    fi
+
+    local hugepages_option=""
+    local HUGEPAGES_DIR allocated_pages_1GB allocated_pages_2MB
+    if (( HUGE_PAGES_1GB > 0 )) ; then
+        HUGEPAGES_DIR=${HUGE_PAGES_1GB_DIR:-${HUGE_PAGES_DIR}}
+        ensure_hugepages ${HUGEPAGES_DIR}
+        allocated_pages_1GB=$(cat /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages)
+        echo "INFO: Requested HP1GB $HUGE_PAGES_1GB available $allocated_pages_1GB"
+        if  (( HUGE_PAGES_1GB > allocated_pages_1GB )) ; then
+            echo "INFO: Requested HP1GB  $HUGE_PAGES_1GB more then available $allocated_pages_1GB.. try to allocate"
+            echo $HUGE_PAGES_1GB > /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
+        fi
+EOM
+    elif (( HUGE_PAGES_2MB > 0 )) ; then
+        HUGEPAGES_DIR=${HUGE_PAGES_2MB_DIR:-${HUGE_PAGES_DIR}}
+        ensure_hugepages ${HUGEPAGES_DIR}
+        allocated_pages_2MB=$(cat /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages)
+        echo "INFO: Requested HP2MB  $HUGE_PAGES_2MB available $allocated_pages_2MB"
+        if  (( HUGE_PAGES_2MB > allocated_pages_2MB )) ; then
+            echo "INFO: Requested HP2MB  $HUGE_PAGES_2MB more then available $allocated_pages_2MB.. try to allocate"
+            echo $HUGE_PAGES_2MB > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+        fi
+    fi
+
+    local INTROSPECT_IP='0.0.0.0'
+    if ! is_enabled ${INTROSPECT_LISTEN_ALL} ; then
+    INTROSPECT_IP=$vrouter_ip
+    fi
+
+    local COMPUTE_NODE_ADDRESS=${VROUTER_COMPUTE_NODE_ADDRESS:-$vrouter_ip}
+
+    local XMPP_SERVERS_LIST=${XMPP_SERVERS:-`get_server_list CONTROL ":$XMPP_SERVER_PORT "`}
+    local CONTROL_NETWORK_IP=$(get_ip_for_vrouter_from_control)
+    local dns_servers_list=${DNS_SERVERS:-`get_server_list DNS ":$DNS_SERVER_PORT "`}
+    local XMPP_SSL_IS_ENABLED
+    if is_enabled ${XMPP_SSL_ENABLE} ; then
+        XMPP_SSL_IS_ENABLED="true"
+    else
+        XMPP_SSL_IS_ENABLED="false"
+    fi
+
+    local INTROSPECT_SSL_IS_ENABLED
+    if is_enabled ${INTROSPECT_SSL_ENABLE} ; then
+        INTROSPECT_SSL_IS_ENABLED="true"
+    else
+        INTROSPECT_SSL_IS_ENABLED="false"
+    fi
+
+    local result_params=""
+    while read line; do
+        IFS='=' read -ra key <<< "$line"
+        if [[ -n "${key[0]}" ]]; then
+            read -r -d '' result_params<< EOM || true
+${result_params}
+${key[0]}=${!key[0]}
+
+EOM
+        fi
+    done <$parameters_file
+    echo "$result_params" > $parameters_file
+}
+
+function create_agent_config() {
+    echo "INFO: Preparing /etc/contrail/contrail-vrouter-agent.conf"
+
+    if ! [[  -f  $parameters_file ]]; then
+      echo "ERROR: Can\'t find params file $parameters_file"
+      exit 1
+    fi
+
+    source $parameters_file
+
+    if [ "$CLOUD_ORCHESTRATOR" == "vcenter" ] && ! [[ -n "$TSN_AGENT_MODE" ]]; then
+        read -r -d '' vmware_options << EOM || true
+vmware_physical_interface = $VMWARE_PHYS_INT
+vmware_mode = vcenter
+EOM
+    fi
+
+    agent_mode_options="physical_interface_mac = $PHYS_INT_MAC"
+    if [[ "$AGENT_MODE" == 'dpdk' ]]; then
         read -r -d '' agent_mode_options << EOM || true
 platform=${AGENT_MODE}
-physical_interface_mac=$phys_int_mac
-physical_interface_address=$pci_address
+physical_interface_mac=$PHYS_INT_MAC
+physical_interface_address=$PCI_ADDRESS
 physical_uio_driver=${DPDK_UIO_DRIVER}
 EOM
     fi
 
     tsn_agent_mode=""
-    if is_tsn ; then
+    if [[ -n "$TSN_AGENT_MODE" ]] ; then
         read -r -d '' tsn_agent_mode << EOM || true
 agent_mode = ${TSN_AGENT_MODE}
 EOM
+    fi
+
+    vrouter_gateway_opts=''
+    if [[ -n "$VROUTER_GATEWAY" ]] ; then
+        vrouter_gateway_opts="gateway=$VROUTER_GATEWAY"
     fi
 
     subcluster_option=""
@@ -95,7 +186,7 @@ tsn_servers = `echo ${TSN_NODES} | tr ',' ' '`
 EOM
 
     priority_group_option=""
-    if [[ -n "${PRIORITY_ID}" ]] && ! is_dpdk; then
+    if [[ -n "${PRIORITY_ID}" ]] && [[ "$AGENT_MODE" != 'dpdk' ]]; then
         priority_group_option="[QOS-NIANTIC]"
         IFS=',' read -ra priority_id_list <<< "${PRIORITY_ID}"
         IFS=',' read -ra priority_bandwidth_list <<< "${PRIORITY_BANDWIDTH}"
@@ -109,14 +200,14 @@ bandwidth=${priority_bandwidth_list[${index}]}
 EOM
             priority_group_option+=$'\n'"${qos_niantic}"
         done
-        if is_vlan $phys_int; then
+        if [[ $IS_VLAN_ENABLED == "true" ]]; then
             echo "ERROR: qos scheduling not supported for vlan interface skipping ."
             priority_group_option=""
         fi
     fi
 
     qos_queueing_option=""
-    if [[ -n "${QOS_QUEUE_ID}" ]] && ! is_dpdk; then
+    if [[ -n "${QOS_QUEUE_ID}" ]] && [[ "$AGENT_MODE" != 'dpdk' ]]; then
         qos_queueing_option="[QOS]"$'\n'"priority_tagging=${PRIORITY_TAGGING}"
         IFS=',' read -ra qos_queue_id <<< "${QOS_QUEUE_ID}"
         IFS=';' read -ra qos_logical_queue <<< "${QOS_LOGICAL_QUEUES}"
@@ -163,67 +254,79 @@ EOM
     fi
 
     crypt_interface_option=""
-    if is_encryption_supported ; then
+    if [[ "$IS_ENCRYPTION_SUPPORTED_FLAG" == "true" ]]; then
         read -r -d '' crypt_interface_option << EOM || true
 [CRYPT]
 crypt_interface=$VROUTER_CRYPT_INTERFACE
 EOM
     fi
+
     hugepages_option=""
     if (( HUGE_PAGES_1GB > 0 )) ; then
-        hp_dir=${HUGE_PAGES_1GB_DIR:-${HUGE_PAGES_DIR}}
-        ensure_hugepages ${hp_dir}
-        allocated_pages_1GB=$(cat /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages)
-        echo "INFO: Requested HP1GB $HUGE_PAGES_1GB available $allocated_pages_1GB"
-        if  (( HUGE_PAGES_1GB > allocated_pages_1GB )) ; then
-            echo "INFO: Requested HP1GB  $HUGE_PAGES_1GB more then available $allocated_pages_1GB.. try to allocate"
-            echo $HUGE_PAGES_1GB > /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
-        fi
-        read -r -d '' hugepages_option << EOM || true
+    read -r -d '' hugepages_option << EOM || true
 [RESTART]
-huge_page_1G=${hp_dir}/bridge ${hp_dir}/flow
+huge_page_1G=${HUGEPAGES_DIR}/bridge ${HUGEPAGES_DIR}/flow
 EOM
     elif (( HUGE_PAGES_2MB > 0 )) ; then
-        hp_dir=${HUGE_PAGES_2MB_DIR:-${HUGE_PAGES_DIR}}
-        ensure_hugepages ${hp_dir}
-        allocated_pages_2MB=$(cat /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages)
-        echo "INFO: Requested HP2MB  $HUGE_PAGES_2MB available $allocated_pages_2MB"
-        if  (( HUGE_PAGES_2MB > allocated_pages_2MB )) ; then
-            echo "INFO: Requested HP2MB  $HUGE_PAGES_2MB more then available $allocated_pages_2MB.. try to allocate"
-            echo $HUGE_PAGES_2MB > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
-        fi
-        read -r -d '' hugepages_option << EOM || true
+    read -r -d '' hugepages_option << EOM || true
 [RESTART]
-huge_page_2M=${hp_dir}/bridge ${hp_dir}/flow
+huge_page_2M=${HUGEPAGES_DIR}/bridge ${HUGEPAGES_DIR}/flow
 EOM
     fi
 
-    introspect_ip='0.0.0.0'
-    if ! is_enabled ${INTROSPECT_LISTEN_ALL} ; then
-    introspect_ip=$vrouter_ip
+    if [[ "$XMPP_SSL_IS_ENABLED" == "true" ]] ; then
+        read -r -d '' xmpp_certs_config << EOM || true
+xmpp_server_cert=${XMPP_SERVER_CERTFILE}
+xmpp_server_key=${XMPP_SERVER_KEYFILE}
+xmpp_ca_cert=${XMPP_SERVER_CA_CERTFILE}
+EOM
+    else
+        xmpp_certs_config=''
     fi
 
-    compute_node_address=${VROUTER_COMPUTE_NODE_ADDRESS:-$vrouter_ip}
-}
+    if [[ "$INTROSPECT_SSL_IS_ENABLED" == 'true' ]]; then
+        read -r -d '' sandesh_client_config << EOM || true
+[SANDESH]
+introspect_ssl_enable=${INTROSPECT_SSL_ENABLE}
+introspect_ssl_insecure=${INTROSPECT_SSL_INSECURE}
+sandesh_ssl_enable=${SANDESH_SSL_ENABLE}
+sandesh_keyfile=${SANDESH_KEYFILE}
+sandesh_certfile=${SANDESH_CERTFILE}
+sandesh_ca_cert=${SANDESH_CA_CERTFILE}
+EOM
+    else
+        read -r -d '' sandesh_client_config << EOM || true
+[SANDESH]
+introspect_ssl_enable=${INTROSPECT_SSL_ENABLE}
+sandesh_ssl_enable=${SANDESH_SSL_ENABLE}
+EOM
+    fi
 
-function create_agent_config() {
-    echo "INFO: Preparing /etc/contrail/contrail-vrouter-agent.conf"
+    if [[ -n "$STATS_COLLECTOR_DESTINATION_PATH" ]]; then
+        read -r -d '' collector_stats_config << EOM || true
+[STATS]
+stats_collector=${STATS_COLLECTOR_DESTINATION_PATH}
+EOM
+    else
+        collector_stats_config=''
+    fi
+
     upgrade_old_logs "vrouter-agent"
     mkdir -p /etc/contrail
     cat << EOM > /etc/contrail/contrail-vrouter-agent.conf
 [CONTROL-NODE]
-servers=${XMPP_SERVERS:-`get_server_list CONTROL ":$XMPP_SERVER_PORT "`}
+servers=$XMPP_SERVERS_LIST
 $subcluster_option
 
 [DEFAULT]
-http_server_ip=$introspect_ip
+http_server_ip=$INTROSPECT_IP
 collectors=$COLLECTOR_SERVERS
 log_file=$CONTAINER_LOG_DIR/contrail-vrouter-agent.log
 log_level=$LOG_LEVEL
 log_local=$LOG_LOCAL
 
-hostname=${agent_name}
-agent_name=${agent_name}
+hostname=${AGENT_NAME}
+agent_name=${AGENT_NAME}
 
 xmpp_dns_auth_enable=${XMPP_SSL_ENABLE}
 xmpp_auth_enable=${XMPP_SSL_ENABLE}
@@ -236,10 +339,10 @@ $tsn_server_list
 $sandesh_client_config
 
 [NETWORKS]
-control_network_ip=$(get_ip_for_vrouter_from_control)
+control_network_ip=$CONTROL_NETWORK_IP
 
 [DNS]
-servers=${DNS_SERVERS:-`get_server_list DNS ":$DNS_SERVER_PORT "`}
+servers=$dns_servers_list
 
 [METADATA]
 metadata_proxy_secret=${METADATA_PROXY_SECRET}
@@ -247,9 +350,9 @@ $metadata_ssl_conf
 
 [VIRTUAL-HOST-INTERFACE]
 name=vhost0
-ip=$vrouter_cidr
+ip=$VROUTER_CIDR
 physical_interface=$phys_int
-compute_node_address=$compute_node_address
+compute_node_address=$COMPUTE_NODE_ADDRESS
 $vrouter_gateway_opts
 
 [SERVICE-INSTANCE]
@@ -464,19 +567,4 @@ function resume_container() {
         exit 1
     fi
     echo "yes" > pause_container_pipe
-}
-
-# Export local variables to file
-function collect_host_data() {
-    local variable
-    HOST_DATA_FILE=${HOST_DATA_FILE:-'/var/run/hostdata'}
-     # All variables from this list will be saved as key=value to file. As the key well be used variable name
-    local vars_to_export="vrouter_cidr vrouter_ip vrouter_gateway agent_name SERVICE_NAME NODE_TYPE pci_address phys_int
-      phys_int_mac control_network_ip CLOUD_ORCHESTRATOR is_tsn vmware_phys_int vmware_mode HUGE_PAGES_1GB HUGE_PAGES_2MB K8S_TOKEN"
-    if [ -f $HOST_DATA_FILE ]; then
-        rm -f $HOST_DATA_FILE
-    fi
-    for variable in $vars_to_export; do
-        echo "$variable=${!variable}" >> $HOST_DATA_FILE
-    done
 }
