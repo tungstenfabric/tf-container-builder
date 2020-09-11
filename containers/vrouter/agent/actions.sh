@@ -204,6 +204,10 @@ EOM
     fi
 
     compute_node_address=${VROUTER_COMPUTE_NODE_ADDRESS:-$vrouter_ip}
+
+    xmpp_servers_list=${XMPP_SERVERS:-`get_server_list CONTROL ":$XMPP_SERVER_PORT "`}
+    control_network_ip=$(get_ip_for_vrouter_from_control)
+    dns_servers_list=${DNS_SERVERS:-`get_server_list DNS ":$DNS_SERVER_PORT "`}
 }
 
 function create_agent_config() {
@@ -212,7 +216,7 @@ function create_agent_config() {
     mkdir -p /etc/contrail
     cat << EOM > /etc/contrail/contrail-vrouter-agent.conf
 [CONTROL-NODE]
-servers=${XMPP_SERVERS:-`get_server_list CONTROL ":$XMPP_SERVER_PORT "`}
+servers=$xmpp_servers_list
 $subcluster_option
 
 [DEFAULT]
@@ -236,10 +240,10 @@ $tsn_server_list
 $sandesh_client_config
 
 [NETWORKS]
-control_network_ip=$(get_ip_for_vrouter_from_control)
+control_network_ip=$control_network_ip
 
 [DNS]
-servers=${DNS_SERVERS:-`get_server_list DNS ":$DNS_SERVER_PORT "`}
+servers=$dns_servers_list
 
 [METADATA]
 metadata_proxy_secret=${METADATA_PROXY_SECRET}
