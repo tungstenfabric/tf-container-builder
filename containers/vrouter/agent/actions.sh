@@ -337,7 +337,6 @@ EOM
       $@ &
     fi
 
-    $@ &
     local vrouter_agent_process=$!
     echo $vrouter_agent_process > /var/run/vrouter-agent.pid
 
