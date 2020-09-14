@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5d60ba98_eb72ae48",
+        "filename": "containers/analytics/snmp/topology/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-09-14T15:30:29Z",
+      "side": 1,
+      "message": "Tungstenfabric",
+      "range": {
+        "startLine": 8,
+        "startChar": 15,
+        "endLine": 8,
+        "endChar": 23
+      },
+      "revId": "a405d38d5a6515b6a8d6e2aa3e9e83185cc88820",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c84c8fa_b4c59aa5",
+        "filename": "containers/analytics/snmp/topology/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-09-14T15:30:29Z",
+      "side": 1,
+      "message": "Tungstenfabric",
+      "range": {
+        "startLine": 9,
+        "startChar": 19,
+        "endLine": 9,
+        "endChar": 27
+      },
+      "revId": "a405d38d5a6515b6a8d6e2aa3e9e83185cc88820",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
