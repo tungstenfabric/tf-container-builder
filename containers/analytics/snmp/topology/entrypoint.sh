@@ -47,4 +47,4 @@ set_vnc_api_lib_ini
 
 upgrade_old_logs "topology"
 
-run_service "$@"
+run_service "$@" -c /etc/contrail/tf-topology.conf
