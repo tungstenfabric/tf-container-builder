@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f599aa06_55c68949",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-09-15T11:05:55Z",
+      "side": 1,
+      "message": "still contrail-topology - it\u0027s a name of running container",
+      "range": {
+        "startLine": 65,
+        "startChar": 21,
+        "endLine": 65,
+        "endChar": 23
+      },
+      "revId": "0395dca222d7f1fe7e6fcd1f2b2432cda71baece",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
