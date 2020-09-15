@@ -11,7 +11,7 @@ LABEL name=$CONTAINER_NAME \
 COPY entrypoint.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/usr/bin/tf-topology"]
+CMD ["/usr/bin/tf-topology", "-c", "/etc/contrail/tf-topology.conf"]
 
 ENV SERVICE_NAME=topology
 ENV NODE_TYPE=analytics-snmp
