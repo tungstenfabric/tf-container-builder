@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a3b99774_1a2380b7",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 10
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-09-15T14:48:09Z",
+      "side": 1,
+      "message": "maybe CONFIGDB_CASSANDRA_DRIVER ?\n\nand please add it to PARAMS.md in current folder",
+      "range": {
+        "startLine": 13,
+        "startChar": 18,
+        "endLine": 13,
+        "endChar": 33
+      },
+      "revId": "e78472b5f8e508f7948f23fec3a93bb392d273dc",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
