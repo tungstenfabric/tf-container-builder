@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bd2098fa_20f45f11",
+        "filename": "containers/analytics/snmp/topology/entrypoint.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-16T06:35:55Z",
+      "side": 1,
+      "message": "maybe be better in Dockerfile?",
+      "range": {
+        "startLine": 50,
+        "startChar": 17,
+        "endLine": 50,
+        "endChar": 50
+      },
+      "revId": "610994b2aa5cbff3e10625bc73d0d6e9ec395870",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
