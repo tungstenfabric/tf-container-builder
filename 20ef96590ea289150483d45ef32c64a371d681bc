@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f3544af6_2ad05b1b",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 17
+      },
+      "lineNbr": 518,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-16T07:04:20Z",
+      "side": 1,
+      "message": "does it work for values with spaces, e.g.\nSOME_ENV_VAR\u003d\"value1 value2 value3\"\n?\nI suspect that in the file it becomes w/o \"\" \nSOME_ENV_VAR\u003dvalue1 value2 value3\nand then it fail on source command...",
+      "range": {
+        "startLine": 518,
+        "startChar": 8,
+        "endLine": 518,
+        "endChar": 56
+      },
+      "revId": "20ef96590ea289150483d45ef32c64a371d681bc",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
