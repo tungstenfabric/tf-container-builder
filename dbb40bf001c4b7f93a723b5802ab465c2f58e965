@@ -1,0 +1,303 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "77090227_12885bb4",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 43
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-18T13:19:47Z",
+      "side": 1,
+      "message": "there is function with such name.. either change name or remove function..",
+      "range": {
+        "startLine": 11,
+        "startChar": 32,
+        "endLine": 11,
+        "endChar": 39
+      },
+      "revId": "dbb40bf001c4b7f93a723b5802ab465c2f58e965",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2203f705_0b1c9b82",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 43
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-18T13:19:47Z",
+      "side": 1,
+      "message": "local ?",
+      "range": {
+        "startLine": 34,
+        "startChar": 8,
+        "endLine": 34,
+        "endChar": 23
+      },
+      "revId": "dbb40bf001c4b7f93a723b5802ab465c2f58e965",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e3b62552_b85540ad",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 43
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-18T13:19:47Z",
+      "side": 1,
+      "message": "i would name interfaces or nics",
+      "range": {
+        "startLine": 54,
+        "startChar": 14,
+        "endLine": 54,
+        "endChar": 19
+      },
+      "revId": "dbb40bf001c4b7f93a723b5802ab465c2f58e965",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e94e21ba_b1b597b5",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 43
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-18T13:19:47Z",
+      "side": 1,
+      "message": "mightbe just i ?\nanother short wellknown name is iface / ifaces",
+      "range": {
+        "startLine": 56,
+        "startChar": 12,
+        "endLine": 56,
+        "endChar": 16
+      },
+      "revId": "dbb40bf001c4b7f93a723b5802ab465c2f58e965",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "571d16d4_0d03072e",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 43
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-18T13:19:47Z",
+      "side": 1,
+      "message": "it might be that this code is to be in a separate function .. because it changes system state..?",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 98,
+        "endChar": 6
+      },
+      "revId": "dbb40bf001c4b7f93a723b5802ab465c2f58e965",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5cde1a52_96d43073",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 43
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-18T13:19:47Z",
+      "side": 1,
+      "message": "add indentation",
+      "range": {
+        "startLine": 102,
+        "startChar": 4,
+        "endLine": 102,
+        "endChar": 17
+      },
+      "revId": "dbb40bf001c4b7f93a723b5802ab465c2f58e965",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3fb522b0_1c1dd180",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 43
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-18T13:19:47Z",
+      "side": 1,
+      "message": "local line before while",
+      "range": {
+        "startLine": 125,
+        "startChar": 15,
+        "endLine": 125,
+        "endChar": 19
+      },
+      "revId": "dbb40bf001c4b7f93a723b5802ab465c2f58e965",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc4c4f46_8bc19bf7",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 43
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-18T13:19:47Z",
+      "side": 1,
+      "message": "i\u0027d prefere \nkey\u003d$(echo $line | cut -d \u0027\u003d\u0027 -f 1)",
+      "range": {
+        "startLine": 126,
+        "startChar": 8,
+        "endLine": 126,
+        "endChar": 40
+      },
+      "revId": "dbb40bf001c4b7f93a723b5802ab465c2f58e965",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8442ce35_d1ece18d",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 43
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-18T13:19:47Z",
+      "side": 1,
+      "message": "why not \nrm -f $parameters_file.tmp # before while read...\nhere just\necho ${key}\u003d${!key} \u003e\u003e $parameters_file.tmp\nthen after the loop:\nmv $parameters_file.tmp $parameters_file\n\n\nor even dont touch initial params file and call it like blabla.template\nand here just alwaus recreated target file w/o tmp..",
+      "range": {
+        "startLine": 128,
+        "startChar": 0,
+        "endLine": 132,
+        "endChar": 3
+      },
+      "revId": "dbb40bf001c4b7f93a723b5802ab465c2f58e965",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b280fdd5_e2987990",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 43
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-18T13:19:47Z",
+      "side": 1,
+      "message": "hm.. why no if [[ ! -f ... ]] ?",
+      "range": {
+        "startLine": 141,
+        "startChar": 7,
+        "endLine": 141,
+        "endChar": 36
+      },
+      "revId": "dbb40bf001c4b7f93a723b5802ab465c2f58e965",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d465998_79f56acc",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 43
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-18T13:19:47Z",
+      "side": 1,
+      "message": "local\nand below for others",
+      "range": {
+        "startLine": 155,
+        "startChar": 4,
+        "endLine": 155,
+        "endChar": 22
+      },
+      "revId": "dbb40bf001c4b7f93a723b5802ab465c2f58e965",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64f8c96e_bb346773",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 43
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-18T13:19:47Z",
+      "side": 1,
+      "message": "why not to use function?",
+      "range": {
+        "startLine": 189,
+        "startChar": 36,
+        "endLine": 189,
+        "endChar": 65
+      },
+      "revId": "dbb40bf001c4b7f93a723b5802ab465c2f58e965",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eb6b17ce_4c29db11",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 43
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-18T13:19:47Z",
+      "side": 1,
+      "message": "why not is_enabled $IS_VLAN_ENABLED ?\nand same about other comparisons with \u0027true\u0027...",
+      "range": {
+        "startLine": 203,
+        "startChar": 11,
+        "endLine": 203,
+        "endChar": 43
+      },
+      "revId": "dbb40bf001c4b7f93a723b5802ab465c2f58e965",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
