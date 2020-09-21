@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 build_root=${CONTRAIL_SOURCE//\"/}
 build_path=${build_root}/${CONTAINER_SOURCE_DATA_PATH//\"/}
 
