@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 function is_enabled() {
   local val=${1,,}

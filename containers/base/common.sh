@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Logging
 LOG_LEVEL=${LOG_LEVEL:-SYS_NOTICE}
