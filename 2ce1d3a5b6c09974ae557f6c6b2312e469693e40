@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fcf5c66d_f760b14f",
+        "filename": "containers/vrouter/base/vhost-dhcp.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-22T12:18:11Z",
+      "side": 1,
+      "message": "we cannot do it as it breaks logic that checks this path.\n\ncan include into container and we modify /sbin/dhclient-script\nsay, put it into /vhost-dhcp/dhclient-script\nand put into this dir only files that it needs.\n?\n\nCan we avoid as many files like ifcfg-vhost as we can? \nCan we modify dhclient scripts to minimize files we need?",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 2
+      },
+      "revId": "2ce1d3a5b6c09974ae557f6c6b2312e469693e40",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
