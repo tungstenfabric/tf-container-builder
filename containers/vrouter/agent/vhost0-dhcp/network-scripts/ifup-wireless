@@ -1,0 +1,62 @@
+#!/bin/bash
+# Network Interface Configuration System
+# Copyright (c) 1996-2009 Red Hat, Inc. all rights reserved.
+#
+# Based on PCMCIA wireless script by (David Hinds/Jean Tourrilhes)
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License, version 2,
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+# Configure wireless network device options.  See iw(8) for more info.
+# Valid variables:
+#    MODE: Ad-Hoc, Managed, etc.
+#    ESSID: Name of the wireless network
+#    FREQ: Frequency to operate on.  See CHANNEL
+#    KEY: Encryption key for WEP.
+
+# Only meant to be called from ifup.
+
+cd /etc/sysconfig/network-scripts
+. ./network-functions
+
+IW=${IW:-iw}
+
+[ "$KEY" ] && KEYS="key d:0:$KEY"
+
+shopt -s nocasematch
+
+case "$MODE" in
+managed)
+    if [ "$ESSID" ]; then
+        $IW dev "$DEVICE" set type managed
+        $IW dev "$DEVICE" connect -w "$ESSID" $FREQ $KEYS
+    fi
+    ;;
+ad-hoc)
+    if [ -n "$ESSID" -a -n "$FREQ" ]; then
+        $IW dev "$DEVICE" set type ibss
+        $IW dev "$DEVICE" ibss join "$ESSID" "$FREQ" $KEYS
+    fi
+    ;;
+monitor)
+    if [ "$FREQ" ]; then 
+        $IW dev "$DEVICE" set type monitor
+        $IW dev "$DEVICE" set freq "$FREQ"
+    fi
+    ;;
+esac
+
+if [ -n "$WOWLAN" ] ; then
+    PHYDEVICE=$(phy_wireless_device $DEVICE)
+    iw phy $PHYDEVICE wowlan enable ${WOWLAN}
+fi

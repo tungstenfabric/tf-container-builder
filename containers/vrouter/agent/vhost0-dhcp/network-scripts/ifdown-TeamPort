@@ -1,0 +1,49 @@
+#!/bin/sh
+
+# Copyright (C) 2012-2015 Jiri Pirko <jiri@resnulli.us>
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+. /etc/init.d/functions
+
+cd /etc/sysconfig/network-scripts
+. ./network-functions
+
+[ -f ../network ] && . ../network
+
+CONFIG=${1}
+
+need_config "${CONFIG}"
+
+source_config
+
+if [ -n "${TEAM_MASTER}" ]; then
+	if [ ! -x /usr/bin/teamdctl ]; then
+		net_log $"Team support not available: teamdctl not found"
+		exit 1
+	fi
+	/sbin/ip link show ${TEAM_MASTER} > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		net_log $"Team master is not present, skipping port device removal from master" info
+		exit 0
+	fi
+	/usr/bin/teamdctl ${TEAM_MASTER} port remove ${DEVICE} || exit 1
+fi
+
+if [ "${DEVICETYPE}" = "TeamPort" ]; then
+	# This means that this was called directly, not via ifdown-eth
+	# so execute ifdown-eth now.
+	exec /etc/sysconfig/network-scripts/ifdown-eth ${CONFIG} $2
+fi

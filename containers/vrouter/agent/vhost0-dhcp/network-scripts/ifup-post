@@ -1,0 +1,151 @@
+#!/bin/bash
+
+# Source the general functions for is_true() and is_false():
+. /etc/init.d/functions
+
+cd /etc/sysconfig/network-scripts
+. ./network-functions
+
+[ -f ../network ] && . ../network
+
+unset REALDEVICE
+if [ "$1" = --realdevice ] ; then
+    REALDEVICE=$2
+    shift 2
+fi
+
+CONFIG=$1
+source_config
+
+[ -z "$REALDEVICE" ] && REALDEVICE=$DEVICE
+
+if is_false "$ISALIAS"; then
+    /etc/sysconfig/network-scripts/ifup-aliases ${DEVICE} ${CONFIG}
+fi
+
+if ! is_true "$NOROUTESET"; then
+    /etc/sysconfig/network-scripts/ifup-routes ${REALDEVICE} ${DEVNAME}
+fi
+
+
+if ! is_false "${PEERDNS}" || is_true "${RESOLV_MODS}"; then
+    # Obtain the DNS entries when using PPP if necessary:
+    [ -n "${MS_DNS1}" ] && DNS1="${MS_DNS1}"
+    [ -n "${MS_DNS2}" ] && DNS2="${MS_DNS2}"
+
+    # Remove duplicate DNS entries and shift them, if necessary:
+    update_DNS_entries
+
+    # Determine what regexp we should use (for testing below):
+    if   [ -n "${DNS3}" ]; then
+        grep_regexp="[^#]?nameserver[[:space:]]+${DNS1}[^#]?nameserver[[:space:]]+${DNS2}[^#]?nameserver[[:space:]]+${DNS3}"
+    elif [ -n "${DNS2}" ]; then
+        grep_regexp="[^#]?nameserver[[:space:]]+${DNS1}[^#]?nameserver[[:space:]]+${DNS2}"
+    elif [ -n "${DNS1}" ]; then
+        grep_regexp="[^#]?nameserver[[:space:]]+${DNS1}"
+    else
+        # No DNS entries used at all ->> match everything.
+        grep_regexp=".*"
+    fi
+
+    # Test if the search field needs updating, or
+    # if the nameserver entries order should be updated:
+    if [ -n "${DOMAIN}" ] && ! grep -q "^search.*${DOMAIN}.*$" /etc/resolv.conf ||
+        ! tr --delete '\n' < /etc/resolv.conf | grep -E -q "${grep_regexp}"; then
+
+        if tmp_file=$(mktemp); then
+            search_str=''
+
+            while read line; do
+                case ${line} in
+
+                    # Skip nameserver entries when at least one DNS option was given
+                    # (at this stage we know that we have to update all the nameserver
+                    # enries anyway -- see below), or copy them if we are changing just
+                    # the 'search' field in /etc/resolv.conf:
+                    nameserver*)
+                        if [[ "${grep_regexp}" != ".*" ]]; then
+                            continue
+                        else
+                            echo "${line}" >> "${tmp_file}"
+                        fi
+                        ;;
+
+                    domain* | search*)
+                        if [ -n "${DOMAIN}" ]; then
+                            read search value < <(echo ${line})
+                            search_str+=" ${value}"
+                        else
+                            echo "${line}" >> "${tmp_file}"
+                        fi
+                        ;;
+
+                    # Keep the rest of the /etc/resolv.conf as it was:
+                    *)
+                        echo "${line}" >> "${tmp_file}"
+                        ;;
+                esac
+            done < /etc/resolv.conf
+
+            # Insert the domain into 'search' field:
+            if [ -n "${DOMAIN}" ]; then
+                echo "search ${DOMAIN}${search_str}" >> "${tmp_file}"
+            fi
+
+            # Add the requested nameserver entries:
+            [ -n "${DNS1}" ] && echo "nameserver ${DNS1}" >> "${tmp_file}"
+            [ -n "${DNS2}" ] && echo "nameserver ${DNS2}" >> "${tmp_file}"
+            [ -n "${DNS3}" ] && echo "nameserver ${DNS3}" >> "${tmp_file}"
+
+            # backup resolv.conf
+            cp -af /etc/resolv.conf /etc/resolv.conf.save
+
+            # Maintain permissions, but set umask in case it doesn't exist:
+            umask_old=$(umask)
+            umask 022
+
+            # Update the resolv.conf:
+            change_resolv_conf "${tmp_file}"
+
+            rm -f "${tmp_file}"
+            umask ${umask_old}
+            unset tmp_file search_str umask_old
+        else
+            net_log $"/etc/resolv.conf was not updated: failed to create temporary file" 'err' 'ifup-post'
+        fi
+    fi
+
+    unset grep_regexp
+fi
+
+# don't set hostname on ppp/slip connections
+if [ "$2" = "boot" -a \
+        "${DEVICE}" != lo -a \
+        "${DEVICETYPE}" != "ppp" -a \
+        "${DEVICETYPE}" != "slip" ]; then
+    if need_hostname; then
+        IPADDR=$(LANG=C ip -o -4 addr ls dev ${DEVICE} | awk '{ print $4 ; exit }')
+        eval $(/bin/ipcalc --silent --hostname ${IPADDR} ; echo "status=$?")
+        if [ "$status" = "0" ]; then
+            set_hostname $HOSTNAME
+        fi
+    fi
+fi
+
+# Set firewall ZONE for this device (empty ZONE means default):
+if [ "${REALDEVICE}" != "lo" ]; then
+    dbus-send --print-reply --system --dest=org.fedoraproject.FirewallD1 \
+              /org/fedoraproject/FirewallD1 \
+              org.fedoraproject.FirewallD1.zone.changeZoneOfInterface \
+              string:"${ZONE}" string:"${DEVICE}" \
+              > /dev/null 2>&1
+fi
+
+# Notify programs that have requested notification
+do_netreport
+
+if [ -x /sbin/ifup-local ]; then
+    /sbin/ifup-local ${DEVICE}
+fi
+
+exit 0

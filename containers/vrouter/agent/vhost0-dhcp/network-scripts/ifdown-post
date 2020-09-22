@@ -1,0 +1,72 @@
+#!/bin/sh
+# This should be called whenever an interface goes down, not just when
+# it is brought down explicitly.
+
+cd /etc/sysconfig/network-scripts
+. ./network-functions
+
+unset REALDEVICE
+if [ "$1" = --realdevice ] ; then
+    REALDEVICE=$2
+    shift 2
+fi
+
+CONFIG=$1
+source_config
+
+[ -z "$REALDEVICE" ] && REALDEVICE=$DEVICE
+
+/etc/sysconfig/network-scripts/ifdown-routes ${REALDEVICE} ${DEVNAME}
+
+# Remove duplicate DNS entries and shift them,
+# to have always correct condition below...
+update_DNS_entries
+
+if ! is_false "${PEERDNS}" || is_true "${RESOLV_MODS}" && \
+    [ "${DEVICETYPE}" = "ppp" -o "${DEVICETYPE}" = "ippp" -o -n "${DNS1}" \
+    -o "${BOOTPROTO}" = "bootp" -o "${BOOTPROTO}" = "dhcp" ] ; then
+    if [ -f /etc/resolv.conf.save ]; then
+        change_resolv_conf /etc/resolv.conf.save
+        rm -f /etc/resolv.conf.save
+    fi
+    if [ "${DEVICETYPE}" = "ppp" -o "${DEVICETYPE}" = "ippp" ]; then
+        if [ -f /etc/ppp/peers/$DEVICE ] ; then
+            rm -f /etc/ppp/peers/$DEVICE
+        fi
+    fi
+fi
+
+# Reset the default route if this interface had a special one
+if ! check_default_route ; then
+    # ISDN device needs special handling dial on demand
+    if [ "${DEVICETYPE}" = "ippp" -o "${DEVICETYPE}" = "isdn" ] && \
+       [ "$DIALMODE" = "auto" ] ; then
+        if [ -z "$GATEWAY" ] ; then
+            /sbin/ip route add default ${METRIC:+metric} \
+                ${WINDOW:+window $WINDOW} dev ${DEVICE}
+        else
+            /sbin/ip route add default ${METRIC:+metric} \
+                ${WINDOW:+window $WINDOW} via ${GATEWAY}
+        fi
+    else
+        add_default_route ${DEVICE}
+    fi
+fi
+
+# Reset firewall zone (empty ZONE means default):
+if [ "${REALDEVICE}" != "lo" ]; then
+    dbus-send --print-reply --system --dest=org.fedoraproject.FirewallD1 \
+              /org/fedoraproject/FirewallD1 \
+              org.fedoraproject.FirewallD1.zone.removeInterface \
+              string: "" string:"${DEVICE}" \
+              > /dev/null 2>&1
+fi
+
+# Notify programs that have requested notification
+do_netreport
+
+if [ -x /sbin/ifdown-local ]; then
+    /sbin/ifdown-local ${DEVICE}
+fi
+
+exit 0
