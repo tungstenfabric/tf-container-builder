@@ -16,6 +16,8 @@ RUN  yum install -y dhclient NetworkManager contrail-vrouter-agent haproxy libvi
      ldconfig
 
 COPY *.sh /
+COPY vhost0-dhcp/dhclient-script /etc/dhcp/dhclient-script
+COPY vhost0-dhcp/vhost0-nameservers.sh /etc/dhcp/dhclient-exit-hooks.d/
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/contrail-vrouter-agent"]
