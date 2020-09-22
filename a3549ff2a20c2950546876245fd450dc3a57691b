@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6ffc220e_7adb4db8",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 53
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-22T11:24:47Z",
+      "side": 1,
+      "message": "is it variable?",
+      "range": {
+        "startLine": 11,
+        "startChar": 32,
+        "endLine": 11,
+        "endChar": 39
+      },
+      "revId": "a3549ff2a20c2950546876245fd450dc3a57691b",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
