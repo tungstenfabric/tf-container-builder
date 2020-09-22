@@ -603,8 +603,8 @@ function init_vhost0() {
             kill_dhcp_clients ${phys_int}
         fi
         if [ -z "$BIND_INT" ] ; then
-            # Patch if it is not the case of OSP+DPDK (BIND_INT is set if 
-            # dpdk container is started by ifup script, vhost0 is initialized here 
+            # Patch if it is not the case of OSP+DPDK (BIND_INT is set if
+            # dpdk container is started by ifup script, vhost0 is initialized here
             # and ifcfg files are already prepared correctly by os-net-collect)
             prepare_ifcfg $phys_int $bind_type $bind_int || true
         fi
@@ -844,7 +844,7 @@ function launch_dhcp_clients() {
     mkdir -p /var/lib/dhcp
     # Update /dhclient-vhost0.conf with the system /etc/dhcp/dhclient.conf
     cat /etc/dhcp/dhclient.conf >> /dhclient-vhost0.conf
-    dhclient -v -sf /vhost-dhcp.sh -cf /dhclient-vhost0.conf -pf /run/dhclient.vhost0.pid -lf /var/lib/dhcp/dhclient.vhost0.leases -I vhost0 2>&1 </dev/null & disown -h "$!"
+    dhclient -v -sf /etc/dhcp/dhclient-script -cf /dhclient-vhost0.conf -pf /run/dhclient.vhost0.pid -lf /var/lib/dhcp/dhclient.vhost0.leases -I vhost0 2>&1 </dev/null & disown -h "$!"
     sleep 3
 }
 
