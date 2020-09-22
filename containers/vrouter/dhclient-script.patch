@@ -1,0 +1,15 @@
+704,708d703
+< if [ ! -r /etc/sysconfig/network-scripts/network-functions ]; then
+<     echo "Missing /etc/sysconfig/network-scripts/network-functions, exiting." >&2
+<     exit 1
+< fi
+< 
+714d708
+< . /etc/sysconfig/network-scripts/network-functions
+725,728c719
+< cd /etc/sysconfig/network-scripts
+< CONFIG="${interface}"
+< need_config ${CONFIG}
+< source_config >/dev/null 2>&1
+---
+> . /ifcfg-vhost0

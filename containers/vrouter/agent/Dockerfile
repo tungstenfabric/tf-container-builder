@@ -8,7 +8,7 @@ LABEL name=$CONTAINER_NAME \
       summary="Contrail Vrouter Agent" \
       description="The vRouter agent is a user space process running inside Linux. It acts as the local, lightweight control plane."
 
-RUN  yum install -y dhclient NetworkManager contrail-vrouter-agent haproxy libvirt-client \
+RUN  yum install -y patch dhclient NetworkManager contrail-vrouter-agent haproxy libvirt-client \
      python-opencontrail-vrouter-netns python-contrail-vrouter-api && \
      rpm -qi contrail-vrouter-agent | awk '/Version/{print($3)}' > /contrail_build_version && \
      yum clean all -y && \
@@ -16,6 +16,11 @@ RUN  yum install -y dhclient NetworkManager contrail-vrouter-agent haproxy libvi
      ldconfig
 
 COPY *.sh /
+COPY vhost0-dhcp/ifcfg-vhost0 /
+COPY vhost0-dhcp/dhclient-script.patch /
+RUN patch /sbin/dhclient-script < /dhclient-script.patch
+COPY vhost0-dhcp/vhost0-nameservers.sh /etc/dhcp/dhclient-exit-hooks.d/
+RUN chmod a+x /etc/dhcp/dhclient-exit-hooks.d/vhost0-nameservers.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/contrail-vrouter-agent"]
