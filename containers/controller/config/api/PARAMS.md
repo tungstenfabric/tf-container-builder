@@ -27,6 +27,7 @@
 | CONFIG_API_SERVER_KEYFILE            | $SERVER_KEYFILE                                |
 | CONFIG_API_SSL_ENABLE                | $SSL_ENABLE                                    |
 | CONFIG_NODES                         | $CONTROLLER_NODES                              |
+| CONFIG_API_WORKER_COUNT              | 1                                              |
 | *CONFIGDB_NODES*                     | $CONFIG_NODES                                  |
 | *CONFIGDB_PORT*                      | 9161                                           |
 | **Controller**                       |                                                |

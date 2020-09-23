@@ -8,14 +8,14 @@ LABEL name=$CONTAINER_NAME \
       description="Controller Configuration API provides a REST API to an orchestration system."
 
 # contrail-config-openstack contains svc_monitor and vnc_openstack modules
-RUN yum install -y python-neutron-lib && \
+RUN yum install -y python-neutron-lib openssl-devel && \
     yum clean all -y && \
     rm -rf /var/cache/yum
 
 COPY *.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/usr/bin/contrail-api", "--conf_file", "/etc/contrail/contrail-api.conf", "--conf_file", "/etc/contrail/contrail-keystone-auth.conf", "--worker_id", "0"]
+CMD ["/usr/bin/uwsgi", "/etc/contrail/contrail-api-uwsgi.ini"]
 
 ENV SERVICE_NAME=api
 LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
