@@ -22,6 +22,30 @@
       "revId": "2ce1d3a5b6c09974ae557f6c6b2312e469693e40",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ccea00d4_d8bc480a",
+        "filename": "containers/vrouter/base/vhost-dhcp.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 980
+      },
+      "writtenOn": "2020-09-23T10:45:32Z",
+      "side": 1,
+      "message": "What script checks this path and why?\nIf we\u0027ll choose dhclient-script patch approach then we must patch\nall scripts in the directory. The path is hardcoded everywhere.",
+      "parentUuid": "fcf5c66d_f760b14f",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 2
+      },
+      "revId": "2ce1d3a5b6c09974ae557f6c6b2312e469693e40",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
     }
   ]
 }
