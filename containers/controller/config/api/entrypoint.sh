@@ -32,11 +32,13 @@ else
 fi
 
 mkdir -p /etc/contrail
-cat > /etc/contrail/contrail-api.conf << EOM
+for count in {0..4}
+do
+cat > /etc/contrail/contrail-api-$count.conf << EOM
 [DEFAULTS]
 listen_ip_addr=${host_ip}
 listen_port=$CONFIG_API_PORT
-http_server_port=${CONFIG_API_INTROSPECT_PORT}
+http_server_port=$count${CONFIG_API_INTROSPECT_PORT}
 http_server_ip=$(get_introspect_listen_ip_for_node CONFIG)
 log_file=$CONTAINER_LOG_DIR/contrail-api.log
 log_level=$LOG_LEVEL
@@ -51,7 +53,7 @@ cassandra_use_ssl=${CASSANDRA_SSL_ENABLE,,}
 cassandra_ca_certs=$CASSANDRA_SSL_CA_CERTFILE
 zk_server_ip=$ZOOKEEPER_SERVERS
 
-$config_api_certs_config
+worker_id=$count
 
 rabbit_server=$RABBITMQ_SERVERS
 $rabbit_config
@@ -66,7 +68,19 @@ $collector_stats_config
 $neutron_section
 EOM
 
-add_ini_params_from_env API /etc/contrail/contrail-api.conf
+cat> /etc/contrail/contrail-api-uwsgi.ini <<EOM
+[uwsgi]
+master = true
+single-interpreter = true
+workers = 5
+gevent = 1000
+protocol = http
+socket = ${host_ip}:$CONFIG_API_PORT
+module = vnc_cfg_api_server.uwsgi_api_server:get_apiserver()
+uid = contrail
+gid = contrail
+lazy-apps = true
+EOM
 
 set_third_party_auth_config
 set_vnc_api_lib_ini
