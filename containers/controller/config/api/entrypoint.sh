@@ -32,11 +32,22 @@ else
 fi
 
 mkdir -p /etc/contrail
-cat > /etc/contrail/contrail-api.conf << EOM
+
+ADMIN_PORT=8085
+for ((index=0; index<${CONFIG_API_WORKER_COUNT}; ++index)) ; do
+  if [ "$index" = 0 ] ; then
+    get_http_server_port=${CONFIG_API_INTROSPECT_PORT}
+    get_admin_port=${ADMIN_PORT}
+  else
+    get_http_server_port=$((10000 + CONFIG_API_INTROSPECT_PORT + index - 1))
+    get_admin_port=$((20000 + ADMIN_PORT + index - 1))
+  fi
+
+cat > /etc/contrail/contrail-api-$index.conf << EOM
 [DEFAULTS]
 listen_ip_addr=${host_ip}
 listen_port=$CONFIG_API_PORT
-http_server_port=${CONFIG_API_INTROSPECT_PORT}
+http_server_port=${get_http_server_port}
 http_server_ip=$(get_introspect_listen_ip_for_node CONFIG)
 log_file=$CONTAINER_LOG_DIR/contrail-api.log
 log_level=$LOG_LEVEL
@@ -51,7 +62,8 @@ cassandra_use_ssl=${CASSANDRA_SSL_ENABLE,,}
 cassandra_ca_certs=$CASSANDRA_SSL_CA_CERTFILE
 zk_server_ip=$ZOOKEEPER_SERVERS
 
-$config_api_certs_config
+admin_port=${get_admin_port}
+worker_id=$index
 
 rabbit_server=$RABBITMQ_SERVERS
 $rabbit_config
@@ -65,8 +77,31 @@ $collector_stats_config
 
 $neutron_section
 EOM
+done
 
-add_ini_params_from_env API /etc/contrail/contrail-api.conf
+cat> /etc/contrail/contrail-api-uwsgi.ini <<EOM
+[uwsgi]
+strict
+master
+single-interpreter
+vacuum
+need-app
+workers = ${CONFIG_API_WORKER_COUNT}
+gevent = ${CONFIG_API_MAX_REQUESTS}
+lazy-apps
+
+$(if is_enabled ${CONFIG_API_SSL_ENABLE} ; then
+  echo "https-socket = ${host_ip}:$CONFIG_API_PORT,${CONFIG_API_SERVER_CERTFILE},${CONFIG_API_SERVER_KEYFILE}"
+else
+  echo "protocol = http"
+  echo "socket = ${host_ip}:$CONFIG_API_PORT"
+fi)
+module = vnc_cfg_api_server.uwsgi_api_server:get_apiserver()
+so-keepalive
+reuse-port
+uid = contrail
+gid = contrail
+EOM
 
 set_third_party_auth_config
 set_vnc_api_lib_ini
