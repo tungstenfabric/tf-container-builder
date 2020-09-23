@@ -15,7 +15,7 @@ RUN yum install -y python-neutron-lib && \
 COPY *.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/usr/bin/contrail-api", "--conf_file", "/etc/contrail/contrail-api.conf", "--conf_file", "/etc/contrail/contrail-keystone-auth.conf", "--worker_id", "0"]
+CMD ["/usr/bin/uwsgi", "/etc/contrail/contrail-api-uwsgi.ini"]
 
 ENV SERVICE_NAME=api
 LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
