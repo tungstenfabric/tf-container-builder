@@ -113,6 +113,12 @@ EOM
     else
         XMPP_SSL_IS_ENABLED="false"
     fi
+    local QOS_DEF_HW_QUEUE_ENABLED
+    if is_enabled ${QOS_DEF_HW_QUEUE} ; then
+        QOS_DEF_HW_QUEUE_ENABLED="true"
+    else
+        QOS_DEF_HW_QUEUE_ENABLED="false"
+    fi
 
     local INTROSPECT_SSL_IS_ENABLED
     if is_enabled ${INTROSPECT_SSL_ENABLE} ; then
@@ -226,8 +232,8 @@ logical_queue=${qos_logical_queue[${index}]}
 EOM
             qos_queueing_option+=$'\n'"${qos_config}"
         done
-        qos_def=""
-        if is_enabled ${QOS_DEF_HW_QUEUE} ; then
+        local qos_def=""
+        if [[ $QOS_DEF_HW_QUEUE_ENABLED == "true" ]] ; then
             qos_def="default_hw_queue=true"
         fi
 
