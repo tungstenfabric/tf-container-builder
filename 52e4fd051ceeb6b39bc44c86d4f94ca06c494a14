@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "09e410b6_d21fba20",
+        "filename": "containers/controller/config/api/Dockerfile",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 56
+      },
+      "writtenOn": "2020-09-24T01:01:55Z",
+      "side": 1,
+      "message": "@andrey uWsgi rpm is available only in epel repo. for redhat containers are we installing any packages from epel repo. If not can we bring in uWsgi as pip package in this container?",
+      "revId": "52e4fd051ceeb6b39bc44c86d4f94ca06c494a14",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
