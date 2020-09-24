@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "df765a46_efc9154d",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 4
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-09-24T19:52:00Z",
+      "side": 1,
+      "message": "this must be configurable and it would be good to have default value related to cores count",
+      "revId": "436c76cbde467f13a998d5aa26b4c7fa624baa56",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
