@@ -38,8 +38,8 @@ function wait_files() {
   local file1=$1
   local file2=$2
   printf "INFO: wait for files $file1 and $file2"
-  wait_cmd_success "test -f $file1" || { echo -e "\nERROR: failed to wait $file1" && return 1; }
-  wait_cmd_success "test -f $file2" || { echo -e "\nERROR: failed to wait $file2" && return 1; }
+  wait_cmd_success "test -f $file1" || { echo -e "\nERROR: failed to wait $file1"; exit 1; }
+  wait_cmd_success "test -f $file2" || { echo -e "\nERROR: failed to wait $file2"; exit 1; }
   echo -e "\nINFO: files $file1 and $file2 are present"
 }
 
@@ -48,7 +48,7 @@ function wait_certs_if_ssl_enabled() {
     return
   fi
 
-  is_enabled $SSL_ENABLE && wait_files "$SERVER_KEYFILE" "$SERVER_CERTFILE"
+  is_enabled $SSL_ENABLE && wait_files "$SERVER_CERTFILE" "$SERVER_KEYFILE";
   if [[ "$SERVER_KEYFILE" != "$XMPP_SERVER_KEYFILE" ]] ; then
     is_enabled $XMPP_SSL_ENABLE && wait_files "$XMPP_SERVER_CERTFILE" "$XMPP_SERVER_KEYFILE"
   fi
