@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8c836e6d_f5b51d83",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 56
+      },
+      "writtenOn": "2020-09-24T00:50:25Z",
+      "side": 1,
+      "message": "Need to add ssh config and tcp keepalive equivalent of https://github.com/tungstenfabric/tf-controller/blob/master/src/config/api-server/vnc_cfg_api_server/vnc_bottle.py#L31 and\n\nsocket options equivalent of https://github.com/tungstenfabric/tf-controller/blob/master/src/config/api-server/vnc_cfg_api_server/vnc_bottle.py#L54",
+      "revId": "3b9116e626dc54128616caba51cdb5db2fd0b195",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6368d805_c02f5d9d",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 56
+      },
+      "writtenOn": "2020-09-24T00:50:25Z",
+      "side": 1,
+      "message": "Instead of 0.0.0.0:8082, we should use ${host_ip}:8082",
+      "revId": "3b9116e626dc54128616caba51cdb5db2fd0b195",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5416c288_ea0bb08b",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 56
+      },
+      "writtenOn": "2020-09-24T00:50:25Z",
+      "side": 1,
+      "message": "Lets rename it to get_apiserver(), with uWsgi we are not using bottle as server.",
+      "revId": "3b9116e626dc54128616caba51cdb5db2fd0b195",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "847eb841_199df60d",
+        "filename": "containers/controller/config/api/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 56
+      },
+      "writtenOn": "2020-09-24T00:50:25Z",
+      "side": 1,
+      "message": "you can name the config file as /etc/contrail/contrail-api-uwsgi.conf to be consistent with our other config file names",
+      "revId": "d0b5ce186fac453a9cf2b1873d10d4629fcdb8d8",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
