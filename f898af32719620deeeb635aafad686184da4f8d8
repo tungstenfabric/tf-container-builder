@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5385f9dc_5644ad42",
+        "filename": "containers/vrouter/agent/Dockerfile",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-24T16:34:18Z",
+      "side": 1,
+      "message": "lets just have patched file directly in github.",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 56
+      },
+      "revId": "f898af32719620deeeb635aafad686184da4f8d8",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8e2a6a3_51fda63f",
+        "filename": "containers/vrouter/agent/Dockerfile",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-24T16:34:18Z",
+      "side": 1,
+      "message": "please change attributes at the source file in git.\nin that case it be preserved during build and this would not been needed.",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 67
+      },
+      "revId": "f898af32719620deeeb635aafad686184da4f8d8",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "be00eab1_77ea2554",
+        "filename": "containers/vrouter/agent/vhost0-dhcp/ifcfg-vhost0",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-24T16:34:18Z",
+      "side": 1,
+      "message": "what envs from this list is mandatory for dhclient to work?",
+      "range": {
+        "startLine": 2,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 13
+      },
+      "revId": "f898af32719620deeeb635aafad686184da4f8d8",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
