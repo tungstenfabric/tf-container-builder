@@ -16,6 +16,24 @@
       "revId": "52e4fd051ceeb6b39bc44c86d4f94ca06c494a14",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "39419c66_781da433",
+        "filename": "containers/controller/config/api/Dockerfile",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-09-24T13:48:14Z",
+      "side": 1,
+      "message": "it\u0027s possible but it\u0027s better to copy this package into TPC - we already did the same",
+      "parentUuid": "09e410b6_d21fba20",
+      "revId": "52e4fd051ceeb6b39bc44c86d4f94ca06c494a14",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
     }
   ]
 }
