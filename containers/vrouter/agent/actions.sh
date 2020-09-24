@@ -107,20 +107,6 @@ EOM
     local XMPP_SERVERS_LIST=${XMPP_SERVERS:-`get_server_list CONTROL ":$XMPP_SERVER_PORT "`}
     local CONTROL_NETWORK_IP=$(get_ip_for_vrouter_from_control)
     local DNS_SERVERS_LIST=${DNS_SERVERS:-`get_server_list DNS ":$DNS_SERVER_PORT "`}
-    local XMPP_SSL_IS_ENABLED
-    if is_enabled ${XMPP_SSL_ENABLE} ; then
-        XMPP_SSL_IS_ENABLED="true"
-    else
-        XMPP_SSL_IS_ENABLED="false"
-    fi
-
-    local INTROSPECT_SSL_IS_ENABLED
-    if is_enabled ${INTROSPECT_SSL_ENABLE} ; then
-        INTROSPECT_SSL_IS_ENABLED="true"
-    else
-        INTROSPECT_SSL_IS_ENABLED="false"
-    fi
-
     local result_params=""
     local key line
     while read line; do
@@ -279,7 +265,7 @@ huge_page_2M=${HUGEPAGES_DIR}/bridge ${HUGEPAGES_DIR}/flow
 EOM
     fi
 
-    if [[ "$XMPP_SSL_IS_ENABLED" == "true" ]] ; then
+    if is_enabled ${XMPP_SSL_ENABLE} ; then
         read -r -d '' xmpp_certs_config << EOM || true
 xmpp_server_cert=${XMPP_SERVER_CERTFILE}
 xmpp_server_key=${XMPP_SERVER_KEYFILE}
@@ -289,7 +275,7 @@ EOM
         xmpp_certs_config=''
     fi
 
-    if [[ "$INTROSPECT_SSL_IS_ENABLED" == 'true' ]]; then
+    if is_enabled ${INTROSPECT_SSL_ENABLE} ; then
         read -r -d '' sandesh_client_config << EOM || true
 [SANDESH]
 introspect_ssl_enable=${INTROSPECT_SSL_ENABLE}
