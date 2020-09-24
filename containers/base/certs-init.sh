@@ -18,7 +18,7 @@ if [[ -z "$SERVER_CERTFILE" || -z "$SERVER_KEYFILE" ]] ; then
   exit -1
 fi
 
-FORCE_GENERATE_CERT=${FORCE_GENERATE_CERT:-'false'}
+FORCE_GENERATE_CERT=${FORCE_GENERATE_CERT:-'true'}
 if [[ -f "$SERVER_CERTFILE" && -f "$SERVER_KEYFILE" ]] ; then
   if ! is_enabled $FORCE_GENERATE_CERT ; then
     echo "INFO: cert and key files are already exist"
@@ -45,6 +45,8 @@ chmod 750 $(dirname $SERVER_KEYFILE)
 
 tmp_lock_name=$(mktemp -p $cert_dir_name .lock.XXXXXXXX)
 lock_file_name="${SERVER_CERTFILE}.lock"
+echo "DBG: $(date --utc)"
+ls -Rlh /etc/contrail/ssl
 if ! mv $tmp_lock_name $lock_file_name ; then
   # That is possible in cases of all-in-on deployments
   echo "WARNING: skip generation because some other init is in progress of that"
@@ -169,6 +171,8 @@ cat "$openssl_config_file"
 function generate_local_ca() {
   #generate local self-signed CA if requested
   if [[ ! -f "${SERVER_CA_KEYFILE}" ]] ; then
+    echo "DBG: $(date --utc)"
+    ls -Rlh /etc/contrail/ssl
     openssl genrsa -out $SERVER_CA_KEYFILE $CA_PRIVATE_KEY_BITS || fail "Failed to generate CA key file"
     chgrp contrail $SERVER_CA_KEYFILE || fail "Failed to set group contrail on $SERVER_CA_KEYFILE"
     chmod 640 $SERVER_CA_KEYFILE || fail "Failed to to chmod 640 on $SERVER_CA_KEYFILE"
@@ -284,7 +288,8 @@ else
 fi
 
 chmod 644 ${SERVER_CERTFILE}.tmp || fail "Failed to chmod 644 on ${SERVER_CERTFILE}.tmp"
-mv ${SERVER_KEYFILE}.tmp ${SERVER_KEYFILE}
-chgrp contrail $SERVER_KEYFILE || fail "Failed to set group contrail on $SERVER_CA_KEYFILE"
-chmod 640 ${SERVER_KEYFILE} || fail "Failed to chmod 640 on ${SERVER_KEYFILE}"
 mv ${SERVER_CERTFILE}.tmp ${SERVER_CERTFILE}
+
+chgrp contrail ${SERVER_KEYFILE}.tmp || fail "Failed to set group contrail on ${SERVER_KEYFILE}.tmp"
+chmod 640 ${SERVER_KEYFILE}.tmp || fail "Failed to chmod 640 on ${SERVER_KEYFILE}.tmp"
+mv ${SERVER_KEYFILE}.tmp ${SERVER_KEYFILE}
