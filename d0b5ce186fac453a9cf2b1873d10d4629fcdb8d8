@@ -16,6 +16,24 @@
       "revId": "d0b5ce186fac453a9cf2b1873d10d4629fcdb8d8",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "70c9e18c_ca8e20f7",
+        "filename": "containers/controller/config/api/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-09-24T15:03:45Z",
+      "side": 1,
+      "message": "uWSGI supports loading configuration files with ini, xml, yaml and json files.",
+      "parentUuid": "847eb841_199df60d",
+      "revId": "d0b5ce186fac453a9cf2b1873d10d4629fcdb8d8",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
     }
   ]
 }
