@@ -3,7 +3,7 @@
 # or directly.
 # To run these functions, source agent_functions.sh and common.sh before
 
-parameters_file='/parameters.sh'
+export PARAMETERS_FILE='/parameters.sh'
 
 function prepare_agent_config_vars() {
     echo "INFO: Start prepare_agent_config_vars"
@@ -132,19 +132,19 @@ ${key[0]}=${!key[0]}
 
 EOM
         fi
-    done <$parameters_file
-    echo "$result_params" > $parameters_file
+    done <$PARAMETERS_FILE
+    echo "$result_params" > $PARAMETERS_FILE
 }
 
 function create_agent_config() {
     echo "INFO: Preparing /etc/contrail/contrail-vrouter-agent.conf"
 
-    if [[  ! -f  $parameters_file ]]; then
-      echo "ERROR: Can\'t find params file $parameters_file"
+    if [[  ! -f  $PARAMETERS_FILE ]]; then
+      echo "ERROR: Can\'t find params file $PARAMETERS_FILE"
       exit 1
     fi
 
-    source $parameters_file
+    source $PARAMETERS_FILE
 
     if [ "$CLOUD_ORCHESTRATOR" == "vcenter" ] && ! [[ -n "$TSN_AGENT_MODE" ]]; then
         read -r -d '' vmware_options << EOM || true
@@ -226,7 +226,7 @@ logical_queue=${qos_logical_queue[${index}]}
 EOM
             qos_queueing_option+=$'\n'"${qos_config}"
         done
-        qos_def=""
+        local qos_def=""
         if is_enabled ${QOS_DEF_HW_QUEUE} ; then
             qos_def="default_hw_queue=true"
         fi
