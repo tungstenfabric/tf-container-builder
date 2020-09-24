@@ -18,7 +18,7 @@ if [[ -z "$SERVER_CERTFILE" || -z "$SERVER_KEYFILE" ]] ; then
   exit -1
 fi
 
-FORCE_GENERATE_CERT=${FORCE_GENERATE_CERT:-'false'}
+FORCE_GENERATE_CERT=${FORCE_GENERATE_CERT:-'true'}
 if [[ -f "$SERVER_CERTFILE" && -f "$SERVER_KEYFILE" ]] ; then
   if ! is_enabled $FORCE_GENERATE_CERT ; then
     echo "INFO: cert and key files are already exist"
