@@ -46,5 +46,6 @@ RUN YUM_ENABLE_REPOS=$(echo $YUM_ENABLE_REPOS | tr -d '"') && \
     useradd -md /home/contrail --uid $CONTRAIL_UID --shell /sbin/nologin --system --gid $CONTRAIL_GID $CONTRAIL_USER
 
 COPY *.sh /
+COPY pip.conf /etc/pip.conf
 
 CMD ["/usr/bin/tail","-f","/dev/null"]

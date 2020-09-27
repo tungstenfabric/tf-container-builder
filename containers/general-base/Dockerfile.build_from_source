@@ -28,5 +28,6 @@ ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG
 COPY *.repo /etc/yum.repos.d/
 
 COPY *.sh /
+COPY pip.conf /etc/pip.conf
 
 CMD ["/usr/bin/tail","-f","/dev/null"]
