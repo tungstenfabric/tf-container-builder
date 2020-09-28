@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7112d35e_48b7b17f",
+        "filename": "containers/vrouter/agent/Dockerfile",
+        "patchSetId": 6
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-09-28T18:19:11Z",
+      "side": 1,
+      "message": "is that possible to have one folder, say, /vhost0-dhcp and all these files inside?\n1. /sbin/dhclient-script - we have own code that runs the script, we can just change it to run own file instead of overwritting existin one\n2. lets have all changes inside dhclient-script marked by some comment to easily find own part inside.\n3. ifcfg-vhost0 - lets have a comment inside describting the case when it is used to avoid othe people confusion.\n\n\nps: if possible to keep all in one folder here would be just single copy command",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 71
+      },
+      "revId": "cadc1a5a8137b8ed41259392d06deeb0a1286176",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
