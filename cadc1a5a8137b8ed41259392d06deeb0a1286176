@@ -22,6 +22,30 @@
       "revId": "cadc1a5a8137b8ed41259392d06deeb0a1286176",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e719a44_ced2f68f",
+        "filename": "containers/vrouter/agent/Dockerfile",
+        "patchSetId": 6
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 980
+      },
+      "writtenOn": "2020-09-29T06:57:02Z",
+      "side": 1,
+      "message": "vhost-nameservers.sh script must be inside dhclient-exit-hooks.d, 2 other\nfiles can be placed inside one directory, I can do that.",
+      "parentUuid": "7112d35e_48b7b17f",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 71
+      },
+      "revId": "cadc1a5a8137b8ed41259392d06deeb0a1286176",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
     }
   ]
 }
