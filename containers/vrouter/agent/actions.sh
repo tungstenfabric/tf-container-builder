@@ -120,6 +120,8 @@ EOM
         fi
     done <$PARAMETERS_FILE
     echo "$result_params" > $PARAMETERS_FILE
+
+    cleanup_lbaas_netns_config
 }
 
 function create_agent_config() {
@@ -372,23 +374,7 @@ $collector_stats_config
 $hugepages_option
 EOM
 
-    cleanup_lbaas_netns_config
-
     add_ini_params_from_env VROUTER_AGENT /etc/contrail/contrail-vrouter-agent.conf
-
-    local interface_list mode policy slaves pci_addresses bond_numa
-    if [[ -n "${PRIORITY_ID}" ]] || [[ -n "${QOS_QUEUE_ID}" ]]; then
-        if is_dpdk ; then
-        echo "INFO: Qos provisioning not supported for dpdk vrouter. Skipping."
-        else
-            interface_list="${PHYS_INT}"
-            if is_bonding ${PHYS_INT} ; then
-                IFS=' ' read -r mode policy slaves pci_addresses bond_numa <<< $(get_bonding_parameters $phys_int)
-                interface_list="${slaves//,/ }"
-            fi
-            /opt/contrail/utils/qosmap.py --interface_list ${interface_list}
-        fi
-    fi
 
     echo "INFO: /etc/contrail/contrail-vrouter-agent.conf"
     cat /etc/contrail/contrail-vrouter-agent.conf
@@ -428,6 +414,20 @@ EOM
 function start_agent() {
     echo "INFO: Run start_agent"
 
+    local interface_list mode policy slaves pci_addresses bond_numa
+    if [[ -n "${PRIORITY_ID}" ]] || [[ -n "${QOS_QUEUE_ID}" ]]; then
+        if is_dpdk ; then
+        echo "INFO: Qos provisioning not supported for dpdk vrouter. Skipping."
+        else
+            interface_list="${PHYS_INT}"
+            if is_bonding ${PHYS_INT} ; then
+                IFS=' ' read -r mode policy slaves pci_addresses bond_numa <<< $(get_bonding_parameters $phys_int)
+                interface_list="${slaves//,/ }"
+            fi
+            /opt/contrail/utils/qosmap.py --interface_list ${interface_list}
+        fi
+    fi
+
     # spin up vrouter-agent as a child process
     if [[ $# == "0" ]]; then
       echo "INFO: Use default vrouter agent to start"
@@ -455,6 +455,8 @@ function start_agent() {
     fi
 
     echo "INFO: vrouter agent process PID: $vrouter_agent_process"
+
+    wait $(cat /var/run/vrouter-agent.pid)
 }
 
 # Setup kernel module and settins needed for start vhost0 network interface
@@ -560,4 +562,13 @@ function resume_container() {
         exit 1
     fi
     echo "yes" > pause_container_pipe
+}
+
+function prepare_agent() {
+    source /common.sh
+    source /agent-functions.sh
+    set_traps
+    vhost0_init
+    wait_vhost0
+    prepare_agent_config_vars  $@
 }
