@@ -1,0 +1,135 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8f151b80_b1ab8724",
+        "filename": "containers/controller/config/api/Dockerfile",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-09-29T19:20:43Z",
+      "side": 1,
+      "message": "why do we need this new package here?\nif we really need it - please just add it to previous line, like\nyum install -y package1 package2 package3 ...",
+      "range": {
+        "startLine": 12,
+        "startChar": 19,
+        "endLine": 12,
+        "endChar": 32
+      },
+      "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "68710933_c450cd5c",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-09-29T19:20:43Z",
+      "side": 1,
+      "message": "please revert back \u0027mkdir ...\u0027",
+      "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d8c1a1f5_55a1a3bd",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-09-29T19:20:43Z",
+      "side": 1,
+      "message": "please add new param to common.sh and to PARAMS.md",
+      "range": {
+        "startLine": 34,
+        "startChar": 24,
+        "endLine": 34,
+        "endChar": 47
+      },
+      "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1237e093_5eb31324",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-09-29T19:20:43Z",
+      "side": 1,
+      "message": "please define port before \u0027cat \u003e ...\"\nsuch code is not so readable",
+      "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a31d265_b9a87605",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-09-29T19:20:43Z",
+      "side": 1,
+      "message": "it\u0027s better to not mix string and arithmetic style. let\u0027s write all in arithmetic $((10000 + ...))",
+      "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "317b7be3_a5ab3a7c",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-09-29T19:20:43Z",
+      "side": 1,
+      "message": "if params have default values I would suggest to not add them",
+      "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "acdfa01f_9480a1c7",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-09-29T19:20:43Z",
+      "side": 1,
+      "message": "please retain last empty line",
+      "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
