@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "108bff95_122c8ec4",
+        "filename": "containers/controller/config/api/Dockerfile",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-09-29T21:59:05Z",
+      "side": 1,
+      "message": "This package is needed for ssl support in uwsgi.",
+      "parentUuid": "8f151b80_b1ab8724",
+      "range": {
+        "startLine": 12,
+        "startChar": 19,
+        "endLine": 12,
+        "endChar": 32
+      },
+      "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "68710933_c450cd5c",
         "filename": "containers/controller/config/api/entrypoint.sh",
         "patchSetId": 5
@@ -39,6 +63,24 @@
       "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f217864_ec81b7b3",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-09-29T21:59:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "68710933_c450cd5c",
+      "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     },
     {
       "key": {
@@ -88,6 +130,54 @@
     },
     {
       "key": {
+        "uuid": "248b1b2d_783a0f2a",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-09-29T21:59:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "46777730_df63a13d",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 52
+      },
+      "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "24a241f0_8b6aeddb",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-09-29T21:59:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8c1a1f5_55a1a3bd",
+      "range": {
+        "startLine": 34,
+        "startChar": 24,
+        "endLine": 34,
+        "endChar": 47
+      },
+      "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1237e093_5eb31324",
         "filename": "containers/controller/config/api/entrypoint.sh",
         "patchSetId": 5
@@ -105,6 +195,24 @@
     },
     {
       "key": {
+        "uuid": "c6771a15_b8efa94a",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-09-29T21:59:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1237e093_5eb31324",
+      "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a31d265_b9a87605",
         "filename": "containers/controller/config/api/entrypoint.sh",
         "patchSetId": 5
@@ -119,6 +227,24 @@
       "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a676c54a_ee5064a8",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-09-29T21:59:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a31d265_b9a87605",
+      "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     },
     {
       "key": {
@@ -153,6 +279,24 @@
       "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b420a8d4_f9dd3d01",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-09-29T21:59:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "acdfa01f_9480a1c7",
+      "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     }
   ]
 }
