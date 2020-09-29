@@ -46,6 +46,30 @@
       "revId": "cadc1a5a8137b8ed41259392d06deeb0a1286176",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da1e6a29_9e4e77d6",
+        "filename": "containers/vrouter/agent/Dockerfile",
+        "patchSetId": 6
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 980
+      },
+      "writtenOn": "2020-09-29T07:05:49Z",
+      "side": 1,
+      "message": "Should I move /vhost-dhcp.sh inside the directory also?",
+      "parentUuid": "2e719a44_ced2f68f",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 71
+      },
+      "revId": "cadc1a5a8137b8ed41259392d06deeb0a1286176",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
     }
   ]
 }
