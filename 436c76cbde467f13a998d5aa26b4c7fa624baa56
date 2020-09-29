@@ -16,6 +16,24 @@
       "revId": "436c76cbde467f13a998d5aa26b4c7fa624baa56",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f3642c6_b3a60d7d",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 4
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-09-29T16:02:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "df765a46_efc9154d",
+      "revId": "436c76cbde467f13a998d5aa26b4c7fa624baa56",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     }
   ]
 }
