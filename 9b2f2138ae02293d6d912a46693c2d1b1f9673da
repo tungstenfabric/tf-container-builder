@@ -65,6 +65,29 @@
     },
     {
       "key": {
+        "uuid": "46777730_df63a13d",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-09-29T19:29:37Z",
+      "side": 1,
+      "message": "for ((index\u003d0; index\u003c$CONFIG_API_WORKER_COUNT; ++index)); do echo $i ; done",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 52
+      },
+      "revId": "9b2f2138ae02293d6d912a46693c2d1b1f9673da",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1237e093_5eb31324",
         "filename": "containers/controller/config/api/entrypoint.sh",
         "patchSetId": 5
