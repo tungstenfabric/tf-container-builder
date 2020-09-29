@@ -120,6 +120,8 @@ EOM
         fi
     done <$PARAMETERS_FILE
     echo "$result_params" > $PARAMETERS_FILE
+
+    cleanup_lbaas_netns_config
 }
 
 function create_agent_config() {
@@ -371,8 +373,6 @@ $collector_stats_config
 
 $hugepages_option
 EOM
-
-    cleanup_lbaas_netns_config
 
     add_ini_params_from_env VROUTER_AGENT /etc/contrail/contrail-vrouter-agent.conf
 
