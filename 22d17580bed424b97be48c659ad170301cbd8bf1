@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2bf80b9f_31983ade",
+        "filename": "containers/controller/config/api/Dockerfile",
+        "patchSetId": 6
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 56
+      },
+      "writtenOn": "2020-09-30T00:46:53Z",
+      "side": 1,
+      "message": "openssl-devel should be added as dependency in \n\nhttps://github.com/tungstenfabric/tf-packages/blob/master/rpm/contrail/contrail.spec#L661",
+      "revId": "22d17580bed424b97be48c659ad170301cbd8bf1",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4402498a_363b9b00",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 6
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 56
+      },
+      "writtenOn": "2020-09-30T00:46:53Z",
+      "side": 1,
+      "message": "If this is to configure maximum allowed greenlets in a worker, then we need to set it to 1024 by default.\n\nPlease refer pool_size used in GeventPoolServer\nhttps://github.com/tungstenfabric/tf-controller/blob/master/src/config/api-server/vnc_cfg_api_server/vnc_bottle.py#L29\n\nWhich is configured by user using max_requests argument, https://github.com/tungstenfabric/tf-controller/blob/9b9c0ffebdde9c9cb93d252d421f483ee1e7011b/src/config/api-server/vnc_cfg_api_server/api_server.py#L5250\n\nDefaults to https://github.com/tungstenfabric/tf-controller/blob/master/src/config/api-server/vnc_cfg_api_server/utils.py#L86",
+      "revId": "22d17580bed424b97be48c659ad170301cbd8bf1",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
