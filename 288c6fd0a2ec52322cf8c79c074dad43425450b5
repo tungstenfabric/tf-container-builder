@@ -22,6 +22,30 @@
       "revId": "288c6fd0a2ec52322cf8c79c074dad43425450b5",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bdeb91d5_5ca1891c",
+        "filename": "containers/vrouter/agent/actions.sh",
+        "patchSetId": 6
+      },
+      "lineNbr": 556,
+      "author": {
+        "id": 872
+      },
+      "writtenOn": "2020-09-30T11:31:45Z",
+      "side": 1,
+      "message": "Replied in the skype",
+      "parentUuid": "13584391_aa589f0b",
+      "range": {
+        "startLine": 554,
+        "startChar": 1,
+        "endLine": 556,
+        "endChar": 6
+      },
+      "revId": "288c6fd0a2ec52322cf8c79c074dad43425450b5",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     }
   ]
 }
