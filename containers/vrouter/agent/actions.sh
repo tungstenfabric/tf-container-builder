@@ -542,7 +542,7 @@ function set_traps() {
 }
 
 function get_parameters() {
-    if ! cat /parameters_state ; then
+    if [[ ! -f /parameters_state ]]; then
         exit 1
     fi
     cat /parameters.sh
