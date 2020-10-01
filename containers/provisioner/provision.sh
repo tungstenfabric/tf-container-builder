@@ -188,6 +188,9 @@ vrouter)
   if is_tsn ; then
     params="$params --router_type tor-service-node --disable_vhost_vmi"
   fi
+  if is_enabled ${SRIOV} ; then
+      params="$params --sriov_physnets ${SRIOV_PHYS_NET}=${SRIOV_PHYSICAL_INTERFACE}"
+  fi
   if [[ -n ${SUBCLUSTER} ]]; then
     params="$params --sub_cluster_name ${SUBCLUSTER}"
   fi
