@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "125d98b6_f079d4df",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 8
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-01T18:45:21Z",
+      "side": 1,
+      "message": "it\u0027s a conflicted port with agent introspect - https://github.com/tungstenfabric/tf-controller/blob/master/src/sandesh/common/vns.sandesh#L75",
+      "range": {
+        "startLine": 36,
+        "startChar": 11,
+        "endLine": 36,
+        "endChar": 15
+      },
+      "revId": "9e178a2e4f76fa5669144ac9db985254c3a4e617",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ee74b8c6_1537fbe2",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 8
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-01T18:45:21Z",
+      "side": 1,
+      "message": "((index\u003d0; index\u003c${CONFIG_API_WORKER_COUNT}; ++index))\n-\u003e\n((index\u003d0; index\u003cCONFIG_API_WORKER_COUNT; ++index))\n\nit\u0027s not need to use ${} inside (( ))",
+      "range": {
+        "startLine": 37,
+        "startChar": 4,
+        "endLine": 37,
+        "endChar": 58
+      },
+      "revId": "9e178a2e4f76fa5669144ac9db985254c3a4e617",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1ca50e3e_32b4b03e",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 8
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-01T18:45:21Z",
+      "side": 1,
+      "message": "please use\n[[ \"$index\" \u003d\u003d 0 ]]",
+      "range": {
+        "startLine": 38,
+        "startChar": 5,
+        "endLine": 38,
+        "endChar": 22
+      },
+      "revId": "9e178a2e4f76fa5669144ac9db985254c3a4e617",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cbeffc07_8fb9e8e2",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 8
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-01T18:45:21Z",
+      "side": 1,
+      "message": "please use relevant names for local vars like \u0027http_server_port\u0027",
+      "range": {
+        "startLine": 39,
+        "startChar": 4,
+        "endLine": 39,
+        "endChar": 24
+      },
+      "revId": "9e178a2e4f76fa5669144ac9db985254c3a4e617",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a983818b_6874eef2",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 8
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-01T18:45:21Z",
+      "side": 1,
+      "message": "please use same approach - either define multiline variable outside of cat\u003c\u003cEOM or just add more lines conditionally with echo after cat\u003c\u003cEOM",
+      "revId": "9e178a2e4f76fa5669144ac9db985254c3a4e617",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "45e238b3_48586ae8",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 8
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-01T18:45:21Z",
+      "side": 1,
+      "message": "i suppose here should be $CONTRAIL_USER or ($CONTRAIL_UID and $CONTRAIL_GID). these variables are define in base Dockerfile",
+      "range": {
+        "startLine": 102,
+        "startChar": 0,
+        "endLine": 103,
+        "endChar": 14
+      },
+      "revId": "9e178a2e4f76fa5669144ac9db985254c3a4e617",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
