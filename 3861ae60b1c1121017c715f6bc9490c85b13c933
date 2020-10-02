@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "75ba6218_852e6ade",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 11
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 56
+      },
+      "writtenOn": "2020-10-02T16:15:54Z",
+      "side": 1,
+      "message": "Hi Andrey, the local port 8095 is used for debugging the api-server in a auth enabled setup. This port(8095) is bound to localhost only. \n\nSo in production environment clients are supposed to use only 8082.\n8095 is used only by provisioner during bringup - so no need to loadbalance\nand developer during debugging - need to be able to access each worker independently.",
+      "parentUuid": "8e9122d8_9fa1899f",
+      "revId": "3861ae60b1c1121017c715f6bc9490c85b13c933",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "56b1cc1d_cee1a8d4",
         "filename": "containers/controller/config/api/entrypoint.sh",
         "patchSetId": 11
