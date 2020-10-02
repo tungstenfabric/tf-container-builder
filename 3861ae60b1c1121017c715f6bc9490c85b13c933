@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8e9122d8_9fa1899f",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 11
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-02T14:05:16Z",
+      "side": 1,
+      "message": "still has a question - maybe it\u0027s possible to ask uwsgi to serve two ports? 8082 and 8095.\nit looks strange that one port is \u0027balanced\u0027 and another is not. As I know - there are cases present where clients use port 8095 instead of 8082.",
+      "revId": "3861ae60b1c1121017c715f6bc9490c85b13c933",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "56b1cc1d_cee1a8d4",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 11
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-02T14:05:16Z",
+      "side": 1,
+      "message": "please check that this indent (for socket param) doesn\u0027t break uwsgi.\n\nalso it\u0027s possible to use printf from bash. it works with \\n",
+      "revId": "3861ae60b1c1121017c715f6bc9490c85b13c933",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
