@@ -16,6 +16,41 @@
       "revId": "75b5dfed3814b1eaf5441d186e6f6c01b7598f2c",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df4e0cb3_65ef3f91",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 10
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-02T05:40:55Z",
+      "side": 1,
+      "message": "maybe it\u0027s possible to ask uwsgi to serve two ports? 8082 and 8095.\nit looks strange that one port is \u0027balanced\u0027 and another is not. As I know - there are cases present where clients use port 8095 instead of 8082.",
+      "parentUuid": "a25b07f1_d198b5aa",
+      "revId": "75b5dfed3814b1eaf5441d186e6f6c01b7598f2c",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2bca752d_10615692",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 10
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-02T05:40:55Z",
+      "side": 1,
+      "message": "please check that this indent (for socket param) doesn\u0027t break uwsgi.",
+      "revId": "75b5dfed3814b1eaf5441d186e6f6c01b7598f2c",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
     }
   ]
 }
