@@ -651,15 +651,16 @@ function init_vhost0() {
 
 function init_sriov() {
     # check whether sriov enabled
-    if [[ -z "$SRIOV_PHYSICAL_INTERFACE" && -z "$SRIOV_VF" ]] ; then
+    if [[ -z "$SRIOV_PHYSICAL_INTERFACE" && -z "$SRIOV_VF" && -z "$SRIOV_PHYSICAL_NETWORK" ]] ; then
         echo "INFO: sriov parameters are not provided"
         return
     fi
 
     local sriov_physical_interfaces=( $(echo $SRIOV_PHYSICAL_INTERFACE | tr ',' ' ') )
+    local sriov_physical_networks=( $(echo $SRIOV_PHYSICAL_NETWORK | tr ',' ' ') )
     local sriov_vfs=( $(echo $SRIOV_VF | tr ',' ' ') )
 
-    if [[ -z "$SRIOV_PHYSICAL_INTERFACE" || -z "$SRIOV_VF"
+    if [[ -z "$SRIOV_PHYSICAL_INTERFACE" || -z "$SRIOV_VF" || -z "$SRIOV_PHYSICAL_NETWORK"
         || ${#sriov_physical_interfaces[@]} != ${#sriov_vfs[@]} ]] ; then
         echo "ERROR: sriov parameters are not correct"
         exit -1
