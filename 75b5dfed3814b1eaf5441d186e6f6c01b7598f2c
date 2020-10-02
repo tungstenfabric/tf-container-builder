@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a25b07f1_d198b5aa",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 10
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 56
+      },
+      "writtenOn": "2020-10-02T00:55:27Z",
+      "side": 1,
+      "message": "Give an option for user to choose port. For example \n\nif CONFIG_API_INTROSPECT_PORTS, CONFIG_API_ADMIN_PORTS is specified by user, get the count of ports and use that as CONFIG_API_WORKER_COUNT and use the user specified ports instead of deriving it in line 42/43.\n\nWe can raise a separate ticket for this and work on it if it take more time to fix.",
+      "revId": "75b5dfed3814b1eaf5441d186e6f6c01b7598f2c",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
