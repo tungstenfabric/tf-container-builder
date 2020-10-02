@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "9762171a_439994bf",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 10
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-10-02T17:28:23Z",
+      "side": 1,
+      "message": "I will raise the seperate ticket for this change(Giving option for user to choose port).",
+      "parentUuid": "df4e0cb3_65ef3f91",
+      "revId": "75b5dfed3814b1eaf5441d186e6f6c01b7598f2c",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2bca752d_10615692",
         "filename": "containers/controller/config/api/entrypoint.sh",
         "patchSetId": 10
