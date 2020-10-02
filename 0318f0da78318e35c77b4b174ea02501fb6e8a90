@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "be03738a_0ec928cc",
+        "filename": "containers/provisioner/provision.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-02T05:35:14Z",
+      "side": 1,
+      "message": "there is no such variable SRIOV",
+      "range": {
+        "startLine": 191,
+        "startChar": 18,
+        "endLine": 191,
+        "endChar": 23
+      },
+      "revId": "0318f0da78318e35c77b4b174ea02501fb6e8a90",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2894ba79_13f93eab",
+        "filename": "containers/provisioner/provision.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-02T05:35:14Z",
+      "side": 1,
+      "message": "there is no variable SRIOV_PHYS_NET\n\nvariable SRIOV_PHYSICAL_INTERFACE contains comma-separated list of interfaces.",
+      "range": {
+        "startLine": 192,
+        "startChar": 41,
+        "endLine": 192,
+        "endChar": 55
+      },
+      "revId": "0318f0da78318e35c77b4b174ea02501fb6e8a90",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
