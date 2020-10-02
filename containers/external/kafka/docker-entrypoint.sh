@@ -99,8 +99,8 @@ if [[ $zk_list_size -eq 2 ]] ; then
   (grep -q '^default.replication.factor' ${CONFIG} && sed -i 's|^default.replication.factor=.*$|default.replication.factor=2|' ${CONFIG}) || echo "default.replication.factor=2" >> ${CONFIG}
 fi
 if [[ $zk_list_size -gt 2 ]] ; then
-  (grep -q '^default.replication.factor' ${CONFIG} && sed -i 's|^default.replication.factor=.*$|default.replication.factor=3|' ${CONFIG}) || echo "default.replication.factor=3" >> ${CONFIG}
-  (grep -q '^min.insync.replicas' ${CONFIG} && sed -i 's|^min.insync.replicas=.*$|min.insync.replicas=2|' ${CONFIG}) || echo "min.insync.replicas=2" >> ${CONFIG}
+  (grep -q '^default.replication.factor' ${CONFIG} && sed -i 's|^default.replication.factor=.*$|default.replication.factor=3|' ${CONFIG}) || echo -e "\ndefault.replication.factor=3" >> ${CONFIG}
+  (grep -q '^min.insync.replicas' ${CONFIG} && sed -i 's|^min.insync.replicas=.*$|min.insync.replicas=2|' ${CONFIG}) || echo -e "\nmin.insync.replicas=2" >> ${CONFIG}
 fi
 echo "log.cleanup.policy=${KAFKA_log_cleanup_policy}" >> ${CONFIG}
 echo "log.cleaner.threads=${KAFKA_log_cleaner_threads}" >> ${CONFIG}
