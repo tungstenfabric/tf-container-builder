@@ -29,6 +29,7 @@
 | DPDK_UIO_DRIVER                    | uio_pci_generic                                     |
 | PHYSICAL_INTERFACE                 |                                                     |
 | SRIOV_PHYSICAL_INTERFACE           |                                                     |
+| SRIOV_PHYSICAL_NETWORK             |                                                     |
 | SRIOV_VF                           |                                                     |
 | **Introspect**                     |                                                     |
 | INTROSPECT_LISTEN_ALL              | True                                                |

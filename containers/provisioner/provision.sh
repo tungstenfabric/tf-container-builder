@@ -195,6 +195,20 @@ vrouter)
     params="$params --enable_vhost_vmi_policy"
   fi
   params="$params --ip_fabric_subnet $ip_fabric_subnet"
+  if [[ -n "$SRIOV_PHYSICAL_INTERFACE" && -n "$SRIOV_PHYSICAL_NETWORK" ]] ; then
+    IFS=', ' read -r -a array_sriov_physical_interfaces <<< "$SRIOV_PHYSICAL_INTERFACE"
+    IFS=', ' read -r -a array_sriov_physical_networks <<< "$SRIOV_PHYSICAL_NETWORK"
+    if [[ ${#array_sriov_physical_interfaces[@]} == ${#array_sriov_physical_networks[@]} ]] ; then
+      sriov_physnets=''
+      for index in ${!array_sriov_physical_networks[@]} ; do
+        sriov_physnets+=" ${array_sriov_physical_networks[index]}=${array_sriov_physical_interfaces[index]}"
+      done
+      params+="--sriov-physnets $sriov_physnets"
+    else
+      echo "ERROR: sriov_physical_networks and sriov_physical_interfaces have a different number of elements"
+      exit 1
+    fi
+  fi
   host_name=$(resolve_hostname_by_ip $host_ip)
   provision_node provision_vrouter.py $host_ip ${VROUTER_HOSTNAME:-${host_name:-${default_hostname}}} $params
   ;;
