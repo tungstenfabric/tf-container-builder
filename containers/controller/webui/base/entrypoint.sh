@@ -8,7 +8,7 @@ host_ip=$(get_listen_ip_for_node WEBUI)
 
 function get_server_json_list(){
   server_typ=$1_NODES
-  srv_list=$(echo ${!server_typ} | sed 's/,/'\',\''/g')
+  srv_list=$(echo ${!server_typ} | sed 's/^,*//' | sed 's/,*$//' | sed 's/,/'\',\''/g')
   echo "['"$srv_list"']"
 }
 
