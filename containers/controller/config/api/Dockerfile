@@ -15,6 +15,7 @@ RUN yum install -y python-neutron-lib && \
 COPY *.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/start-config-api.sh"]
 
 ENV SERVICE_NAME=api
 LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
