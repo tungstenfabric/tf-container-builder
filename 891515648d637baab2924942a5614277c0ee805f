@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "40acf1b0_4236c10d",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 6
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-10-06T00:33:12Z",
+      "side": 1,
+      "message": "I think we need these additional packages: \nuwsgi-plugin-common, \nuwsgi-plugin-python2 and \nuwsgi-plugin-python2-gevent for gevent and module to work.\n\nI tested with pip version of wsgi. So, I didn\u0027t face the issue earlier as it had everything.\nI will raise the review for these packages.",
+      "revId": "891515648d637baab2924942a5614277c0ee805f",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
