@@ -5,13 +5,13 @@ ARG VENDOR_DOMAIN
 ARG CONTAINER_NAME
 
 LABEL name=$CONTAINER_NAME \
-      summary="Contrail SNMP Collector" \
-      description="Contrail SNMP Collector collects data from switches(Spine/Leaf)."
+      summary="TungstenFabric SNMP Collector" \
+      description="TungstenFabric SNMP Collector collects data from switches(Spine/Leaf)."
 
 COPY entrypoint.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/usr/bin/contrail-snmp-collector", "--device-config-file", "/etc/contrail/device.ini"]
+CMD ["/usr/bin/tf-snmp-collector", "-c", "/etc/contrail/tf-snmp-collector.conf", "--device-config-file", "/etc/contrail/device.ini"]
 
 ENV SERVICE_NAME=snmp-collector
 ENV NODE_TYPE=analytics-snmp
