@@ -18,8 +18,19 @@ function trap_vrouter_agent_term() {
     term_process $(cat /var/run/vrouter-agent.pid)
 }
 
-function trap_vrouter_agent_hub() {
-    send_sighup_child_process $(cat /var/run/vrouter-agent.pid)
+function trap_vrouter_agent_hup() {
+    # send_sighup_child_process $(cat /var/run/vrouter-agent.pid)
+    local res=0
+    export TF_FROM_HUP=true
+    echo "INFO: Just before termination"
+    if ! term_process $(cat /var/run/vrouter-agent.pid) ; then
+        echo "ERROR: Failed to stop agent process"
+        res=1
+    fi
+
+    echo "INFO: Just after termination $res"
+
+    exit $res
 }
 
 #Agents constants
