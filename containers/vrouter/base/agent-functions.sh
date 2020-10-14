@@ -18,8 +18,12 @@ function trap_vrouter_agent_term() {
     term_process $(cat /var/run/vrouter-agent.pid)
 }
 
-function trap_vrouter_agent_hub() {
-    send_sighup_child_process $(cat /var/run/vrouter-agent.pid)
+function trap_vrouter_agent_hup() {
+    # TODO when vrouter agent binary will support SIGHUP
+    # We can just run " kill -HUP $(cat /var/run/vrouter-agent.pid) "
+    # But now we have to restart agent process fir reload agent config file
+    term_process $(cat /var/run/vrouter-agent.pid)
+    touch /var/run/restart_agent
 }
 
 #Agents constants
