@@ -426,35 +426,44 @@ function start_agent() {
 
     set_qos
 
-    # spin up vrouter-agent as a child process
-    if [[ $# == "0" ]]; then
-      echo "INFO: Use default vrouter agent to start"
-      /usr/bin/contrail-vrouter-agent &
-    else
-      echo "INFO: Start vrouter-agent using command: $@"
-      $@ &
-    fi
+     while true; do
+        # Remove flag that shows we need to restart agent
+        rm -f /var/run/restart_agent
 
-    local vrouter_agent_process=$!
-    echo $vrouter_agent_process > /var/run/vrouter-agent.pid
-
-    # This is to ensure decrypt interface is
-    # plumbed on vrouter for processing.
-    # it will be interim only till vrouter
-    # agent natively have the support for
-    # decrypt interface in 5.0.1
-    if is_encryption_supported ; then
-        if ! add_vrouter_decrypt_intf $VROUTER_DECRYPT_INTERFACE ; then
-            echo "ERROR: decrypt interface was not configured. exiting..."
-            exit 1
+        # spin up vrouter-agent as a child process
+        if [[ $# == "0" ]]; then
+            echo "INFO: Use default vrouter agent to start"
+            /usr/bin/contrail-vrouter-agent &
+        else
+            echo "INFO: Start vrouter-agent using command: $@"
+            $@ &
         fi
-    else
-        echo "INFO: Kernel version does not support vrouter to vrouter encryption - Not adding $VROUTER_DECRYPT_INTERFACE to vrouter"
-    fi
 
-    echo "INFO: vrouter agent process PID: $vrouter_agent_process"
+        local vrouter_agent_process=$!
+        echo $vrouter_agent_process > /var/run/vrouter-agent.pid
 
-    wait $(cat /var/run/vrouter-agent.pid)
+        # This is to ensure decrypt interface is
+        # plumbed on vrouter for processing.
+        # it will be interim only till vrouter
+        # agent natively have the support for
+        # decrypt interface in 5.0.1
+        if is_encryption_supported ; then
+            if ! add_vrouter_decrypt_intf $VROUTER_DECRYPT_INTERFACE ; then
+                echo "ERROR: decrypt interface was not configured. exiting..."
+                exit 1
+            fi
+        else
+            echo "INFO: Kernel version does not support vrouter to vrouter encryption - Not adding $VROUTER_DECRYPT_INTERFACE to vrouter"
+        fi
+
+        echo "INFO: vrouter agent process PID: $vrouter_agent_process"
+
+        wait $(cat /var/run/vrouter-agent.pid)
+        # Leave the loop if we not need to restart the agent
+        if [[ ! -f /var/run/restart_agent ]]; then
+            break
+        fi
+    done
 }
 
 # Setup kernel module and settins needed for start vhost0 network interface
@@ -539,7 +548,7 @@ function set_traps() {
     trap 'trap_vrouter_agent_term' SIGTERM SIGINT
 
     # Send SIGHUP signal to child process
-    trap 'trap_vrouter_agent_hub' SIGHUP
+    trap 'trap_vrouter_agent_hup' SIGHUP
 }
 
 function get_parameters() {
