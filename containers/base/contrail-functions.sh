@@ -256,3 +256,8 @@ function wait_nic_up() {
   wait_cmd_success "nic_has_ip $nic" || { echo -e "\nERROR: $nic is not up" && return 1; }
   echo -e "\nINFO: $nic is up"
 }
+
+# Send SIGHUP to container process for reload config
+function reload_config() {
+    kill -HUP 1
+}
