@@ -557,3 +557,7 @@ function prepare_agent() {
     wait_vhost0
     prepare_agent_config_vars  $@
 }
+
+function reload_agent_config() {
+    kill -HUP $(cat /var/run/vrouter-agent.pid)
+}
