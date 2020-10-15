@@ -10,6 +10,20 @@ if ! is_enabled ${CONFIG_API_LISTEN_ALL}; then
   host_ip=$(get_listen_ip_for_node CONFIG)
 fi
 
+introspect_port_list=($(echo $CONFIG_API_INTROSPECT_PORT | sed 's/,/ /g'))
+admin_port_list=($(echo $CONFIG_API_ADMIN_PORT | sed 's/,/ /g'))
+len_introspect_port_list=${#introspect_port_list[@]}
+len_admin_port_list=${#admin_port_list[@]}
+
+if (( CONFIG_API_WORKER_COUNT > len_introspect_port_list )) ; then
+  echo "ERROR: Not enough ports provided in CONFIG_API_INTROSPECT_PORT for CONFIG_API_WORKER_COUNT"
+  exit -1
+fi
+if (( CONFIG_API_WORKER_COUNT > len_admin_port_list )) ; then
+  echo "ERROR: Not enough ports provided in CONFIG_API_ADMIN_PORT for CONFIG_API_WORKER_COUNT"
+  exit -1
+fi
+
 cassandra_server_list=$(echo $CONFIGDB_SERVERS | sed 's/,/ /g')
 config_api_certs_config=''
 uwsgi_socket="protocol = http\nsocket = ${host_ip}:$CONFIG_API_PORT"
@@ -37,14 +51,12 @@ fi
 
 mkdir -p /etc/contrail
 
-admin_port=$CONFIG_API_ADMIN_PORT
-http_server_port=$CONFIG_API_INTROSPECT_PORT
 for (( index=0; index < CONFIG_API_WORKER_COUNT; ++index )) ; do
   cat > /etc/contrail/contrail-api-$index.conf << EOM
 [DEFAULTS]
 listen_ip_addr=${host_ip}
 listen_port=$CONFIG_API_PORT
-http_server_port=${http_server_port}
+http_server_port=${introspect_port_list[index]}
 http_server_ip=$(get_introspect_listen_ip_for_node CONFIG)
 log_file=$CONTAINER_LOG_DIR/contrail-api-${index}.log
 log_level=$LOG_LEVEL
@@ -61,7 +73,7 @@ zk_server_ip=$ZOOKEEPER_SERVERS
 
 $config_api_certs_config
 
-admin_port=${admin_port}
+admin_port=${admin_port_list[index]}
 worker_id=${index}
 
 rabbit_server=$RABBITMQ_SERVERS
@@ -78,9 +90,6 @@ $neutron_section
 EOM
 
   add_ini_params_from_env API /etc/contrail/contrail-api-$index.conf
-
-  http_server_port=$(( 10000 + CONFIG_API_INTROSPECT_PORT + index ))
-  admin_port=$(( 20000 + CONFIG_API_ADMIN_PORT + index ))
 
 done
 
