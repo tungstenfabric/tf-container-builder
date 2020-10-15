@@ -10,6 +10,22 @@ if ! is_enabled ${CONFIG_API_LISTEN_ALL}; then
   host_ip=$(get_listen_ip_for_node CONFIG)
 fi
 
+introspect_port_list=($(echo $CONFIG_API_INTROSPECT_PORTS | sed 's/,/ /g'))
+admin_port_list=($(echo $CONFIG_API_ADMIN_PORTS | sed 's/,/ /g'))
+len_introspect_port_list=${#introspect_port_list[@]}
+len_admin_port_list=${#admin_port_list[@]}
+
+if (( CONFIG_API_WORKER_COUNT > 3 )) ; then
+  if (( CONFIG_API_WORKER_COUNT != len_introspect_port_list )) ; then
+    echo "Incorrect arguments for introspect ports" 1>&2
+    exit 1
+  fi
+  if (( CONFIG_API_WORKER_COUNT != len_admin_port_list )) ; then
+    echo "Incorrect arguments for admin ports" 1>&2
+    exit 1
+  fi
+fi
+
 cassandra_server_list=$(echo $CONFIGDB_SERVERS | sed 's/,/ /g')
 config_api_certs_config=''
 uwsgi_socket="protocol = http\nsocket = ${host_ip}:$CONFIG_API_PORT"
@@ -79,8 +95,8 @@ EOM
 
   add_ini_params_from_env API /etc/contrail/contrail-api-$index.conf
 
-  http_server_port=$(( 10000 + CONFIG_API_INTROSPECT_PORT + index ))
-  admin_port=$(( 20000 + CONFIG_API_ADMIN_PORT + index ))
+  http_server_port=${introspect_port_list[index+1]}
+  admin_port=${admin_port_list[index+1]}
 
 done
 

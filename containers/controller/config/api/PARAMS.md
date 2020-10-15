@@ -30,6 +30,8 @@
 | CONFIG_NODES                         | $CONTROLLER_NODES                              |
 | CONFIG_API_WORKER_COUNT              | 1                                              |
 | CONFIG_API_MAX_REQUESTS              | 1024                                           |
+| CONFIG_API_INTROSPECT_PORTS          | 8084,18084,18085                               |
+| CONFIG_API_ADMIN_PORTS               | 8095,18095,18096                               |
 | *CONFIGDB_NODES*                     | $CONFIG_NODES                                  |
 | *CONFIGDB_PORT*                      | 9161                                           |
 | **Controller**                       |                                                |
