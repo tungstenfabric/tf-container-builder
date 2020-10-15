@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b5fb19e9_1dd0fb20",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-10-15T17:38:24Z",
+      "side": 1,
+      "message": "Need to properly throw error in case of incorrect input.",
+      "revId": "c82df3f0e0dffa0f1ef1c9eddbb9c1b23f35845a",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
