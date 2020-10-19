@@ -384,6 +384,24 @@ def get_status_from_container(container):
     return 'inactive'
 
 
+def get_svc_status(svc_name, svc_uve_status, svc_uve_description, svc_status):
+    if svc_uve_status is not None:
+        if svc_uve_status == 'Non-Functional':
+            svc_status = 'initializing'
+        elif svc_uve_status == 'connection-error':
+            if svc_name in vns_constants.BackupImplementedServices:
+                svc_status = 'backup'
+            else:
+                svc_status = 'initializing'
+        elif svc_uve_status == 'connection-timeout':
+            svc_status = 'timeout'
+    else:
+        svc_status = 'initializing'
+    if svc_uve_description is not None and svc_uve_description is not '':
+        svc_status = svc_status + ' (' + svc_uve_description + ')'
+    return svc_status
+
+
 def get_svc_uve_info(svc_name, container, port_env_key, options):
     svc_status = get_status_from_container(container)
     if svc_status != 'active':
@@ -408,22 +426,41 @@ def get_svc_uve_info(svc_name, container, port_env_key, options):
     except (requests.ConnectionError, IOError) as e:
         print_debug('Socket Connection error : %s' % (str(e)))
         svc_uve_status = "connection-error"
+    return get_svc_status(svc_name, svc_uve_status, svc_uve_description, svc_status)
 
-    if svc_uve_status is not None:
-        if svc_uve_status == 'Non-Functional':
-            svc_status = 'initializing'
-        elif svc_uve_status == 'connection-error':
-            if svc_name in vns_constants.BackupImplementedServices:
-                svc_status = 'backup'
-            else:
-                svc_status = 'initializing'
-        elif svc_uve_status == 'connection-timeout':
-            svc_status = 'timeout'
-    else:
-        svc_status = 'initializing'
-    if svc_uve_description is not None and svc_uve_description != '':
-        svc_status = svc_status + ' (' + svc_uve_description + ')'
-    return svc_status
+
+# predefined name as POD_SERVICE. shouldn't be changed.
+def config_api(container, options):
+    svc_name = "contrail-api"
+    svc_status = get_status_from_container(container)
+    if svc_status != 'active':
+        return svc_status
+    # Extract UVE state only for running processes
+    svc_uve_description = None
+    if (svc_name not in vns_constants.NodeUVEImplementedServices and
+            svc_name.rsplit('-', 1)[0] not in vns_constants.NodeUVEImplementedServices):
+        return svc_status
+
+    svc_uve_status = None
+    svc_uve_description = None
+    svc_status_list = []
+    try:
+        http_server_port = get_http_server_port(svc_name, container['Env'], None)
+        svc_config_introspect = IntrospectUtil(http_server_port, options)
+        config_api_uve = svc_config_introspect.get_uve('ConfigApiWorker')
+        for uve in config_api_uve:
+            introspect_port = uve.get('introspect_port')
+            svc_uve_status, svc_uve_description = \
+                get_svc_uve_status(svc_name, int(introspect_port), options)
+            svc_status = get_svc_status(svc_name, svc_uve_status, svc_uve_description, svc_status)
+            svc_status_list.append(svc_status)
+        return svc_status_list
+    except (requests.ConnectionError, IOError) as e:
+        print_debug('Socket Connection error : %s' % (str(e)))
+        return "initializing"
+    except (requests.Timeout, socket.timeout) as te:
+        print_debug('Timeout error : %s' % (str(te)))
+        return "timeout"
 
 
 # predefined name as POD_SERVICE. shouldn't be changed.
