@@ -704,6 +704,12 @@ function remove_vhost0() {
         echo "INFO: removing vhost0 is skipped for dpdk"
         return
     fi
+
+    if [ "$CLOUD_ORCHESTRATOR" == "kubernetes" ] && [ -n "$VROUTER_GATEWAY" ]; then
+        echo "INFO: delete k8s pod cidr route"
+        del_k8s_pod_cidr_route
+    fi
+
     echo "INFO: removing vhost0"
     declare phys_int phys_int_mac restore_ip_cmd routes
     IFS=' ' read -r phys_int phys_int_mac <<< $(get_physical_nic_and_mac)
@@ -867,6 +873,11 @@ function check_and_launch_dhcp_clients() {
 function add_k8s_pod_cidr_route() {
     local pod_cidr=${KUBERNETES_POD_SUBNETS:-"10.32.0.0/12"}
     ip route add $pod_cidr via $VROUTER_GATEWAY dev vhost0
+}
+
+function del_k8s_pod_cidr_route() {
+    local pod_cidr=${KUBERNETES_POD_SUBNETS:-"10.32.0.0/12"}
+    ip route del $pod_cidr via $VROUTER_GATEWAY dev vhost0
 }
 
 function mask2cidr() {

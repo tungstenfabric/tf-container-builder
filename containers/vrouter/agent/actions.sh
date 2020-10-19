@@ -19,7 +19,7 @@ function prepare_agent_config_vars() {
         PCI_ADDRESS=`cat $binding_data_dir/${PHYS_INT}_pci`
     fi
 
-    if [ "$CLOUD_ORCHESTRATOR" == "kubernetes" ] && [ ! -z $VROUTER_GATEWAY ]; then
+    if [ "$CLOUD_ORCHESTRATOR" == "kubernetes" ] && [ -n "$VROUTER_GATEWAY" ]; then
         # dont need k8s_pod_cidr_route if default gateway is vhost0
         add_k8s_pod_cidr_route
     fi
