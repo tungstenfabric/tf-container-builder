@@ -37,14 +37,21 @@ fi
 
 mkdir -p /etc/contrail
 
-admin_port=$CONFIG_API_ADMIN_PORT
-http_server_port=$CONFIG_API_INTROSPECT_PORT
+introspect_port_list=("${CONFIG_API_INTROSPECT_PORT}")
+admin_port_list=("${CONFIG_API_ADMIN_PORT}")
+for (( index=0; index < CONFIG_API_WORKER_COUNT-1; ++index )) ; do
+  http_server_port=$(( 10000 + CONFIG_API_INTROSPECT_PORT + index ))
+  introspect_port_list+=("${http_server_port}")
+  admin_port=$(( 20000 + CONFIG_API_ADMIN_PORT + index ))
+  admin_port_list+=("${admin_port}")
+done
+
 for (( index=0; index < CONFIG_API_WORKER_COUNT; ++index )) ; do
   cat > /etc/contrail/contrail-api-$index.conf << EOM
 [DEFAULTS]
 listen_ip_addr=${host_ip}
 listen_port=$CONFIG_API_PORT
-http_server_port=${http_server_port}
+http_server_port=${introspect_port_list[index]}
 http_server_ip=$(get_introspect_listen_ip_for_node CONFIG)
 log_file=$CONTAINER_LOG_DIR/contrail-api-${index}.log
 log_level=$LOG_LEVEL
@@ -61,8 +68,10 @@ zk_server_ip=$ZOOKEEPER_SERVERS
 
 $config_api_certs_config
 
-admin_port=${admin_port}
+admin_port=${admin_port_list[index]}
 worker_id=${index}
+worker_introspect_port=${introspect_port_list[*]}
+worker_admin_port=${admin_port_list[*]}
 
 rabbit_server=$RABBITMQ_SERVERS
 $rabbit_config
@@ -78,9 +87,6 @@ $neutron_section
 EOM
 
   add_ini_params_from_env API /etc/contrail/contrail-api-$index.conf
-
-  http_server_port=$(( 10000 + CONFIG_API_INTROSPECT_PORT + index ))
-  admin_port=$(( 20000 + CONFIG_API_ADMIN_PORT + index ))
 
 done
 
