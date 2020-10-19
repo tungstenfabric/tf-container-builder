@@ -384,6 +384,24 @@ def get_status_from_container(container):
     return 'inactive'
 
 
+def get_svc_status(svc_name, svc_uve_status, svc_uve_description, svc_status):
+    if svc_uve_status is not None:
+        if svc_uve_status == 'Non-Functional':
+            svc_status = 'initializing'
+        elif svc_uve_status == 'connection-error':
+            if svc_name in vns_constants.BackupImplementedServices:
+                svc_status = 'backup'
+            else:
+                svc_status = 'initializing'
+        elif svc_uve_status == 'connection-timeout':
+            svc_status = 'timeout'
+    else:
+        svc_status = 'initializing'
+    if svc_uve_description is not None and svc_uve_description is not '':
+        svc_status = svc_status + ' (' + svc_uve_description + ')'
+    return svc_status
+
+
 def get_svc_uve_info(svc_name, container, port_env_key, options):
     svc_status = get_status_from_container(container)
     if svc_status != 'active':
@@ -408,22 +426,53 @@ def get_svc_uve_info(svc_name, container, port_env_key, options):
     except (requests.ConnectionError, IOError) as e:
         print_debug('Socket Connection error : %s' % (str(e)))
         svc_uve_status = "connection-error"
+    return get_svc_status(svc_name, svc_uve_status, svc_uve_description, svc_status)
 
-    if svc_uve_status is not None:
-        if svc_uve_status == 'Non-Functional':
-            svc_status = 'initializing'
-        elif svc_uve_status == 'connection-error':
-            if svc_name in vns_constants.BackupImplementedServices:
-                svc_status = 'backup'
-            else:
-                svc_status = 'initializing'
-        elif svc_uve_status == 'connection-timeout':
-            svc_status = 'timeout'
-    else:
-        svc_status = 'initializing'
-    if svc_uve_description is not None and svc_uve_description != '':
-        svc_status = svc_status + ' (' + svc_uve_description + ')'
-    return svc_status
+
+# predefined name as POD_SERVICE. shouldn't be changed.
+def config_api(container, options):
+    svc_name = CONTRAIL_SERVICES_TO_SANDESH_SVC['config']['api']
+
+    dict_container_env = dict(item.split("=") for item in container['Env'])
+    worker_count = int(dict_container_env.get('CONFIG_API_WORKER_COUNT', 1))
+    svc_status_list = [None] * worker_count
+
+    svc_status = get_status_from_container(container)
+    if svc_status != 'active':
+        svc_status_list = [svc_status for index in range(worker_count)]
+        return svc_status_list
+
+    # Extract UVE state only for running processes
+    svc_uve_description = None
+    if (svc_name not in vns_constants.NodeUVEImplementedServices and
+            svc_name.rsplit('-', 1)[0] not in vns_constants.NodeUVEImplementedServices):
+        svc_status_list = [svc_status for index in range(worker_count)]
+        return svc_status_list
+
+    svc_uve_status = None
+    svc_uve_description = None
+
+    http_server_port = get_http_server_port(svc_name, container['Env'], None)
+    if http_server_port:
+        svc_config_introspect = IntrospectUtil(http_server_port, options)
+        config_api_uve = svc_config_introspect.get_uve('ConfigApiWorker')
+        worker_id = None
+        for uve in config_api_uve:
+            try:
+                introspect_port = int(uve.get('introspect_port'))
+                worker_id = int(uve.get('worker_id'))
+                svc_uve_status, svc_uve_description = \
+                    get_svc_uve_status(svc_name, introspect_port, options)
+            except (requests.ConnectionError, IOError) as e:
+                print_debug('Socket Connection error : %s' % (str(e)))
+                svc_uve_status = "initializing"
+            except (requests.Timeout, socket.timeout) as te:
+                print_debug('Timeout error : %s' % (str(te)))
+                svc_uve_status = "timeout"
+
+            svc_status = get_svc_status(svc_name, svc_uve_status, svc_uve_description, svc_status)
+            svc_status_list[worker_id] = svc_status
+    return svc_status_list
 
 
 # predefined name as POD_SERVICE. shouldn't be changed.
@@ -484,6 +533,12 @@ def contrail_pod_status(pod_name, pod_services, options):
         if service not in INDEXED_SERVICES:
             container = pod_services.get(service)
             status = contrail_service_status(container, pod_name, service, internal_svc_name, options)
+            if isinstance(status, list):
+                for index in range(len(status)):
+                    service_name = service if len(status) == 1 else "%s-%s" % (service, index)
+                    print_msg("{}: {}".format(service_name, status[index]))
+                    json_output['pods'].setdefault(pod_name, list()).append({service_name: status[index]})
+                continue
             print_msg("{}: {}".format(service, status))
             json_output['pods'].setdefault(pod_name, list()).append({service: status})
         else:
@@ -499,14 +554,14 @@ def contrail_pod_status(pod_name, pod_services, options):
 
 
 def contrail_service_status(container, pod_name, service, internal_svc_name, options):
-    if internal_svc_name:
-        # TODO: pass env key for introspect port if needed
-        return get_svc_uve_info(internal_svc_name, container, None, options)
-
     fn_name = "{}_{}".format(pod_name, service).replace('-', '_')
     fn = globals().get(fn_name)
     if fn:
         return fn(container, options)
+
+    if internal_svc_name:
+        # TODO: pass env key for introspect port if needed
+        return get_svc_uve_info(internal_svc_name, container, None, options)
 
     return get_status_from_container(container)
 
