@@ -26,7 +26,7 @@ fi
 redis_opts="--lua-time-limit 15000"
 redis_opts+=" --dbfilename ''"
 redis_opts+=' --bind 127.0.0.1'
-if ! is_enabled ${REDIS_SSL_ENABLE} ; then
+if ! is_enabled ${REDIS_SSL_ENABLE} && [[ "$REDIS_LISTEN_ADDRESS" != "127.0.0.1" ]] ; then
     [ -n "$REDIS_LISTEN_ADDRESS" ] && redis_opts+=" $REDIS_LISTEN_ADDRESS"
 fi
 [ -n "$REDIS_SERVER_PORT" ] && redis_opts+=" --port $REDIS_SERVER_PORT"
