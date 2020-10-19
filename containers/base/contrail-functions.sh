@@ -48,7 +48,7 @@ function wait_certs_if_ssl_enabled() {
     return
   fi
 
-  is_enabled $SSL_ENABLE && wait_files "$SERVER_KEYFILE" "$SERVER_CERTFILE"
+  is_enabled $SSL_ENABLE && wait_files "$SERVER_CERTFILE" "$SERVER_KEYFILE"
   if [[ "$SERVER_KEYFILE" != "$XMPP_SERVER_KEYFILE" ]] ; then
     is_enabled $XMPP_SSL_ENABLE && wait_files "$XMPP_SERVER_CERTFILE" "$XMPP_SERVER_KEYFILE"
   fi
