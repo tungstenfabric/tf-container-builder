@@ -46,7 +46,9 @@ function get_next_free_bond_name() {
     local next_name
     while (true) ; do
         next_name="bond${i}"
-        [ ! -e "/sys/class/net/${next_name}" ] && break
+        if [ ! -e "/sys/class/net/${next_name}" ] && [ ! -e /etc/sysconfig/network-scripts/ifcfg-${next_name} ] ; then 
+            break
+        fi
         (( i+=1 ))
     done
     echo $next_name
