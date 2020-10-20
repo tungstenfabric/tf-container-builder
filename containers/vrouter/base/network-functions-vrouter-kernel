@@ -23,7 +23,14 @@ function pkt_setup () {
 
 function load_vrouter() {
     lsmod | grep -q vrouter && return 0
-    free -h && sync && echo 2 >/proc/sys/vm/drop_caches && free -h
+    if free -h && sync
+    then
+        local x=$(grep HugePages_Total /proc/meminfo | while read y z; do echo $z; done)
+        if ((0 == ${x:-0}))
+        then
+            echo 2 >/proc/sys/vm/drop_caches
+        fi
+    fi && free -h
     local vrouter_opts=${VROUTER_MODULE_OPTIONS##[\"\']}
     vrouter_opts=${vrouter_opts%%[\"\']}
     load_kernel_module vrouter $vrouter_opts
