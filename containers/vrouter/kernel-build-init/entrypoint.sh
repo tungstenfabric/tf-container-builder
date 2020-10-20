@@ -24,12 +24,15 @@ echo "$content" > $vrouter_dir/dkms.conf
 
 mkdir -p /vrouter/${contrail_version}/build/include/
 mkdir -p /vrouter/${contrail_version}/build/dp-core
-dkms --verbose add -m vrouter -v "${contrail_version}"
+is_installed=$(dkms status -m vrouter -v ${contrail_version})
+if [[ -z "$is_installed" ]] ; then
+  dkms --verbose add -m vrouter -v "${contrail_version}"
+fi
 echo "INFO: run dkms build for current kernel $current_kver"
 if ! dkms --verbose build -m vrouter -v "${contrail_version}" ; then
   cat /var/lib/dkms/vrouter/${contrail_version}/build/make.log
 else
-  dkms --verbose install -m vrouter -v "${contrail_version}"
+  dkms --verbose install -m vrouter -v "${contrail_version}" --force
 fi
 
 echo "INFO: DKMS run autoinstall for other kernel versions"
