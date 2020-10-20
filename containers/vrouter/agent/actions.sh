@@ -107,7 +107,7 @@ EOM
     local XMPP_SERVERS_LIST=${XMPP_SERVERS:-`get_server_list CONTROL ":$XMPP_SERVER_PORT "`}
     local CONTROL_NETWORK_IP=$(get_ip_for_vrouter_from_control)
     local DNS_SERVERS_LIST=${DNS_SERVERS:-`get_server_list DNS ":$DNS_SERVER_PORT "`}
-    local k8s_token_file K8S_TOKEN
+    local k8s_token_file
     if [[ -z "$K8S_TOKEN" ]]; then
         k8s_token_file=${K8S_TOKEN_FILE:-'/var/run/secrets/kubernetes.io/serviceaccount/token'}
         if [[ -f "$k8s_token_file" ]]; then
