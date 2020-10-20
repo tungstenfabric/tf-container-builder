@@ -85,7 +85,6 @@ function prepare_agent_config_vars() {
             echo "INFO: Requested HP1GB  $HUGE_PAGES_1GB more then available $allocated_pages_1GB.. try to allocate"
             echo $HUGE_PAGES_1GB > /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
         fi
-EOM
     elif (( HUGE_PAGES_2MB > 0 )) ; then
         HUGEPAGES_DIR=${HUGE_PAGES_2MB_DIR:-${HUGE_PAGES_DIR}}
         ensure_hugepages ${HUGEPAGES_DIR}
