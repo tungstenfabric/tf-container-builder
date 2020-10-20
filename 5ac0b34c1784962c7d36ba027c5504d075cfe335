@@ -72,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "9b3911a8_6a1ef83e",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 6
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-10-20T20:20:56Z",
+      "side": 1,
+      "message": "lets just reuse CONFIG_API_ADMIN_PORT instead of new variable CONFIG_API_ADMIN_PORTS.\njust starting from 2011 it\u0027s format is v1,v2,v3\n(same for second variable)\nIf someone before set own value for it he definitely use apicount\u003d1 and he would notice nothing.\n(i mean it still support old notation .._PORT\u003d8084 for those who set it before)",
+      "parentUuid": "13835c3c_b50ab673",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 57,
+        "endChar": 44
+      },
+      "revId": "5ac0b34c1784962c7d36ba027c5504d075cfe335",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "358aae8c_f0d62e73",
         "filename": "containers/controller/config/api/entrypoint.sh",
         "patchSetId": 6
