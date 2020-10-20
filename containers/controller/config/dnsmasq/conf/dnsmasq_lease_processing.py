@@ -12,10 +12,24 @@ LOGGING_FORMAT = \
     '%(asctime)s.%(msecs)03d %(name)s [%(levelname)s]:  %(message)s'
 DATE_FORMAT = "%m/%d/%Y %H:%M:%S"
 
-vnc_api = VncApi(username=os.environ['KEYSTONE_AUTH_ADMIN_USER'],
-             password=os.environ['KEYSTONE_AUTH_ADMIN_PASSWORD'],
-             tenant_name=os.environ['KEYSTONE_AUTH_ADMIN_TENANT'],
-             api_server_host=(os.environ['CONTROLLER_NODES']).split(','))
+
+def _initialize_vnc():
+    controller_nodes = os.environ.get('CONTROLLER_NODES', None).split(',')
+    # keystone global env data
+    user = os.environ.get('KEYSTONE_AUTH_ADMIN_USER', None)
+    passwd = os.environ.get('KEYSTONE_AUTH_ADMIN_PASSWORD', None)
+    tenant = os.environ.get('KEYSTONE_AUTH_ADMIN_TENANT', None)
+
+    if user and passwd and tenant:
+        vnc_api = VncApi(username=user,
+                         password=passwd,
+                         tenant_name=tenant,
+                         api_server_host=controller_nodes)
+    else:
+        vnc_api = VncApi()
+
+    return vnc_api
+
 
 def main():
     logging.basicConfig(
@@ -25,10 +39,9 @@ def main():
         datefmt=DATE_FORMAT)
     logger = logging.getLogger("dnsmasq")
     logger.setLevel(logging.INFO)
-
+    vnc_api = _initialize_vnc()
     if sys.argv[1] == 'read':
         # read from DB mac:ip
-        mac_ip = []
         filters = {}
         lease = 0
         filters['physical_router_managed_state'] = "dhcp"
@@ -40,7 +53,8 @@ def main():
                                            'physical_router_dhcp_parameters']
             )
             if device_obj.get_physical_router_dhcp_parameters():
-                lease=device_obj.get_physical_router_dhcp_parameters().lease_expiry_time
+                lease = device_obj.get_physical_router_dhcp_parameters().\
+                        lease_expiry_time
 
             print("DNSMASQ_LEASE=%s %s %s * *" % (
                 lease,
@@ -82,5 +96,7 @@ def main():
             vnc_api.physical_router_delete(fq_name=fq_name)
         except Exception:
             logger.info("Router '%s' doesnot exist" % fq_name[-1])
+
+
 if __name__ == '__main__':
     main()
