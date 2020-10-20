@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9b25826d_a9dfbef5",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 6
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-10-20T19:45:41Z",
+      "side": 1,
+      "message": "maybe a bit simpler check:\nif (( CONFIG_API_WORKER_COUNT \u003e len_introspect_port_list )) ; then\n  echo \"ERROR: Not enough ports provided in CONFIG_API_INTROSPECT_PORTS for CONFIG_API_WORKER_COUNT\"\n  exit -1\nfi\nif (( CONFIG_API_WORKER_COUNT \u003e len_admin_port_list )) ; then\n  echo \"ERROR: Not enough ports provided in CONFIG_API_ADMIN_PORTS for CONFIG_API_WORKER_COUNT\"\n  exit -1\nfi",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 2
+      },
+      "revId": "5ac0b34c1784962c7d36ba027c5504d075cfe335",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67d97e24_39284170",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 6
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-10-20T19:45:41Z",
+      "side": 1,
+      "message": "just remove",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 57,
+        "endChar": 44
+      },
+      "revId": "5ac0b34c1784962c7d36ba027c5504d075cfe335",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "358aae8c_f0d62e73",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 6
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-10-20T19:45:41Z",
+      "side": 1,
+      "message": "${introspect_port_list[index]}",
+      "range": {
+        "startLine": 63,
+        "startChar": 17,
+        "endLine": 63,
+        "endChar": 36
+      },
+      "revId": "5ac0b34c1784962c7d36ba027c5504d075cfe335",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ddafff6b_99d3c31e",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 6
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-10-20T19:45:41Z",
+      "side": 1,
+      "message": "${admin_port_list[index]}",
+      "range": {
+        "startLine": 80,
+        "startChar": 11,
+        "endLine": 80,
+        "endChar": 24
+      },
+      "revId": "5ac0b34c1784962c7d36ba027c5504d075cfe335",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fde52abb_556fbe4b",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 6
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-10-20T19:45:41Z",
+      "side": 1,
+      "message": "just remove",
+      "range": {
+        "startLine": 98,
+        "startChar": 0,
+        "endLine": 99,
+        "endChar": 40
+      },
+      "revId": "5ac0b34c1784962c7d36ba027c5504d075cfe335",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
