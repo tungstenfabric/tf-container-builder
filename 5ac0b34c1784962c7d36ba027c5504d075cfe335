@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "13835c3c_b50ab673",
+        "filename": "containers/controller/config/api/entrypoint.sh",
+        "patchSetId": 6
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-10-20T20:06:03Z",
+      "side": 1,
+      "message": "In case of default setting, CONFIG_API_WORKER_COUNT\u003d1, what if the user wants different introspect port than 8084?\n\nIf we take the value from the default list, won\u0027t it be an issue?",
+      "parentUuid": "67d97e24_39284170",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 57,
+        "endChar": 44
+      },
+      "revId": "5ac0b34c1784962c7d36ba027c5504d075cfe335",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "358aae8c_f0d62e73",
         "filename": "containers/controller/config/api/entrypoint.sh",
         "patchSetId": 6
