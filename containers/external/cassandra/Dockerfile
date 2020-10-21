@@ -23,7 +23,6 @@ COPY *.sh /
 
 RUN set -eux && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
     yum install -y java java-1.8.0-openjdk numactl python3 openssl which && \
-    yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y && \
     yum install jemalloc -y && \
     groupadd -f -g 999 ${CASSANDRA_GROUP} && adduser -u 999 -M -g ${CASSANDRA_GROUP} ${CASSANDRA_USER} && \
     usermod -a -G $CONTRAIL_GID ${CASSANDRA_USER} && \
@@ -37,7 +36,6 @@ RUN set -eux && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
     chown -R ${CASSANDRA_USER}:${CASSANDRA_GROUP} ${CASSANDRA_CONFIG} ${CASSANDRA_LOG} ${CASSANDRA_LIB} && \
     ln -sT ${CASSANDRA_LIB} "${CASSANDRA_HOME}/data" && \
     ln -sT ${CASSANDRA_LOG} "${CASSANDRA_HOME}/logs" && \
-    yum remove epel-release -y && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
 # smoke test
