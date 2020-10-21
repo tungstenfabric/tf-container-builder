@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6aa06658_781073c1",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 425,
+      "author": {
+        "id": 437
+      },
+      "writtenOn": "2020-10-21T10:57:38Z",
+      "side": 1,
+      "message": "Container always use own variable that mightbe redefined via env.. So here it looks it might be like:\n# somewhere where constants defined\nCONFIG_API_INTROSPECT_PORT_DEFAULT\u003d\"8084,18084,...\" # a constant corresponding to default in container\n\nthen here just:\nhttp_server_port \u003d dict_container_env.get(\u0027CONFIG_API_INTROSPECT_PORT\u0027, CONFIG_API_INTROSPECT_PORT_DEFAULT).split(\",\")\n\nI mean no needs to have any if .. else depending on count",
+      "range": {
+        "startLine": 421,
+        "startChar": 0,
+        "endLine": 425,
+        "endChar": 94
+      },
+      "revId": "2057c259be091905fc2fad89b560b4cf404a1bb9",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
