@@ -93,6 +93,30 @@
       "revId": "67d905caa35dfc6e4e344f14648871e6272a178a",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f4eb1666_62f583f5",
+        "filename": "containers/vrouter/agent/vhost0-dhcp/vhost0-nameservers.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-22T13:46:20Z",
+      "side": 1,
+      "message": "please ensure that directory is there",
+      "parentUuid": "03aa1eb7_01389843",
+      "range": {
+        "startLine": 25,
+        "startChar": 6,
+        "endLine": 25,
+        "endChar": 43
+      },
+      "revId": "67d905caa35dfc6e4e344f14648871e6272a178a",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     }
   ]
 }
