@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "0644a8a0_6ec1ae9a",
+        "filename": "containers/vrouter/agent/vhost0-dhcp/vhost0-nameservers.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 980
+      },
+      "writtenOn": "2020-10-22T12:43:37Z",
+      "side": 1,
+      "message": "$new_domain_search must be used, it\u0027s ok to use new_domain_name if new_domain_search is unset\nthese vars are set by dhclient before if data is provided by DHCP server",
+      "parentUuid": "2cc6c0f8_c0d00605",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 6
+      },
+      "revId": "67d905caa35dfc6e4e344f14648871e6272a178a",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f93e77c8_12c3fec5",
         "filename": "containers/vrouter/agent/vhost0-dhcp/vhost0-nameservers.sh",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "67d905caa35dfc6e4e344f14648871e6272a178a",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "03aa1eb7_01389843",
+        "filename": "containers/vrouter/agent/vhost0-dhcp/vhost0-nameservers.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 980
+      },
+      "writtenOn": "2020-10-22T12:43:37Z",
+      "side": 1,
+      "message": "recreate",
+      "parentUuid": "f93e77c8_12c3fec5",
+      "range": {
+        "startLine": 25,
+        "startChar": 6,
+        "endLine": 25,
+        "endChar": 43
+      },
+      "revId": "67d905caa35dfc6e4e344f14648871e6272a178a",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     }
   ]
 }
