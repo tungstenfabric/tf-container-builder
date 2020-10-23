@@ -117,6 +117,30 @@
       "revId": "67d905caa35dfc6e4e344f14648871e6272a178a",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0bb835e1_9aa4ab31",
+        "filename": "containers/vrouter/agent/vhost0-dhcp/vhost0-nameservers.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 980
+      },
+      "writtenOn": "2020-10-23T12:03:26Z",
+      "side": 1,
+      "message": "systemd-resolved is running, do we really need to extra check?",
+      "parentUuid": "f4eb1666_62f583f5",
+      "range": {
+        "startLine": 25,
+        "startChar": 6,
+        "endLine": 25,
+        "endChar": 43
+      },
+      "revId": "67d905caa35dfc6e4e344f14648871e6272a178a",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     }
   ]
 }
