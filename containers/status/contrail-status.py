@@ -5,6 +5,7 @@ import operator
 import optparse
 import os
 import socket
+import struct
 import subprocess
 import warnings
 import json
@@ -277,6 +278,41 @@ class EtreeToDict(object):
         return f[0].text if len(f) else None
 
 
+listeners = None
+
+
+def fill_listeners():
+    global listeners
+    with open('/proc/net/tcp', 'r') as f:
+        lines = f.readlines()[1:]
+    if len(lines) == 0:
+        return
+
+    listeners = dict()
+    default_addr = socket.getfqdn()
+    for line in lines:
+        items = line.split()
+        # 0A is a TCP_LISTEN from net/tcp_states.h
+        if len(items) < 4 or int(items[3], base=16) != 10:
+            continue
+        ip, port = items[1].split(":")
+        ip = socket.inet_ntoa(struct.pack("<L", int(ip, base=16)))
+        addr = socket.getfqdn(ip) if ip != "0.0.0.0" else default_addr
+        port = str(int(port, base=16))
+        # doesn't matter what address will be stored - we need any to request introspect status
+        listeners[port] = addr
+
+
+def get_addr_to_connect(port):
+    global listeners
+    if not listeners:
+        fill_listeners()
+
+    if listeners and port in listeners:
+        return listeners[port]
+    return socket.getfqdn()
+
+
 class IntrospectUtil(object):
     def __init__(self, port, options):
         self._port = port
@@ -287,29 +323,8 @@ class IntrospectUtil(object):
 
     def _mk_url_str(self, path, secure=False):
         proto = "https" if secure else "http"
-        ip = self._get_addr_to_connect()
+        ip = get_addr_to_connect(self._port)
         return "%s://%s:%d/%s" % (proto, ip, self._port, path)
-
-    def _get_addr_to_connect(self):
-        default_addr = socket.getfqdn()
-        port = ':{0}'.format(self._port)
-        try:
-            lsof = (subprocess.Popen(
-                ['lsof', '-Pn', '-sTCP:LISTEN', '-i' + port],
-                stdout=subprocess.PIPE).communicate()[0])
-            lsof_lines = lsof.splitlines()[1:]
-            if not len(lsof_lines):
-                return default_addr
-            items = lsof_lines[0].split()
-            for item in items:
-                if port in item:
-                    ip = item.split(':')[0]
-                    if ip == '*':
-                        return default_addr
-                    return socket.getfqdn(ip)
-        except Exception:
-            pass
-        return default_addr
 
     def _make_request(self, path, secure):
         url = self._mk_url_str(path, secure=secure)
@@ -325,7 +340,7 @@ class IntrospectUtil(object):
         except requests.ConnectionError:
             resp = self._make_request(path, not ssl_enabled)
         if resp.status_code != requests.codes.ok:
-            print_debug('URL: %s : HTTP error: %s' % (url, str(resp.status_code)))
+            print_debug('PATH: %s : HTTP error: %s' % (path, str(resp.status_code)))
             return None
 
         return etree.fromstring(resp.text)
