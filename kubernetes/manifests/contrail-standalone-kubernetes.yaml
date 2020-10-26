@@ -1473,6 +1473,8 @@ spec:
           name: network-scripts
         - mountPath: /host/bin
           name: host-bin
+        - mountPath: /host/etc
+          name: host-etc
         - mountPath: /var/log/contrail
           name: contrail-logs
         - mountPath: /usr/src
@@ -1536,6 +1538,9 @@ spec:
       - name: host-bin
         hostPath:
           path: /bin
+      - name: host-etc
+        hostPath:
+          path: /etc
       - name: docker-unix-socket
         hostPath:
           path: /var/run
