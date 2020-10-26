@@ -1516,6 +1516,8 @@ spec:
         # there are sockets and pci dev info
         - mountPath: /var/run
           name: var-run
+        - mountPath: /host/etc
+          name: host-etc
         - mountPath: /usr/src
           name: usr-src
         - mountPath: /var/log/contrail
@@ -1577,6 +1579,9 @@ spec:
       - name: var-run
         hostPath:
           path: /var/run
+      - name: host-etc
+        hostPath:
+          path: /etc
       - name: pod-secret
         secret:
           secretName: contrail-kube-manager-token
