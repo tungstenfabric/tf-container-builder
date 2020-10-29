@@ -1,0 +1,95 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "040df1d8_98bf354d",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 385,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-29T08:06:00Z",
+      "side": 1,
+      "message": "please use two empty lines between global functions in python",
+      "revId": "e060fbc856c13577b1e127b2c21cff35d8db3cde",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9fef05dc_2badb56c",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 423,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-29T08:06:00Z",
+      "side": 1,
+      "message": "can it be common code?\nfor any service we take it\u0027s worker constant (taken from sandesh) and if it\u0027s absent do one call or if present do several calls.\n\nindividual insertions in common code make it unstable/unreadable",
+      "revId": "e060fbc856c13577b1e127b2c21cff35d8db3cde",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec53159e_5bc26c99",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 437,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-29T08:06:00Z",
+      "side": 1,
+      "message": "what about these exceptions for new block?",
+      "revId": "e060fbc856c13577b1e127b2c21cff35d8db3cde",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9423f98_c90387a9",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 503,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-29T08:06:00Z",
+      "side": 1,
+      "message": "this should be hidden inside contrail_service_status with new function similar to vcenter_plugin/toragent_tor_agent.\n\nFor this you need to interchange second and first \u0027if\u0027 blocks inside contrail_service_status - e.g. check first if global function is present for this pod_name/service and call it or check internal_svc_name then",
+      "revId": "e060fbc856c13577b1e127b2c21cff35d8db3cde",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9205c235_b27f64fa",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 508,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-10-29T08:06:00Z",
+      "side": 1,
+      "message": "please do not use str() operator and string additions. please use string format as below",
+      "range": {
+        "startLine": 508,
+        "startChar": 55,
+        "endLine": 508,
+        "endChar": 58
+      },
+      "revId": "e060fbc856c13577b1e127b2c21cff35d8db3cde",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
