@@ -24,6 +24,9 @@ echo "$content" > $vrouter_dir/dkms.conf
 
 mkdir -p /vrouter/${contrail_version}/build/include/
 mkdir -p /vrouter/${contrail_version}/build/dp-core
+if dkms status | grep "${contrail_version}" ; then
+  dkms --verbose remove -m vrouter -v ${contrail_version}
+fi
 dkms --verbose add -m vrouter -v "${contrail_version}"
 echo "INFO: run dkms build for current kernel $current_kver"
 if ! dkms --verbose build -m vrouter -v "${contrail_version}" ; then
