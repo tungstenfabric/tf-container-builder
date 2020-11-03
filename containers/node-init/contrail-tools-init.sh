@@ -32,7 +32,7 @@ fi
 
 
 image=$(echo ${CONTRAIL_STATUS_IMAGE} | sed 's/contrail-status:/contrail-tools:/')
-tmp_suffix="-it --rm --pid host --net host --privileged ${image}"
+tmp_suffix="--rm --pid host --net host --privileged ${image}"
 tmp_file=/host/usr/bin/contrail-tools.tmp.${RANDOM}
 cat > $tmp_file << EOM
 #!/bin/bash
@@ -43,6 +43,12 @@ if [[ -n "\$@" ]]; then
   echo "\$@" >> \$entrypoint
   chmod a+x \$entrypoint
   entrypoint_arg="-v \$entrypoint:\$entrypoint --entrypoint \$entrypoint"
+fi
+
+if [ -t 0 ];
+    tmp_suffix="-it $tmp_suffix"
+else
+    tmp_suffix="-i $tmp_suffix"
 fi
 
 u=\$(which docker 2>/dev/null)
