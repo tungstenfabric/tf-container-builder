@@ -30,9 +30,9 @@ if [[ -n "${SERVER_CA_CERTFILE}" ]] ; then
   fi
 fi
 
-
 image=$(echo ${CONTRAIL_STATUS_IMAGE} | sed 's/contrail-status:/contrail-tools:/')
-tmp_suffix="-it --rm --pid host --net host --privileged ${image}"
+tmp_suffix=$([ -t 0 ] && echo "-it" || echo "-i")
+tmp_suffix+=" --rm --pid host --net host --privileged ${image}"
 tmp_file=/host/usr/bin/contrail-tools.tmp.${RANDOM}
 cat > $tmp_file << EOM
 #!/bin/bash
