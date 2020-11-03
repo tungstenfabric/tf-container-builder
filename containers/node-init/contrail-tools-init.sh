@@ -32,11 +32,15 @@ fi
 
 
 image=$(echo ${CONTRAIL_STATUS_IMAGE} | sed 's/contrail-status:/contrail-tools:/')
-tmp_suffix="-it --rm --pid host --net host --privileged ${image}"
+tmp_suffix="--rm --pid host --net host --privileged ${image}"
 tmp_file=/host/usr/bin/contrail-tools.tmp.${RANDOM}
 cat > $tmp_file << EOM
 #!/bin/bash
 
+interactive_key='-i'
+if [ -t 0 ]; then
+    interactive_key+='t'
+fi
 if [[ -n "\$@" ]]; then
   entrypoint=\$(mktemp)
   echo '#!/bin/bash -e' > \$entrypoint
@@ -47,7 +51,7 @@ fi
 
 u=\$(which docker 2>/dev/null)
 if pidof dockerd >/dev/null 2>&1 || pidof dockerd-current >/dev/null 2>&1 ; then
-    \$u run $vol_opts \$entrypoint_arg $tmp_suffix
+    \$u run $vol_opts \$entrypoint_arg $interactive_key $tmp_suffix
     rm -f \$entrypoint
     exit \$?
 fi
@@ -57,7 +61,7 @@ if ((\$? == 0)); then
     r+=' --volume=/run/runc:/run/runc'
     r+=' --volume=/sys/fs:/sys/fs'
     r+=' --cap-add=ALL --security-opt seccomp=unconfined'
-    \$r $tmp_suffix
+    \$r $interactive_key $tmp_suffix
     rm -f \$entrypoint
     exit \$?
 fi
