@@ -32,7 +32,13 @@ fi
 
 
 image=$(echo ${CONTRAIL_STATUS_IMAGE} | sed 's/contrail-status:/contrail-tools:/')
-tmp_suffix="-it --rm --pid host --net host --privileged ${image}"
+if [ -t 0 ]; then
+    # interactive mode
+    tmp_suffix="-it --rm --pid host --net host --privileged ${image}"
+else
+    # non-interactive
+    tmp_suffix+="-i --rm --pid host --net host --privileged ${image}"
+fi
 tmp_file=/host/usr/bin/contrail-tools.tmp.${RANDOM}
 cat > $tmp_file << EOM
 #!/bin/bash
