@@ -1,0 +1,135 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "20c3d0b6_e02cc213",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 434,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-11-08T12:45:02Z",
+      "side": 1,
+      "message": "svc_name \u003d CONTRAIL_SERVICES_TO_SANDESH_SVC[\u0027config\u0027][\u0027api\u0027]",
+      "range": {
+        "startLine": 434,
+        "startChar": 15,
+        "endLine": 434,
+        "endChar": 29
+      },
+      "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "588651dc_525bff55",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 437,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-11-08T12:45:02Z",
+      "side": 1,
+      "message": "here is you hide workers\u0027 statuses.\nwhen user should see many inactive workers - he will see only one.\nI think it\u0027s not good.",
+      "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73b4b679_6ffe9c40",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 442,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-11-08T12:45:02Z",
+      "side": 1,
+      "message": "the same - function will returns just one element instead of list for multiple workers",
+      "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a960889_51ba22f9",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 447,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-11-08T12:45:02Z",
+      "side": 1,
+      "message": "and the same is here - I suppose that this function must return list at least when multiple workers is configured or maybe always for config-api.\nI mean when this code raises an exception for worker #3 then we\u0027ll have just one status instead of list - it\u0027s not user-friendly.",
+      "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "201411a9_f98dfa9c",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 448,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-11-08T12:45:02Z",
+      "side": 1,
+      "message": "what if this code returns None for port?",
+      "range": {
+        "startLine": 448,
+        "startChar": 8,
+        "endLine": 448,
+        "endChar": 24
+      },
+      "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d3799083_c1808ace",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-11-08T12:45:02Z",
+      "side": 1,
+      "message": "why do you need such order? why \u0027append\u0027 is not possible?",
+      "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f045791b_b4135a92",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 524,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-11-08T12:45:02Z",
+      "side": 1,
+      "message": "I would prefer to not have equal lines with print_msg / json_output.\nor at least to remove \u0027continue\u0027 (just use \u0027else\u0027)\nand I suggest to not check \u0027len(status) \u003d\u003d 1\u0027 here - it\u0027s more correct to do this in contrail_service_status",
+      "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
