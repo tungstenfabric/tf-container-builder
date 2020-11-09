@@ -31,7 +31,8 @@ RUN for item in `ls /__*` ; do mv $item /${item:3} ; done && \
     rm -rf /var/cache/yum && \
     groupadd -f -g 1011 kafka && adduser -M -g kafka kafka && \
     usermod -a -G $CONTRAIL_GID $KAFKA_USER && \
-    chown -R $KAFKA_USER:$KAFKA_GROUP $LOG_DIR $KAFKA_DIR
+    chown -R $KAFKA_USER:$KAFKA_GROUP $LOG_DIR $KAFKA_DIR \
+    chmod 754 $LOG_DIR
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 WORKDIR $KAFKA_DIR
