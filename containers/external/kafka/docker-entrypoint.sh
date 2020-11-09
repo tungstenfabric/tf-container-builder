@@ -85,7 +85,7 @@ else
     (grep -q '^ssl.key.password' ${CONFIG} && sed -i "s|^ssl.key.password.*$|ssl.key.password=${KAFKA_KEY_PASSWORD}|" ${CONFIG}) || echo "ssl.key.password=${KAFKA_KEY_PASSWORD}" >> ${CONFIG}
     (grep -q '^ssl.truststore.password' ${CONFIG} && sed -i "s|^ssl.truststore.password.*$|ssl.truststore.password=${KAFKA_STORE_PASSWORD}|" ${CONFIG}) || echo "ssl.truststore.password=${KAFKA_STORE_PASSWORD}" >> ${CONFIG}
     (grep -q '^security.inter.broker.protocol' ${CONFIG} && sed -i 's|^security.inter.broker.protocol.*$|security.inter.broker.protocol=SSL|' ${CONFIG}) || echo "security.inter.broker.protocol=SSL" >> ${CONFIG}
-    (grep -q '^ssl.endpoint.identification.algorithm' ${CONFIG} && sed -i 's|^ssl.endpoint.identification.algorithm.*$|ssl.endpoint.identification.algorithm=|' ${CONFIG}) || echo "ssl.endpoint.identification.algorithm=" >> ${CONFIG} 
+    (grep -q '^ssl.endpoint.identification.algorithm' ${CONFIG} && sed -i 's|^ssl.endpoint.identification.algorithm.*$|ssl.endpoint.identification.algorithm=|' ${CONFIG}) || echo "ssl.endpoint.identification.algorithm=" >> ${CONFIG}
 fi
 
 sed -i "s)^zookeeper.connect=.*$)zookeeper.connect=$ZOOKEEPER_SERVERS)g" ${CONFIG}
@@ -111,6 +111,7 @@ echo "reserved.broker.max.id=100001" >> ${CONFIG}
 # Container is run under root, so
 # here it is needed to upgrade owner for kafka files
 chown -R $KAFKA_USER:$KAFKA_GROUP "$KAFKA_DIR" "$KAFKA_CONF_DIR" "$LOG_DIR"
+chmod -R 750 "$LOG_DIR"
 
 # replace CONTRAIL_UID and CONTRAIL_GID with kafka values, as they are
 # to be used in run_services
