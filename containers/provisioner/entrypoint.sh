@@ -2,7 +2,9 @@
 
 LOG_DIR=${LOG_DIR:-"/var/log/contrail"}
 mkdir -p $LOG_DIR
+touch "$LOG_DIR/provisioner-$NODE_TYPE.log"
 exec &> >(tee -a "$LOG_DIR/provisioner-$NODE_TYPE.log")
+chmod 600 $LOG_DIR/provisioner-$NODE_TYPE.log
 echo "INFO: =================== $(date) ==================="
 
 source /common.sh
