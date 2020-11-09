@@ -203,7 +203,7 @@ vrouter)
       for index in ${!array_sriov_physical_networks[@]} ; do
         sriov_physnets+=" ${array_sriov_physical_networks[index]}=${array_sriov_physical_interfaces[index]}"
       done
-      params+="--sriov-physnets $sriov_physnets"
+      params="$params --sriov_physnets $sriov_physnets"
     else
       echo "ERROR: sriov_physical_networks and sriov_physical_interfaces have a different number of elements"
       exit 1
