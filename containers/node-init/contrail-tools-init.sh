@@ -37,9 +37,6 @@ tmp_file=/host/usr/bin/contrail-tools.tmp.${RANDOM}
 cat > $tmp_file << EOM
 #!/bin/bash
 
-interactive_key='-i'
-[ -t 0 ] && interactive_key+='t'
-
 if [[ -n "\$@" ]]; then
   entrypoint=\$(mktemp)
   echo '#!/bin/bash -e' > \$entrypoint
@@ -50,7 +47,7 @@ fi
 
 u=\$(which docker 2>/dev/null)
 if pidof dockerd >/dev/null 2>&1 || pidof dockerd-current >/dev/null 2>&1 ; then
-    \$u run $vol_opts \$entrypoint_arg \$interactive_key $tmp_suffix
+    \$u run $vol_opts \$entrypoint_arg \$tmp_suffix
     rm -f \$entrypoint
     exit \$?
 fi
@@ -60,7 +57,7 @@ if ((\$? == 0)); then
     r+=' --volume=/run/runc:/run/runc'
     r+=' --volume=/sys/fs:/sys/fs'
     r+=' --cap-add=ALL --security-opt seccomp=unconfined'
-    \$r \$interactive_key $tmp_suffix
+    \$r \$tmp_suffix
     rm -f \$entrypoint
     exit \$?
 fi
