@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "6ca2c14b_de7515b7",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 434,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-11-11T18:15:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "20c3d0b6_e02cc213",
+      "range": {
+        "startLine": 434,
+        "startChar": 15,
+        "endLine": 434,
+        "endChar": 29
+      },
+      "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "588651dc_525bff55",
         "filename": "containers/status/contrail-status.py",
         "patchSetId": 14
@@ -39,6 +63,24 @@
       "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a044522_04d3ae01",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 437,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-11-11T18:15:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "588651dc_525bff55",
+      "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     },
     {
       "key": {
@@ -59,6 +101,24 @@
     },
     {
       "key": {
+        "uuid": "52c803e2_52f8c4e4",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 442,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-11-11T18:15:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "73b4b679_6ffe9c40",
+      "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a960889_51ba22f9",
         "filename": "containers/status/contrail-status.py",
         "patchSetId": 14
@@ -73,6 +133,24 @@
       "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2c9df2b0_27c2fd95",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 447,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-11-11T18:15:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a960889_51ba22f9",
+      "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     },
     {
       "key": {
@@ -99,6 +177,30 @@
     },
     {
       "key": {
+        "uuid": "b47b59d0_739ca050",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 448,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-11-11T18:15:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "201411a9_f98dfa9c",
+      "range": {
+        "startLine": 448,
+        "startChar": 8,
+        "endLine": 448,
+        "endChar": 24
+      },
+      "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d3799083_c1808ace",
         "filename": "containers/status/contrail-status.py",
         "patchSetId": 14
@@ -110,6 +212,24 @@
       "writtenOn": "2020-11-08T12:45:02Z",
       "side": 1,
       "message": "why do you need such order? why \u0027append\u0027 is not possible?",
+      "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "02fac7b8_b27ec26f",
+        "filename": "containers/status/contrail-status.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 971
+      },
+      "writtenOn": "2020-11-11T18:15:55Z",
+      "side": 1,
+      "message": "The worker uves fetched are stored in random order, say first for worker-id 2, then 0, then 1.\nSo, I now I am storing the status in list according to worker-id.",
+      "parentUuid": "d3799083_c1808ace",
       "revId": "c4164c9e0a1b273ef949cad61aa541724c9b1d45",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
