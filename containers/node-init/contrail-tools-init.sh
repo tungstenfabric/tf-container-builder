@@ -2,6 +2,9 @@
 
 source /common.sh
 
+cont_name="contrail-tools"
+trap "sudo docker stop $cont_name" SIGTERM SIGINT SIGHUP EXIT
+
 if [[ ! -d /host/usr/bin ]]; then
   echo "ERROR: there is no mount /host/usr/bin from Host's /usr/bin. Utility contrail-tools could not be created."
   exit 1
@@ -26,7 +29,7 @@ if [[ -n "${SERVER_CA_CERTFILE}" ]] ; then
   # In case of FreeIPA CA file is palced in /etc/ipa/ca.crt
   # and should be mounted additionally
   if [[ ! "${SERVER_CA_CERTFILE}" =~ "/etc/contrail/ssl" ]] ; then
-    vol_opts+=" -v ${SERVER_CA_CERTFILE}:${SERVER_CA_CERTFILE}:ro"
+    vol_opts+=" --name=$cont_name -v ${SERVER_CA_CERTFILE}:${SERVER_CA_CERTFILE}:ro"
   fi
 fi
 
