@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5436e623_bf2c0c1a",
+        "filename": "containers/node-init/contrail-tools-init.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-11-11T12:54:23Z",
+      "side": 1,
+      "message": "using container name is a bad practice as we understood with contrail-status",
+      "revId": "614f6415e7b7e7cdcb94095ef3d25270dfb8ff83",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eb8bd216_f7b4d070",
+        "filename": "containers/node-init/contrail-tools-init.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-11-11T12:54:23Z",
+      "side": 1,
+      "message": "why so many signals? we have to catch off ssh session termination.\nas I remember it\u0027s only SIGHUP",
+      "range": {
+        "startLine": 6,
+        "startChar": 35,
+        "endLine": 6,
+        "endChar": 61
+      },
+      "revId": "614f6415e7b7e7cdcb94095ef3d25270dfb8ff83",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d77bdd91_2163d3bb",
+        "filename": "containers/node-init/contrail-tools-init.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-11-11T12:54:23Z",
+      "side": 1,
+      "message": "please read variable name - it\u0027s \u0027vol_opts\u0027. it\u0027s not intended to be used to other options and moreover this line is inside several conditions.",
+      "revId": "614f6415e7b7e7cdcb94095ef3d25270dfb8ff83",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
