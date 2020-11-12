@@ -40,6 +40,10 @@ cat > $tmp_file << EOM
 interactive_key='-i'
 [ -t 0 ] && interactive_key+='t'
 
+cont_name="contrail-tools_\$(head /dev/urandom | tr -dc a-z0-9 | head -c 13)"
+
+name_opts="--name=\$cont_name"
+
 if [[ -n "\$@" ]]; then
   entrypoint=\$(mktemp)
   echo '#!/bin/bash -e' > \$entrypoint
@@ -50,13 +54,15 @@ fi
 
 u=\$(which docker 2>/dev/null)
 if pidof dockerd >/dev/null 2>&1 || pidof dockerd-current >/dev/null 2>&1 ; then
-    \$u run $vol_opts \$entrypoint_arg \$interactive_key $tmp_suffix
+    trap "sudo docker rm -f \$cont_name" SIGHUP
+    \$u run \$name_opts $vol_opts \$entrypoint_arg \$interactive_key $tmp_suffix
     rm -f \$entrypoint
     exit \$?
 fi
 u=\$(which podman 2>/dev/null)
 if ((\$? == 0)); then
-    r="\$u run $vol_opts \$entrypoint_arg "
+    trap "sudo podman rm -f \$cont_name" SIGHUP
+    r="\$u run \$name_opts $vol_opts \$entrypoint_arg "
     r+=' --volume=/run/runc:/run/runc'
     r+=' --volume=/sys/fs:/sys/fs'
     r+=' --cap-add=ALL --security-opt seccomp=unconfined'
