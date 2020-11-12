@@ -8,13 +8,13 @@ LABEL name=$CONTAINER_NAME \
       summary="Contrail RabbitMQ" \
       description="Contrail Rabbitmq is the message bus that different Contrail processes subscribe to."
 
-COPY *.sh hostname_to_ip /
+COPY *.sh /
 
 # vim-common is needed because of xxd tool
 RUN /bin/bash -c 'for item in `ls /__*` ; do mv $item /${item:3} ; done' && \
     curl -s https://packagecloud.io/install/repositories/rabbitmq/erlang/script.rpm.sh | bash && \
     curl -s https://packagecloud.io/install/repositories/rabbitmq/rabbitmq-server/script.rpm.sh | bash && \
-    yum install -y erlang-21.3* rabbitmq-server-3.7.20* bind bind-utils perl vim-common && \
+    yum install -y erlang-21.3* rabbitmq-server-3.7.20* vim-common && \
     usermod -a -G $CONTRAIL_GID rabbitmq && \
     usermod -d /var/lib/rabbitmq rabbitmq && \
     rabbitmq-plugins enable --offline rabbitmq_management && \
