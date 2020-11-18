@@ -10,7 +10,7 @@ rabbitmq_server_list=$(echo $RABBITMQ_SERVERS | sed 's/,/ /g')
 configdb_cql_servers=$(echo $CONFIGDB_CQL_SERVERS | sed 's/,/ /g')
 
 mkdir -p /etc/contrail
-cat > /etc/contrail/contrail-collector.conf << EOM
+cat > /etc/contrail/tf-collector.conf << EOM
 [DEFAULT]
 analytics_data_ttl=${ANALYTICS_DATA_TTL:-48}
 analytics_config_audit_ttl=${ANALYTICS_CONFIG_AUDIT_TTL:-2160}
@@ -25,7 +25,7 @@ syslog_port=${COLLECTOR_SYSLOG_LISTEN_PORT:-$COLLECTOR_SYSLOG_PORT}
 sflow_port=${COLLECTOR_SFLOW_LISTEN_PORT:-$COLLECTOR_SFLOW_PORT}
 ipfix_port=${COLLECTOR_IPFIX_LISTEN_PORT:-$COLLECTOR_IPFIX_PORT}
 # log_category=
-log_file=$CONTAINER_LOG_DIR/contrail-collector.log
+log_file=$CONTAINER_LOG_DIR/tf-collector.log
 log_files_count=${COLLECTOR_LOG_FILE_COUNT:-10}
 log_file_size=${COLLECTOR_LOG_FILE_SIZE:-1048576}
 log_level=$LOG_LEVEL
@@ -33,12 +33,12 @@ log_local=$LOG_LOCAL
 # sandesh_send_rate_limit=
 EOM
 if is_enabled ${ANALYTICSDB_ENABLE} ; then
-cat >> /etc/contrail/contrail-collector.conf << EOM
+cat >> /etc/contrail/tf-collector.conf << EOM
 cassandra_server_list=$ANALYTICSDB_CQL_SERVERS
 EOM
 fi
 
-cat >> /etc/contrail/contrail-collector.conf << EOM
+cat >> /etc/contrail/tf-collector.conf << EOM
 zookeeper_server_list=$ZOOKEEPER_SERVERS
 
 [CASSANDRA]
@@ -57,7 +57,7 @@ port=${COLLECTOR_STRUCTURED_SYSLOG_LISTEN_PORT:-$COLLECTOR_STRUCTURED_SYSLOG_POR
 # tcp_forward_destination=10.213.17.53:514
 EOM
 if is_enabled ${ANALYTICS_ALARM_ENABLE} ; then
-cat >> /etc/contrail/contrail-collector.conf << EOM
+cat >> /etc/contrail/tf-collector.conf << EOM
 kafka_broker_list=$KAFKA_SERVERS
 kafka_topic=${KAFKA_TOPIC:-structured_syslog_topic}
 # number of kafka partitions
@@ -65,7 +65,7 @@ kafka_partitions=${KAFKA_PARTITIONS:-30}
 EOM
 fi
 
-cat >> /etc/contrail/contrail-collector.conf << EOM
+cat >> /etc/contrail/tf-collector.conf << EOM
 
 [API_SERVER]
 # List of api-servers in ip:port format separated by space
@@ -74,7 +74,7 @@ api_server_use_ssl=${CONFIG_API_SSL_ENABLE}
 
 EOM
 if is_enabled ${ANALYTICSDB_ENABLE} ; then
-cat >> /etc/contrail/contrail-collector.conf << EOM
+cat >> /etc/contrail/tf-collector.conf << EOM
 [DATABASE]
 # disk usage percentage
 disk_usage_percentage.high_watermark0=${COLLECTOR_disk_usage_percentage_high_watermark0:-90}
@@ -102,7 +102,7 @@ low_watermark2.message_severity_level=${COLLECTOR_low_watermark2_message_severit
 EOM
 fi
 
-cat >> /etc/contrail/contrail-collector.conf << EOM
+cat >> /etc/contrail/tf-collector.conf << EOM
 
 [REDIS]
 port=$REDIS_SERVER_PORT
@@ -111,7 +111,7 @@ password=$REDIS_SERVER_PASSWORD
 EOM
 
 if is_enabled ${ANALYTICS_ALARM_ENABLE} ; then
-cat >> /etc/contrail/contrail-collector.conf << EOM
+cat >> /etc/contrail/tf-collector.conf << EOM
 [KAFKA]
 kafka_broker_list=$KAFKA_SERVERS
 kafka_ssl_enable=${KAFKA_SSL_ENABLE:-${SSL_ENABLE:-False}}
@@ -119,7 +119,7 @@ ${kafka_ssl_config}
 EOM
 fi
 
-cat >> /etc/contrail/contrail-collector.conf << EOM
+cat >> /etc/contrail/tf-collector.conf << EOM
 [CONFIGDB]
 config_db_server_list=$configdb_cql_servers
 config_db_use_ssl=${CASSANDRA_SSL_ENABLE,,}
@@ -134,7 +134,7 @@ $sandesh_client_config
 $collector_stats_config
 EOM
 
-add_ini_params_from_env COLLECTOR /etc/contrail/contrail-collector.conf
+add_ini_params_from_env COLLECTOR /etc/contrail/tf-collector.conf
 
 set_third_party_auth_config
 set_vnc_api_lib_ini
