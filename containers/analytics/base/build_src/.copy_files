@@ -1,2 +1,2 @@
-build/production/analytics/vizd /usr/bin/contrail-collector
+build/production/analytics/vizd /usr/bin/tf-collector
 build/production/query_engine/qed /usr/bin/contrail-query-engine
