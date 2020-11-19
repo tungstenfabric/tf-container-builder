@@ -12,6 +12,6 @@ else
   if [ ${1} = old ] || [ ${1} = add ] ; then
     echo "SCRIPT ADD"
     cd /etc/scripts
-    python dnsmasq_lease_processing.py write ${2} ${3} ${4} ${DNSMASQ_LEASE_EXPIRES}
+    python dnsmasq_lease_processing.py write ${2} ${3} ${4} ${DNSMASQ_LEASE_EXPIRES} ${DNSMASQ_VENDOR_CLASS}
   fi
 fi
