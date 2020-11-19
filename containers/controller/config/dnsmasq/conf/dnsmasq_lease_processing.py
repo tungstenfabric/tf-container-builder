@@ -76,7 +76,8 @@ def main():
             physical_router_hostname=sys.argv[4],
             physical_router_dhcp_parameters={
                 'lease_expiry_time': sys.argv[5]
-            }
+            },
+            physical_router_device_family=sys.argv[6]
         )
         try:
             pr_uuid = vnc_api.physical_router_create(physicalrouter)
@@ -91,9 +92,18 @@ def main():
                                                          sys.argv[3]))
         logger.info("Router created id: %s" % pr_uuid)
     elif sys.argv[1] == 'delete':
+        object_type = "physical_router"
+        device_family = ""
         fq_name = ['default-global-system-config', sys.argv[2]]
         try:
-            vnc_api.physical_router_delete(fq_name=fq_name)
+            pr_uuid = vnc_api.fq_name_to_id(object_type, fq_name)
+            device_obj = vnc_api.physical_router_read(
+                         id=pr_uuid, fields=['physical_router_device_family']
+                         )
+            device_family = device_obj.get_physical_router_device_family()
+            logger.info("Device Family %s", device_family)
+            if "qfx5220" not in device_family:
+                vnc_api.physical_router_delete(fq_name=fq_name)
         except Exception:
             logger.info("Router '%s' doesnot exist" % fq_name[-1])
 
