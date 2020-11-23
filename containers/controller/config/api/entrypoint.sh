@@ -102,6 +102,7 @@ need-app
 plugins = python, gevent
 workers = ${CONFIG_API_WORKER_COUNT}
 gevent = ${CONFIG_API_MAX_REQUESTS}
+buffer-size = 65535
 lazy-apps
 
 $(printf '%b\n' "$uwsgi_socket")
