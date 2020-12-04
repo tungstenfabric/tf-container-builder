@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bb02210c_bd10b5cd",
+        "filename": "containers/external/redis/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-12-04T10:52:19Z",
+      "side": 1,
+      "message": "\u0027|| exit 1\u0027 is not required",
+      "range": {
+        "startLine": 18,
+        "startChar": 94,
+        "endLine": 18,
+        "endChar": 103
+      },
+      "revId": "2d9391ab2f7d923d00ea1edc9fdcd9f4cdf12308",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
