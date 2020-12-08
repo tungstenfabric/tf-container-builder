@@ -32,7 +32,7 @@ if [[ $ntype == 'VROUTER' ]]; then
 
   htype='VROUTER'
   hostip=$(get_ip_for_vrouter_from_control)
-  host_name=${VROUTER_HOSTNAME:-}
+  host_name=${VROUTER_HOSTNAME:-$(resolve_hostname_by_ip $hostip)}
 else
   # nodes list var name is a ANALYTICSDB_NODES (not DATABASE_NODES)
   if [[ $ntype == 'DATABASE' ]] ; then
@@ -42,10 +42,12 @@ else
   else
     htype="$ntype"
   fi
-  if [[ $ntype == 'CONTROL' ]] ; then
-    host_name=${CONTROL_HOSTNAME:-}
-  fi
   hostip=$(get_listen_ip_for_node ${htype})
+  if [[ $ntype == 'CONTROL' ]] ; then
+    host_name=${CONTROL_HOSTNAME:-$(resolve_hostname_by_ip $hostip)}
+  else
+    host_name=$(resolve_hostname_by_ip $hostip)
+  fi
 fi
 
 introspect_ip='0.0.0.0'
