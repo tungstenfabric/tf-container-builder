@@ -15,14 +15,13 @@ COPY *.sh hostname_to_ip /
 
 RUN set -eux && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
     if ! yum repolist | grep -q epel ; then \
-        yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm ; \
+        yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm || exit 1 ; \
     fi && \
     yum install perl -y && \
     wget -nv --tries=3 -c -O ${REDIS_RPM_NAME}.rpm ${REDIS_CACHE}/${REDIS_RPM_NAME}.rpm?raw=true && \
     yum install ${REDIS_RPM_NAME}.rpm -y && \
     usermod -a -G $CONTRAIL_GID redis && \
     rm -rf ${REDIS_RPM_NAME}.rpm && \
-    yum remove epel-release -y && \
     yum clean all -y && rm -rf /var/cache/yum
 
 RUN mkdir /data && chown redis:redis /data
