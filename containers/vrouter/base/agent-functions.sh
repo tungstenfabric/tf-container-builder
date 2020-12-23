@@ -669,6 +669,7 @@ function init_sriov() {
         exit -1
     fi
     echo "INFO: SRIOV Enabled"
+    load_kernel_module ${SRIOV_VFIO_DRIVER:-'vfio'}
     local sriov_numvfs=""
     local i=0
     for i in ${!sriov_vfs[@]} ; do
