@@ -34,7 +34,11 @@ log_file=$CONTAINER_LOG_DIR/contrail-vcenter-fabric-manager.log
 
 [ZOOKEEPER]
 zookeeper_servers=$ZOOKEEPER_SERVERS
-
+zookeeper_ssl_enable=${SSL_ENABLE:-False}
+zookeeper_ssl_keyfile=${SERVER_KEYFILE}
+zookeeper_ssl_certificate=${SERVER_CERTFILE}
+zookeeper_ssl_ca_cert=${SERVER_CA_CERTFILE}
+ 
 [RABBIT]
 rabbit_hosts=$RABBITMQ_NODES
 rabbit_port=$RABBITMQ_NODE_PORT
