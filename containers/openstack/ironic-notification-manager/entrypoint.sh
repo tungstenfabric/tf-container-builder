@@ -9,8 +9,7 @@ log_file = $CONTAINER_LOG_DIR/ironic-notification-manager.log
 log_level = $LOG_LEVEL
 log_local = $LOG_LOCAL
 
-rabbit_server = $RABBITMQ_SERVERS
-rabbit_port = $RABBITMQ_NODE_PORT
+rabbit_servers = $RABBITMQ_SERVERS
 $rabbit_config
 $kombu_ssl_config
 
