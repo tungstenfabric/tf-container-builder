@@ -317,9 +317,10 @@ class IntrospectUtil(object):
     def __init__(self, port, options):
         self._port = port
         self._timeout = options.timeout
-        self._certfile = options.certfile
-        self._keyfile = options.keyfile
-        self._cacert = options.cacert
+        self._cacert = options.cacert if os.path.isfile(options.cacert) else False
+        self._certs = (options.certfile, options.keyfile) \
+            if os.path.isfile(options.certfile) and \
+                os.path.isfile(options.keyfile) else None
 
     def _mk_url_str(self, path, secure=False):
         proto = "https" if secure else "http"
@@ -330,9 +331,8 @@ class IntrospectUtil(object):
         url = self._mk_url_str(path, secure=secure)
         if not secure:
             return requests.get(url, timeout=self._timeout)
-        return requests.get(
-            url, timeout=self._timeout,
-            verify=self._cacert, cert=(self._certfile, self._keyfile))
+        return requests.get(url, timeout=self._timeout,
+                            verify=self._cacert, cert=self._certs)
 
     def _load(self, path):
         try:
@@ -728,6 +728,8 @@ def main():
     options = parse_args()
     debug_output = options.debug
     output_format = options.format
+    if not debug_output:
+        requests.packages.urllib3.disable_warnings()
 
     ssl_enabled = yaml.load(os.getenv('INTROSPECT_SSL_ENABLE', 'False'))
     if not isinstance(ssl_enabled, bool):
