@@ -13,7 +13,7 @@ rabbit_servers = $RABBITMQ_SERVERS
 $rabbit_config
 $kombu_ssl_config
 
-notification_level = $IRONIC_NOTIFICATION_LEVEL
+notification_level = ${IRONIC_NOTIFICATION_LEVEL:-debug}
 collectors = $COLLECTOR_SERVERS
 introspect_port = ${IRONIC_NOTIFICATION_MANAGER_INTROSPECT_PORT:-8110}
 EOM

@@ -17,4 +17,9 @@ COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/ironic-notification-manager", "--conf_file", "/etc/contrail/ironic-notification-manager.conf", "--conf_file", "/etc/contrail/contrail-keystone-auth.conf"]
 
+ENV NODE_TYPE=openstack
+LABEL $VENDOR_DOMAIN".pod"=$NODE_TYPE
+
+ENV SERVICE_NAME=ironic
+LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
 LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
