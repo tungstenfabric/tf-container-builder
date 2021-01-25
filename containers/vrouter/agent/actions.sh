@@ -167,9 +167,26 @@ agent_mode = ${TSN_AGENT_MODE}
 EOM
     fi
 
-    local vrouter_gateway_opts=''
-    if [[ -n "$VROUTER_GATEWAY" ]] ; then
-        vrouter_gateway_opts="gateway=$VROUTER_GATEWAY"
+    local vrouter_opts=''
+    if [[ -n "$L3MH_CIDR" ]]; then
+        local control_node_ip=$(resolve_1st_control_node_ip)
+        local phys_ints=$(ip route show $control_node_ip | grep "nexthop via" | awk '{print $5}' | tr '\n' ' ')
+        local phys_ips=''
+        local nic=''
+        for nic in $phys_ints ; do
+            phys_ips+=" $(get_cidr_for_nic $nic)"
+        done
+        read -r -d '' vrouter_opts << EOM || true
+physical_interface=${phys_ints}
+physical_interface_addr=${phys_ips}
+gateway=$(ip route show $control_node_ip | grep "nexthop via" | awk '{print $3}' | tr '\n' ' ')
+loopback_ip=$(eval_l3mh_loopback_ip)
+EOM
+    else
+        vrouter_opts="physical_interface=$PHYS_INT"
+        if [[ -n "$VROUTER_GATEWAY" ]] ; then
+            vrouter_opts+=$'\n'"gateway=$VROUTER_GATEWAY"
+        fi
     fi
 
     local subcluster_option=""
@@ -353,9 +370,8 @@ $metadata_ssl_conf
 [VIRTUAL-HOST-INTERFACE]
 name=vhost0
 ip=$VROUTER_CIDR
-physical_interface=$PHYS_INT
 compute_node_address=$COMPUTE_NODE_ADDRESS
-$vrouter_gateway_opts
+$vrouter_opts
 
 [SERVICE-INSTANCE]
 netns_command=/usr/bin/opencontrail-vrouter-netns
@@ -479,15 +495,22 @@ function vhost0_init() {
     #   In osp13 case there is docker service restart that leads
     #   to restart of dpdk container at the step right after network
     #   pre-config stetp. At this moment agen container is not created yet
-    #   and ifup is alrady run before, so, only dpdk container
+    #   and ifup is alrady run before, so only dpdk container
     #   can do re-init of vhost0.
-    if is_dpdk || [[ "$KERNEL_INIT_VHOST0" != 'true' ]] ; then
+    if is_dpdk || ! is_enabled "$KERNEL_INIT_VHOST0" ; then
         if ! wait_vhost0 ; then
             echo "FATAL: failed to wait vhost0"
             exit 1
         fi
     else
-        if ! init_vhost0 ; then
+        local l3mh_loopback_ip=$(eval_l3mh_loopback_ip)
+        local res=0
+        if [[ -n "$l3mh_loopback_ip" ]] ; then
+            init_vhost0_l3mh $l3mh_loopback_ip || res=1
+        else
+            init_vhost0 || res=1
+        fi
+        if [[ $res != 0 ]] ; then
             echo "FATAL: failed to init vhost0"
             exit 1
         fi

@@ -36,16 +36,24 @@ function load_vrouter() {
 }
 
 function create_vhost0() {
+    # $1 and $2 are comma-separated list of interfaces
+    # $3 is a vrrp mac for L3MH case
     local phys_int=$1
     local phys_int_mac=$2
+    local vhost0_mac=${3:-$phys_int_mac}
     load_vrouter
     pkt_setup pkt1
     pkt_setup pkt2
     pkt_setup pkt3
-    vif --create vhost0 --mac $phys_int_mac
-    vif --add $phys_int --mac $phys_int_mac --vrf 0 --vhost-phys --type physical
-    vif --add vhost0 --mac $phys_int_mac --vrf 0 --type vhost --xconnect $phys_int
-    ip link set dev vhost0 address $phys_int_mac
+    vif --create vhost0 --mac $vhost0_mac
+    local phys_int_arr=( $(echo $phys_int | tr ',' ' ') )
+    local phys_int_mac_arr=( $(echo $phys_int_mac | tr ',' ' ') )
+    local i=${#phys_int_arr[@]}
+    for ((i--;i>=0;i--)); do
+        vif --add ${phys_int_arr[$i]} --mac ${phys_int_mac_arr[$i]} --vrf 0 --vhost-phys --type physical
+    done
+    vif --add vhost0 --mac $vhost0_mac --vrf 0 --type vhost --xconnect $phys_int
+    ip link set dev vhost0 address $vhost0_mac
     ip link set dev vhost0 up
 }
 
@@ -63,6 +71,15 @@ function ifup_init_vhost() {
     ip addr show dev vhost0 >/dev/null 2>&1 && return 0
     local phys_int=${BIND_INT}
     [ -z "$phys_int" ] && { echo "ERROR: BIND_INT in not set in ifcfg-vhost0" && return 1; }
+    if [[ -n "L3MH_CIDR" ]]; then
+        ifup_init_vhost_l3mh
+    else
+        ifup_init_vhost_classic
+    fi
+}
+
+function ifup_init_vhost_classic() {
+    local phys_int=${BIND_INT}
     local physdev=''
     if physdev=`grep PHYSDEV /etc/sysconfig/network-scripts/ifcfg-${phys_int}`; then
       local parent_dev=`echo $physdev|awk -F"=" '{print $2}'`
@@ -86,6 +103,17 @@ function ifup_init_vhost() {
         kill_dhcp_clients ${phys_int}
         ifup ${phys_int}
     fi
+}
+
+function ifup_init_vhost_l3mh() {
+    local phys_ints=${BIND_INT}
+    # up iface to read info from it on next steps
+    declare phys_int_mac_arr
+    for phys_int in $(echo $phys_ints | tr ',' ' ') ; do
+        ifup ${phys_int}
+        phys_int_mac_arr=( $phys_int_mac_arr $(get_iface_mac $phys_int) )
+    done
+    create_vhost0 $phys_ints $(echo "${phys_int_mac_arr[@]}" | tr ' ' ',') $L3MH_VRRP_MAC ; then
 }
 
 # ifdown interface

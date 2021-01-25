@@ -586,7 +586,7 @@ function init_vhost0() {
         local pci_address=`cat $binding_data_dir/${phys_int}_pci`
         # TODO: This part of config is needed for vif tool to work,
         # later full config will be written.
-        # Maybe rework someow config pathching..
+        # Maybe rework somehow config pathching..
         prepare_vif_config $AGENT_MODE
         addrs=`cat $binding_data_dir/${phys_int}_ip_addresses`
         mtu=`cat $binding_data_dir/${phys_int}_mtu`
@@ -646,6 +646,66 @@ function init_vhost0() {
     if ! is_dpdk ; then
         local _phys_int_routes=$(get_dev_routes $phys_int)
         del_dev_routes ${phys_int} "$_phys_int_routes"
+    fi
+
+    [[ $ret == 0 ]] && ensure_host_resolv_conf
+    dbg_trace_agent_vers
+    return $ret
+}
+
+function init_vhost0_l3mh() {
+    local vrouter_mac="$(get_iface_mac vhost0)"
+    if [[ "$vrouter_mac" == "$L3MH_VRRP_MAC" ]] ; then
+        echo "INFO: vhost0 is already up"
+        dbg_trace_agent_vers
+        ensure_host_resolv_conf
+        return 0
+    fi
+
+    local control_node_ip=$(resolve_1st_control_node_ip)
+    local phys_ints_arr=( $(ip route show $control_node_ip | grep "nexthop via" | awk '{print $5}' | tr '\n' ' ') )
+    if [[ -z "${phys_ints_arr[@]}" ]]; then
+        echo "ERROR: Physical NIC-s couldn't be derived from routing to control node. Please check routes."
+        exit 1
+    fi
+    declare phys_int_mac_arr
+    local mtu=$(get_iface_mtu ${phys_int_arr[0]})
+    local _mtu
+    local i=${#phys_int_arr[@]}
+    local ifcfg_files=1
+    for ((i--;i>=0;i--)); do
+        local phys_int=${phys_int_arr[$i]}
+        phys_int_mac_arr=( $phys_int_mac_arr $(get_iface_mac $phys_int) )
+        _mtu=$(get_iface_mtu $phys_int)
+        if [[ "$mtu" != "$_mtu" ]]; then
+            echo "ERROR: MTU(=$_mtu) for interface $phys_int != MTU(=$mtu) of interface ${phys_int_arr[0]}"
+            exit 1
+        fi
+        if [[ ! -e /etc/sysconfig/network-scripts/ifcfg-${phys_int} ]]; then
+            ifcfg_files=0
+        fi
+    done
+
+    echo "INFO: creating vhost0 for L3MH mode. nics: $phys_int_arr, macs: $phys_int_mac_arr"
+    if ! create_vhost0 $(echo "${phys_int_arr[@]}" | tr ' ' ',') $(echo "${phys_int_mac_arr[@]}" | tr ' ' ',') $L3MH_VRRP_MAC ; then
+        dbg_trace_agent_vers
+        return 1
+    fi
+
+    local ret=0
+    if [[ ifcfg_files == 1 || -e /etc/sysconfig/network-scripts/ifcfg-vhost0 ]]; then
+        echo "INFO: creating ifcfg-vhost0 and initialize it via ifup"
+        if [ -z "$BIND_INT" ] ; then
+            prepare_ifcfg_l3mh $(echo ${phys_int_arr[@]} | tr ' ' ',') 'kernel' $mtu || true
+        fi
+        ip link set dev vhost0 down
+        ifup vhost0 || { echo "ERROR: failed to ifup vhost0." && ret=1; }
+    else
+        echo "INFO: there is no ifcfg for ${phys_int_arr[@]} and ifcfg-vhost0, so initialize vhost0 manually"
+        if [[ -n "$mtu" ]] ; then
+            echo "INFO: set mtu"
+            ip link set dev vhost0 mtu $mtu
+        fi
     fi
 
     [[ $ret == 0 ]] && ensure_host_resolv_conf
@@ -916,7 +976,7 @@ function check_physical_mtu() {
     fi
 }
 
-function set_qos () {
+function set_qos() {
     local interface_list mode policy slaves pci_addresses bond_numa
     if [[ -n "${PRIORITY_ID}" ]] || [[ -n "${QOS_QUEUE_ID}" ]]; then
         if is_dpdk ; then
@@ -930,4 +990,33 @@ function set_qos () {
             /opt/contrail/utils/qosmap.py --interface_list ${interface_list}
         fi
     fi
+}
+
+function ip_in_cidr() {
+    local ip=$1
+    local cidr=$2
+
+    local ip_parts=( $(echo $ip | tr '.' ' ') )
+    local ip_start=$(( ip_parts[0]*(2**24) + ip_parts[1]*(2**16) + ip_parts[2]*(2**8) + ip_parts[3] ))
+    local cidr_parts=( $(echo $cidr | tr '.' ' ' | tr '/' ' ') )
+    local cidr_start=$(( cidr_parts[0]*(2**24) + cidr_parts[1]*(2**16) + cidr_parts[2]*(2**8) + cidr_parts[3] ))
+    local cidr_end=$(( cidr_start + 2**(32-cidr_parts[4]) ))
+    if (( cidr_start <= ip )) && (( ip < cidr_end )) ; then
+        return 0
+    fi
+    return 1
+}
+
+function eval_l3mh_loopback_ip() {
+    if [[ -z "$L3MH_CIDR" ]]; then
+        return
+    fi
+    # ip tool shows additional loopback interfaces 
+    local ip
+    for ip in $(ip addr | awk '/inet /{print $2}' | cut -d '/' -f 1 ) ; do
+        if ip_in_cidr $ip $L3MH_CIDR ; then
+            echo "$ip"
+            return
+        fi
+    done
 }
