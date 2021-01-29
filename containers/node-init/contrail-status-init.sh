@@ -12,7 +12,7 @@ if [[ -z "$CONTRAIL_STATUS_IMAGE" ]]; then
   exit 1
 fi
 
-env_opts="--env INTROSPECT_SSL_ENABLE=$INTROSPECT_SSL_ENABLE --env VENDOR_NAME=$VENDOR_NAME"
+env_opts="--env INTROSPECT_SSL_ENABLE=$INTROSPECT_SSL_ENABLE --env VENDOR_NAME=$VENDOR_NAME --env VENDOR_DOMAIN=$VENDOR_DOMAIN"
 vol_opts=''
 cmd_args=''
 # ssl folder is always to mounted: in case of IPA init container
