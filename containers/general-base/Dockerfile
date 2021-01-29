@@ -16,13 +16,20 @@ COPY licensing.txt /licenses
 
 ARG GENERAL_EXTRA_RPMS=""
 ARG YUM_ENABLE_REPOS=""
+ARG LC_ALL="en_US.UTF-8"
+ARG LANG="en_US.UTF-8"
+ARG LANGUAGE="en_US.UTF-8"
 
 # These definitions are just for build purposes and must not be changed at runtime
-ENV CONTRAIL_GID=1999
-ENV CONTRAIL_UID=1999
-ENV CONTRAIL_USER=contrail
-# version is used by contrail-version tool
-ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG
+# CONTRAIL_VERSION - used by contrail-version tool
+# LANG, LC_ALL - used by some tools, like rabbitmqctl
+ENV CONTRAIL_GID=1999 \
+    CONTRAIL_UID=1999 \
+    CONTRAIL_USER=contrail \
+    CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG \
+    LC_ALL=$LC_ALL \
+    LANG=$LANG \
+    LANGUAGE=$LANGUAGE
 
 # this copy should be before yum install
 COPY *.repo /etc/yum.repos.d/
