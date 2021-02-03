@@ -1,12 +1,14 @@
 ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
-ARG VENDOR_DOMAIN
 
 ARG CONTAINER_NAME
+ENV SERVICE_NAME=kafka
 LABEL name=$CONTAINER_NAME \
       summary="Contrail Kafka" \
-      description="Contrail Kafka is used for streaming data in Analytics DB."
+      description="Contrail Kafka is used for streaming data in Analytics DB." \
+      $VENDOR_DOMAIN".service"=$SERVICE_NAME \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 ARG KAFKA_DISTRO_NAME=kafka_2.11-2.3.1
 ARG KAFKA_CACHE=https://github.com/tungstenfabric/tf-third-party-cache/blob/master/kafka
@@ -36,7 +38,3 @@ RUN for item in `ls /__*` ; do mv $item /${item:3} ; done && \
 ENTRYPOINT ["/docker-entrypoint.sh"]
 WORKDIR $KAFKA_DIR
 CMD ["bin/kafka-server-start.sh", "config/server.properties"]
-
-ENV SERVICE_NAME=kafka
-LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
-LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME

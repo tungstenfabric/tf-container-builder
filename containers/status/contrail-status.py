@@ -319,8 +319,8 @@ class IntrospectUtil(object):
         self._timeout = options.timeout
         self._cacert = options.cacert if os.path.isfile(options.cacert) else False
         self._certs = (options.certfile, options.keyfile) \
-            if os.path.isfile(options.certfile) and \
-                os.path.isfile(options.keyfile) else None
+            if (os.path.isfile(options.certfile) and
+                os.path.isfile(options.keyfile)) else None
 
     def _mk_url_str(self, path, secure=False):
         proto = "https" if secure else "http"
@@ -412,7 +412,7 @@ def get_svc_status(svc_name, svc_uve_status, svc_uve_description, svc_status):
             svc_status = 'timeout'
     else:
         svc_status = 'initializing'
-    if svc_uve_description is not None and svc_uve_description is not '':
+    if svc_uve_description:
         svc_status = svc_status + ' (' + svc_uve_description + ')'
     return svc_status
 

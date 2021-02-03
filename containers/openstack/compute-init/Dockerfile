@@ -1,11 +1,12 @@
 ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
-ARG VENDOR_DOMAIN
+
 ARG CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Init container for OpenStack Compute" \
-      description="Sidecar container with libraries for nova-compute."
+      description="Sidecar container with libraries for nova-compute." \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 RUN rpm -Uvh --nodeps $(repoquery --location contrail-vrouter-agent) && \
     rpm -Uvh --nodeps $(repoquery --location contrail-nova-vif) && \
@@ -21,5 +22,3 @@ RUN rpm -Uvh --nodeps $(repoquery --location contrail-vrouter-agent) && \
 COPY *.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
-
-LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME

@@ -1,12 +1,12 @@
 ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-base:${CONTRAIL_CONTAINER_TAG}
-ARG VENDOR_DOMAIN
 
 ARG CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Contrail Init container" \
-      description="Container is used to configure operating system for Contrail services."
+      description="Container is used to configure operating system for Contrail services." \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 RUN yum install -y openssl && \
     yum install -y --downloadonly --downloaddir=/ contrail-tripleo-puppet && \
@@ -16,5 +16,3 @@ RUN yum install -y openssl && \
 COPY *.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
-
-LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME

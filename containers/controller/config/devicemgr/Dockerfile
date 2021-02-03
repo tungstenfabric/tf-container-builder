@@ -1,11 +1,14 @@
 ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-controller-config-base:${CONTRAIL_CONTAINER_TAG}
-ARG VENDOR_DOMAIN
+
 ARG CONTAINER_NAME
+ENV SERVICE_NAME=device-manager
 LABEL name=$CONTAINER_NAME \
       summary="Contrail Device Manager" \
-      description="Contrail Device Manager is used to manage network devices in the Contrail system."
+      description="Contrail Device Manager is used to manage network devices in the Contrail system." \
+      $VENDOR_DOMAIN".service"=$SERVICE_NAME \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 # git rpm cannot be remove as it removes contrail-utils, and common by deps
 RUN pip install --no-compile \
@@ -36,8 +39,3 @@ COPY *.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/contrail-device-manager", "--conf_file", "/etc/contrail/contrail-device-manager.conf", "--conf_file", "/etc/contrail/contrail-keystone-auth.conf"]
-
-ENV SERVICE_NAME=device-manager
-LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
-LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
-

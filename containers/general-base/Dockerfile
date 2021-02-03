@@ -3,9 +3,11 @@
 ARG LINUX_DISTR=centos
 ARG LINUX_DISTR_VER=7.4.1708
 FROM $LINUX_DISTR:$LINUX_DISTR_VER
-ARG VENDOR_NAME
 
+ARG VENDOR_NAME
+ARG VENDOR_DOMAIN
 ARG CONTRAIL_CONTAINER_TAG
+
 LABEL vendor=$VENDOR_NAME \
       version=$CONTRAIL_CONTAINER_TAG \
       release="5.1.0"
@@ -23,7 +25,9 @@ ARG LANGUAGE="en_US.UTF-8"
 # These definitions are just for build purposes and must not be changed at runtime
 # CONTRAIL_VERSION - used by contrail-version tool
 # LANG, LC_ALL - used by some tools, like rabbitmqctl
-ENV CONTRAIL_GID=1999 \
+ENV VENDOR_DOMAIN=$VENDOR_DOMAIN \
+    VENDOR_NAME=$VENDOR_NAME \
+    CONTRAIL_GID=1999 \
     CONTRAIL_UID=1999 \
     CONTRAIL_USER=contrail \
     CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG \

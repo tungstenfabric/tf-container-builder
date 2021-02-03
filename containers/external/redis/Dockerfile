@@ -1,12 +1,15 @@
 ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
-ARG VENDOR_DOMAIN
-ARG CONTAINER_NAME
 
+ARG CONTAINER_NAME
+ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG \
+    SERVICE_NAME=redis
 LABEL name=$CONTAINER_NAME \
       summary="Contrail Redis" \
-      description="Contrail Redis server supports query engine."
+      description="Contrail Redis server supports query engine." \
+      $VENDOR_DOMAIN".service"=$SERVICE_NAME \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 ARG REDIS_RPM_NAME=redis40u-4.0.14-2.el7.ius.x86_64
 ARG REDIS_CACHE=https://github.com/tungstenfabric/tf-third-party-cache/blob/master/redis
@@ -33,8 +36,3 @@ ENTRYPOINT ["/contrail-entrypoint.sh"]
 EXPOSE 6379
 
 CMD ["redis-server"]
-
-ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG
-ENV SERVICE_NAME=redis
-LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
-LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME

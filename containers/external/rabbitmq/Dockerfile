@@ -1,12 +1,17 @@
 ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
-ARG VENDOR_DOMAIN
-ARG CONTAINER_NAME
 
+ARG CONTAINER_NAME
+ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG \
+    SERVICE_NAME=rabbitmq \
+    RABBITMQ_LOGS=- \
+    RABBITMQ_SASL_LOGS=-
 LABEL name=$CONTAINER_NAME \
       summary="Contrail RabbitMQ" \
-      description="Contrail Rabbitmq is the message bus that different Contrail processes subscribe to."
+      description="Contrail Rabbitmq is the message bus that different Contrail processes subscribe to." \
+      $VENDOR_DOMAIN".service"=$SERVICE_NAME \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 COPY *.sh hostname_to_ip /
 
@@ -28,11 +33,3 @@ EXPOSE 15671 15672 4369 5671 5672 25672
 ENTRYPOINT ["/contrail-entrypoint.sh"]
 
 CMD ["rabbitmq-server"]
-
-ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG \
-    SERVICE_NAME=rabbitmq \
-    RABBITMQ_LOGS=- \
-    RABBITMQ_SASL_LOGS=-
-
-LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME \
-      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME

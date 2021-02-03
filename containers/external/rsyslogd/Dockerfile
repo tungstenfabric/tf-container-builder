@@ -2,12 +2,14 @@ ARG CONTAINER_NAME
 ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
-ARG RSYSLOG_VERSION=8.24.0
-ARG VENDOR_DOMAIN
 
+ARG RSYSLOG_VERSION=8.24.0
+ENV SERVICE_NAME=rsyslogd
 LABEL name=$CONTAINER_NAME \
-    summary="Contrail rsyslogd" \
-    description="Contrail rsyslogd support"
+      summary="Contrail rsyslogd" \
+      description="Contrail rsyslogd support" \
+      $VENDOR_DOMAIN".service"=$SERVICE_NAME \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 COPY *.sh /
 
@@ -23,7 +25,3 @@ COPY rsyslog.d/*.conf /etc/rsyslog.d/
 ENV RSYSLOGD_PIDFILE=/var/run/rsyslogd.pid
 ENTRYPOINT ["/contrail-entrypoint.sh"]
 CMD rsyslogd -n -f /etc/rsyslog.conf -i $RSYSLOGD_PIDFILE
-
-ENV SERVICE_NAME=rsyslogd
-LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
-LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
