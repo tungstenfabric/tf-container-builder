@@ -1,11 +1,15 @@
 ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-base:${CONTRAIL_CONTAINER_TAG}
-ARG VENDOR_DOMAIN
+
 ARG CONTAINER_NAME
+ENV NODE_TYPE=vcenter \
+    SERVICE_NAME=plugin
 LABEL name=$CONTAINER_NAME \
       summary="VMware vCenter plugin" \
-      description="VMware vCenter plugin workflows are represented as simple workflows in vRO plugin."
+      description="VMware vCenter plugin workflows are represented as simple workflows in vRO plugin." \
+      $VENDOR_DOMAIN".service"=$SERVICE_NAME \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 RUN   yum install -y java-1.7.0-openjdk \
       libcontrail-java-api libcontrail-vijava \
@@ -19,8 +23,3 @@ COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["/usr/bin/contrail-vcenter-plugin"]
-
-ENV NODE_TYPE=vcenter
-ENV SERVICE_NAME=plugin
-LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
-LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME

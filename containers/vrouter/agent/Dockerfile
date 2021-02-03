@@ -1,12 +1,14 @@
 ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-vrouter-base:${CONTRAIL_CONTAINER_TAG}
-ARG VENDOR_DOMAIN
 
 ARG CONTAINER_NAME
+ENV SERVICE_NAME=agent
 LABEL name=$CONTAINER_NAME \
       summary="Contrail Vrouter Agent" \
-      description="The vRouter agent is a user space process running inside Linux. It acts as the local, lightweight control plane."
+      description="The vRouter agent is a user space process running inside Linux. It acts as the local, lightweight control plane." \
+      $VENDOR_DOMAIN".service"=$SERVICE_NAME \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 RUN  yum install -y dhclient NetworkManager contrail-vrouter-agent haproxy libvirt-client \
      python-opencontrail-vrouter-netns python-contrail-vrouter-api && \
@@ -22,7 +24,3 @@ COPY vhost0-dhcp/vhost0-nameservers.sh /etc/dhcp/dhclient-exit-hooks.d/
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/contrail-vrouter-agent"]
-
-ENV SERVICE_NAME=agent
-LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
-LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME

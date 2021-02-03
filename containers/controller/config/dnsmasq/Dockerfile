@@ -1,12 +1,16 @@
 ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-base:${CONTRAIL_CONTAINER_TAG}
-ARG VENDOR_DOMAIN
 
 ARG CONTAINER_NAME
+ENV NODE_TYPE=config \
+    SERVICE_NAME=dnsmasq
 LABEL name=$CONTAINER_NAME \
       summary="Contrail Dnsmasq" \
-      description="Contrail Dnsmasq provides network infrastructure: DNS, DHCP, router advertisement and network boot."
+      description="Contrail Dnsmasq provides network infrastructure: DNS, DHCP, router advertisement and network boot." \
+      $VENDOR_DOMAIN".pod"=$NODE_TYPE \
+      $VENDOR_DOMAIN".service"=$SERVICE_NAME \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 RUN mkdir -p /etc/scripts/
 
@@ -28,10 +32,3 @@ RUN yum install -y gcc make && \
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["dnsmasq", "-k", "-p0"]
-
-ENV NODE_TYPE=config
-LABEL $VENDOR_DOMAIN".pod"=$NODE_TYPE
-
-ENV SERVICE_NAME=dnsmasq
-LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
-LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME

@@ -1,12 +1,12 @@
 ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
-ARG VENDOR_DOMAIN
-ARG CONTAINER_NAME
 
+ARG CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Init container for OpenStack neutron-server with ml2 driver" \
-      description="Sidecar container with libraries for neutron-server with ml2 driver."
+      description="Sidecar container with libraries for neutron-server with ml2 driver." \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 COPY *.sh /
 
@@ -33,5 +33,3 @@ RUN wget -nv -c --tries=3 -O /tmp/get-pip.py https://bootstrap.pypa.io/2.7/get-p
     rm -rf networking-opencontrail /var/cache/yum
 
 ENTRYPOINT ["/entrypoint.sh"]
-
-LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME

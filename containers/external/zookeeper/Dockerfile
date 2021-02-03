@@ -1,12 +1,18 @@
 ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
-ARG VENDOR_DOMAIN
-ARG CONTAINER_NAME
 
+ARG CONTAINER_NAME
+ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG \
+    SERVICE_NAME=zookeeper
 LABEL name=$CONTAINER_NAME \
       summary="Contrail Zookeeper" \
-      description="Contrail uses the Apache ZooKeeper process to maintain synchronization of Contrail configuration, analytics and database running on the different instances of controllers."
+      description="Contrail uses the Apache ZooKeeper process to maintain synchronization of Contrail configuration, analytics and database running on the different instances of controllers." \
+      $VENDOR_DOMAIN".service"=$SERVICE_NAME \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
+
+ARG ZOO_VERSION="3.6.1"
+ARG ZOO_DISTRO_NAME="apache-zookeeper-${ZOO_VERSION}-bin"
 
 ENV ZOO_CONF_DIR=/conf \
     ZOO_DATA_DIR=/data \
@@ -20,13 +26,9 @@ ENV ZOO_CONF_DIR=/conf \
     ZOO_MAX_CLIENT_CNXNS=60 \
     ZOO_URL="https://archive.apache.org/dist/zookeeper" \
     ZOO_USER="zookeeper" \
-    ZOO_GROUP="zookeeper"
-
-ARG ZOO_VERSION="3.6.1"
-ARG ZOO_DISTRO_NAME="apache-zookeeper-${ZOO_VERSION}-bin"
-
-ENV PATH=$PATH:/${ZOO_DISTRO_NAME}/bin \
-    ZOOCFGDIR=$ZOO_CONF_DIR
+    ZOO_GROUP="zookeeper" \
+    PATH=$PATH:/${ZOO_DISTRO_NAME}/bin \
+    ZOOCFGDIR=/conf
 
 COPY *.sh hostname_to_ip /
 
@@ -53,8 +55,3 @@ EXPOSE 2181 2888 3888
 ENTRYPOINT ["/contrail-entrypoint.sh"]
 
 CMD ["zkServer.sh", "start-foreground"]
-
-ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG
-ENV SERVICE_NAME=zookeeper
-LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
-LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME

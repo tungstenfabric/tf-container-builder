@@ -1,17 +1,23 @@
 ARG UBUNTU_DISTR=ubuntu
 ARG UBUNTU_DISTR_VERSION=18.04
 FROM $UBUNTU_DISTR:$UBUNTU_DISTR_VERSION
+
 ARG VENDOR_NAME
 ARG VENDOR_DOMAIN
 ARG CONTRAIL_VERSION
 ARG CONTRAIL_CONTAINER_TAG
 ARG CONTAINER_NAME
+
+ENV VENDOR_DOMAIN=$VENDOR_DOMAIN \
+    VENDOR_NAME=$VENDOR_NAME \
+    CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG
 LABEL vendor=$VENDOR_NAME \
       version=$CONTRAIL_CONTAINER_TAG \
       release="5.1.0" \
       name=$CONTAINER_NAME \
       summary="Contrail vrouter kernel module for ubuntu" \
-      description="This image is used to build vrouter.ko for current ubuntu operating system that it's running on."
+      description="This image is used to build vrouter.ko for current ubuntu operating system that it's running on." \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 # Add required license as text file in Liceses directory
 RUN mkdir /licenses
@@ -52,6 +58,3 @@ COPY dkms.conf /opt/contrail/src/
 COPY entrypoint.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
-
-ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG
-LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME

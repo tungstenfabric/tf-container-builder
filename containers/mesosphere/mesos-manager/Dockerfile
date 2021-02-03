@@ -1,11 +1,16 @@
 ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-base:${CONTRAIL_CONTAINER_TAG}
-ARG VENDOR_DOMAIN
+
 ARG CONTAINER_NAME
+ENV NODE_TYPE=mesosphere \
+    SERVICE_NAME=mesos-manager
 LABEL name=$CONTAINER_NAME \
       summary="Mesosphere Manager" \
-      description="Contrail Mesosphere Manager."
+      description="Contrail Mesosphere Manager." \
+      $VENDOR_DOMAIN".pod"=$NODE_TYPE \
+      $VENDOR_DOMAIN".service"=$SERVICE_NAME \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 RUN yum install -y contrail-mesos-manager && \
     yum clean all -y && \
@@ -15,9 +20,3 @@ COPY entrypoint.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/contrail-mesos-manager", "-c", "/etc/contrail/contrail-mesos.conf"]
-
-ENV NODE_TYPE=mesosphere
-ENV SERVICE_NAME=mesos-manager
-LABEL $VENDOR_DOMAIN".pod"=$NODE_TYPE
-LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
-LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME

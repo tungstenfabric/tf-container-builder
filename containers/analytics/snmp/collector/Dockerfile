@@ -1,20 +1,18 @@
 ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-analytics-base:${CONTRAIL_CONTAINER_TAG}
-ARG VENDOR_DOMAIN
-ARG CONTAINER_NAME
 
+ARG CONTAINER_NAME
+ENV SERVICE_NAME=snmp-collector \
+    NODE_TYPE=analytics-snmp
 LABEL name=$CONTAINER_NAME \
-      summary="Contrail SNMP Collector" \
-      description="Contrail SNMP Collector collects data from switches(Spine/Leaf)."
+      summary="TungstenFabric SNMP Collector" \
+      description="TungstenFabric SNMP Collector collects data from switches(Spine/Leaf)." \
+      $VENDOR_DOMAIN".pod"=$NODE_TYPE \
+      $VENDOR_DOMAIN".service"=$SERVICE_NAME \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 COPY entrypoint.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/contrail-snmp-collector", "--device-config-file", "/etc/contrail/device.ini"]
-
-ENV SERVICE_NAME=snmp-collector
-ENV NODE_TYPE=analytics-snmp
-LABEL $VENDOR_DOMAIN".pod"=$NODE_TYPE
-LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
-LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME

@@ -1,20 +1,23 @@
 ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
-ARG VENDOR_DOMAIN
-ARG CONTAINER_NAME
 
+ARG CONTAINER_NAME
+ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG \
+    SERVICE_NAME=cassandra
 LABEL name=$CONTAINER_NAME \
       summary="Contrail Cassandra DB" \
-      description="Configuration database for Contrail Controller."
+      description="Configuration database for Contrail Controller." \
+      $VENDOR_DOMAIN".service"=$SERVICE_NAME \
+      $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 ENV CASSANDRA_HOME=/opt/cassandra \
     CASSANDRA_CONFIG=/etc/cassandra \
     CASSANDRA_LIB=/var/lib/cassandra \
     CASSANDRA_LOG=/var/log/cassandra \
     CASSANDRA_USER=cassandra \
-    CASSANDRA_GROUP=cassandra
-ENV PATH="$CASSANDRA_HOME/bin:$PATH"
+    CASSANDRA_GROUP=cassandra \
+    PATH="/opt/cassandra/bin:$PATH"
 
 ARG CASSANDRA_VERSION=3.11.3
 ARG DIST_URL="https://archive.apache.org/dist/cassandra/$CASSANDRA_VERSION/apache-cassandra-$CASSANDRA_VERSION-bin.tar.gz"
@@ -44,7 +47,6 @@ RUN set -eux && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
 # smoke test
 	cassandra -v
 
-
 VOLUME $CASSANDRA_LIB
 
 ENTRYPOINT ["/contrail-entrypoint.sh"]
@@ -56,8 +58,3 @@ ENTRYPOINT ["/contrail-entrypoint.sh"]
 EXPOSE 7000 7001 7199 9042 9160
 
 CMD ["cassandra", "-f"]
-
-ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG
-ENV SERVICE_NAME=cassandra
-LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
-LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
