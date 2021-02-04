@@ -50,8 +50,6 @@ fi
 # It should be root created by scons.
 # (SRC_ROOT - is used as default to inherit value from TF CI)
 export CONTRAIL_SOURCE=${CONTRAIL_SOURCE:-'/root/contrail'}
-# Flag to switch to build from sources
-export CONTRAIL_BUILD_FROM_SOURCE=${CONTRAIL_BUILD_FROM_SOURCE:-'false'}
 
 export K8S_VERSION=${K8S_VERSION:-'1.15.4'}
 export OPENSTACK_VERSION=${OPENSTACK_VERSION:-'queens'}
