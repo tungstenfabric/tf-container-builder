@@ -113,7 +113,7 @@ function ifup_init_vhost_l3mh() {
         ifup ${phys_int}
         phys_int_mac_arr=( $phys_int_mac_arr $(get_iface_mac $phys_int) )
     done
-    create_vhost0 $phys_ints $(echo "${phys_int_mac_arr[@]}" | tr ' ' ',') $L3MH_VRRP_MAC ; then
+    create_vhost0 $phys_ints $(echo "${phys_int_mac_arr[@]}" | tr ' ' ',') $L3MH_VRRP_MAC
 }
 
 # ifdown interface
