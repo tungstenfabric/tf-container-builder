@@ -1596,7 +1596,7 @@ spec:
           path: /var/lib/contrail
       - name: var-crashes
         hostPath:
-          path: /var/contrail/crashes
+          path: /var/crashes
       - name: etc-cni
         hostPath:
           path: /etc/cni
