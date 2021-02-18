@@ -22,7 +22,7 @@ vol_opts+=' -v /etc/localtime:/etc/localtime:ro'
 vol_opts+=' -v /var/run:/var/run'
 vol_opts+=' -v /dev:/dev'
 vol_opts+=' -v /var/lib/containers:/var/lib/containers'
-if [[ -n "${SERVER_CA_CERTFILE}" ]] ; then
+if [[ -n "${SERVER_CA_CERTFILE}" ]] && [[ -e ${SERVER_CA_CERTFILE} ]] ; then
   # In case of FreeIPA CA file is palced in /etc/ipa/ca.crt
   # and should be mounted additionally
   if [[ ! "${SERVER_CA_CERTFILE}" =~ "/etc/contrail/ssl" ]] ; then
