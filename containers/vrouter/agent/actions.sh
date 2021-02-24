@@ -7,6 +7,16 @@ export PARAMETERS_FILE='/parameters.sh'
 
 function prepare_agent_config_vars() {
     echo "INFO: Start prepare_agent_config_vars"
+
+    # check vhost0 first
+    local VROUTER_CIDR=$(get_cidr_for_nic 'vhost0')
+    if [[ -z "$VROUTER_CIDR" ]] ; then
+        echo "ERROR: vhost0 interface is down or has no assigned IP"
+        exit 1
+    fi
+    VROUTER_GATEWAY=${VROUTER_GATEWAY:-`get_default_vrouter_gateway`}
+    echo "INFO: vhost0 cidr $VROUTER_CIDR, gateway $VROUTER_GATEWAY"
+
     # TODO: avoid duplication of reading parameters with init_vhost0
     local PHYS_INT_MAC PHYS_INT PCI_ADDRESS
     if ! is_dpdk ; then
@@ -18,16 +28,16 @@ function prepare_agent_config_vars() {
         PHYS_INT_MAC=`cat $binding_data_dir/${PHYS_INT}_mac`
         PCI_ADDRESS=`cat $binding_data_dir/${PHYS_INT}_pci`
     fi
+    if [[ -z "$PHYS_INT" || -z "$PHYS_INT_MAC" ]] ; then
+        echo "ERROR: Empty one of required data: nic=$PHYS_INT, mac=$PHYS_INT_MAC"
+        exit 1
+    fi
+    echo "INFO: Physical interface: $PHYS_INT, mac=$PHYS_INT_MAC, pci=$PCI_ADDRESS"
 
     if [ "$CLOUD_ORCHESTRATOR" == "kubernetes" ] && [ -n "$VROUTER_GATEWAY" ]; then
         # dont need k8s_pod_cidr_route if default gateway is vhost0
         add_k8s_pod_cidr_route
     fi
-
-    VROUTER_GATEWAY=${VROUTER_GATEWAY:-`get_default_vrouter_gateway`}
-    local VROUTER_CIDR=$(get_cidr_for_nic 'vhost0')
-    echo "INFO: Physical interface: $PHYS_INT, mac=$PHYS_INT_MAC, pci=$PCI_ADDRESS"
-    echo "INFO: vhost0 cidr $VROUTER_CIDR, gateway $VROUTER_GATEWAY"
 
     if [ "$CLOUD_ORCHESTRATOR" == "vcenter" ] && ! is_tsn; then
         HYPERVISOR_TYPE=${HYPERVISOR_TYPE:-'vmware'}
@@ -38,10 +48,6 @@ function prepare_agent_config_vars() {
         HYPERVISOR_TYPE=${HYPERVISOR_TYPE:-'kvm'}
     fi
 
-    if [[ -z "$VROUTER_CIDR" ]] ; then
-        echo "ERROR: vhost0 interface is down or has no assigned IP"
-        exit 1
-    fi
     local vrouter_ip=${VROUTER_CIDR%/*}
     local AGENT_NAME=${VROUTER_HOSTNAME:-"$(resolve_hostname_by_ip $vrouter_ip)"}
     [ -z "$AGENT_NAME" ] && AGENT_NAME="$(get_default_hostname)"
@@ -116,6 +122,7 @@ function prepare_agent_config_vars() {
 
     local result_params=""
     local key line
+    local params=$(cat $PARAMETERS_FILE)
     while read line; do
         key=$(echo $line | cut -d '=' -f 1)
         if [[ -n "${key[0]}" ]]; then
@@ -125,10 +132,15 @@ ${key[0]}="${!key[0]}"
 
 EOM
         fi
-    done <$PARAMETERS_FILE
-    echo "$result_params" > $PARAMETERS_FILE
+    done <<< "$params"
 
-    echo "ready" > /parameters_state
+    local tname=$(mktemp --dry-run)
+    echo "$result_params" > $tname
+    mv $tname $PARAMETERS_FILE
+
+    tname=$(mktemp --dry-run)
+    echo "ready" > $tname
+    mv $tname /parameters_state
 
     cleanup_lbaas_netns_config
 }
@@ -143,6 +155,12 @@ function create_agent_config() {
 
     source $PARAMETERS_FILE
 
+    if [[ -z "$PHYS_INT" || -z "$PHYS_INT_MAC" ]] ; then
+        echo "ERROR: Empty one of required data: nic=$PHYS_INT, mac=$PHYS_INT_MAC"
+        exit 1
+    fi
+    echo "INFO: Physical interface: nic=$PHYS_INT, mac=$PHYS_INT_MAC"
+
     if [ "$CLOUD_ORCHESTRATOR" == "vcenter" ] && ! [[ -n "$TSN_AGENT_MODE" ]]; then
         read -r -d '' vmware_options << EOM || true
 vmware_physical_interface = $VMWARE_PHYS_INT
@@ -152,6 +170,12 @@ EOM
 
     local agent_mode_options="physical_interface_mac = $PHYS_INT_MAC"
     if [[ "$AGENT_MODE" == 'dpdk' ]]; then
+        if [[ -z "$PHYS_INT_MAC" || -z "$PCI_ADDRESS" ]] ; then
+            echo "ERROR: Empty one of required data: mac=$PHYS_INT_MAC, pci=$PCI_ADDRESS"
+            exit 1
+        fi
+        echo "INFO: dpdk mode, physical interface: mac=$PHYS_INT_MAC, pci=$PCI_ADDRESS"
+
         read -r -d '' agent_mode_options << EOM || true
 platform=${AGENT_MODE}
 physical_interface_mac=$PHYS_INT_MAC
@@ -577,7 +601,7 @@ function get_parameters() {
     if [[ ! -f /parameters_state ]]; then
         exit 1
     fi
-    cat /parameters.sh
+    cat $PARAMETERS_FILE
 }
 
 function prepare_agent() {
