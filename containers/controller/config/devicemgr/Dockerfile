@@ -3,7 +3,8 @@ ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-controller-config-base:${CONTRAIL_CONTAINER_TAG}
 
 ARG CONTAINER_NAME
-ENV SERVICE_NAME=device-manager
+ENV SERVICE_NAME=device-manager \
+    CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Contrail Device Manager" \
       description="Contrail Device Manager is used to manage network devices in the Contrail system." \

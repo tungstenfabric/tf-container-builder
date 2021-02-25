@@ -187,7 +187,12 @@ class CriContainersInterface:
 
     def list(self, filter_):
         x = self._cri.list(True)
-        return [i for i in x if filter_ in i['Labels']]
+        y = [i for i in x if filter_ in i['Labels']]
+        # NB. openshift list doesn't contain required labels.
+        # we duplicate the labels values in ct env. we use the envs
+        # to perform filtering later. the list doesn't have env
+        # info. let's return full list if the label filtering fails.
+        return x if 0 < len(x) and len(y) == 0 else y
 
     def inspect(self, id_):
         return self._cri.inspect(id_)
@@ -592,7 +597,6 @@ def get_value_from_env(env, key):
     # If env value is not found return none
     return value.split('=')[1] if value else None
 
-
 def get_full_env_of_container(cid):
     cnt_full = client.inspect(cid)
     return cnt_full['Config'].get('Env')
@@ -609,15 +613,23 @@ def get_containers():
         if not labels:
             continue
         service = labels.get(vendor_domain + '.service')
+        full_env = get_full_env_of_container(cnt['Id'])
+        if not service:
+            service = get_value_from_env(full_env, 'SERVICE_NAME')
         if not service:
             # filter only service containers (skip *-init, contrail-status)
             continue
-        full_env = get_full_env_of_container(cnt['Id'])
         pod = labels.get(vendor_domain + '.pod')
         if not pod:
             pod = get_value_from_env(full_env, 'NODE_TYPE')
         name = labels.get(vendor_domain + '.container.name')
+        if not name:
+            name = get_value_from_env(full_env, 'CONTAINER_NAME')
+
         version = labels.get('version')
+        if not version:
+            version = get_value_from_env(full_env, 'CONTRAIL_VERSION')
+
         env_hash = hash(frozenset(full_env))
 
         # service is not empty at this point
@@ -633,7 +645,7 @@ def get_containers():
             'Original Name': name,
             'Original Version': version,
             'State': cnt['State'],
-            'Status': cnt['Status'],
+            'Status': cnt.get('Status', ''),
             'Id': cnt['Id'][0:12],
             'Created': cnt['Created'],
             'Env': full_env,

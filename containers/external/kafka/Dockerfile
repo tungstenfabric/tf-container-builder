@@ -3,7 +3,8 @@ ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
 
 ARG CONTAINER_NAME
-ENV SERVICE_NAME=kafka
+ENV SERVICE_NAME=kafka \
+    CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Contrail Kafka" \
       description="Contrail Kafka is used for streaming data in Analytics DB." \

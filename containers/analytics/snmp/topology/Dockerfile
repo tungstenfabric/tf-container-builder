@@ -4,7 +4,8 @@ FROM ${CONTRAIL_REGISTRY}/contrail-analytics-base:${CONTRAIL_CONTAINER_TAG}
 
 ARG CONTAINER_NAME
 ENV SERVICE_NAME=topology \
-    NODE_TYPE=analytics-snmp
+    NODE_TYPE=analytics-snmp \
+    CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="TungstenFabric SNMP Topology" \
       description="TungstenFabric SNMP Topology periodically updates topology table, which is used by UI to draw maps." \
