@@ -3,7 +3,8 @@ ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-controller-control-base:${CONTRAIL_CONTAINER_TAG}
 
 ARG CONTAINER_NAME
-ENV SERVICE_NAME=control
+ENV SERVICE_NAME=control \
+    CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Contrail Controller" \
       description="Contrail Control is xmpp/bgp based routing engine for Contrail." \
