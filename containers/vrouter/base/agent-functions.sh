@@ -4,14 +4,9 @@ source /network-functions-vrouter-${AGENT_MODE}
 
 # Three signal handlers for vrouter-agent container
 function trap_vrouter_agent_quit() {
-    local res=0
-    if ! term_process $(cat /var/run/vrouter-agent.pid) ; then
-        echo "ERROR: Failed to stop agent process"
-        res=1
-    fi
+    term_process $(cat /var/run/vrouter-agent.pid)
     remove_vhost0
     cleanup_vrouter_agent_files
-    exit $res
 }
 
 function trap_vrouter_agent_term() {
@@ -19,7 +14,11 @@ function trap_vrouter_agent_term() {
 }
 
 function trap_vrouter_agent_hub() {
-    send_sighup_child_process $(cat /var/run/vrouter-agent.pid)
+    # TODO when vrouter agent binary will support SIGHUP
+    # We can just run " kill -HUP $(cat /var/run/vrouter-agent.pid) "
+    # But now we have to restart agent process for reload agent config file
+    touch /var/run/restart_agent
+    term_process $(cat /var/run/vrouter-agent.pid)
 }
 
 #Agents constants
@@ -700,6 +699,12 @@ function remove_vhost0() {
         echo "INFO: removing vhost0 is skipped for dpdk"
         return
     fi
+
+    if [ "$CLOUD_ORCHESTRATOR" == "kubernetes" ] && [ -n "$VROUTER_GATEWAY" ]; then
+        echo "INFO: delete k8s pod cidr route"
+        del_k8s_pod_cidr_route
+    fi
+
     echo "INFO: removing vhost0"
     declare phys_int phys_int_mac restore_ip_cmd routes
     IFS=' ' read -r phys_int phys_int_mac <<< $(get_physical_nic_and_mac)
@@ -717,7 +722,8 @@ function cleanup_vrouter_agent_files() {
 }
 
 function is_process_dead() {
-    if [ -n "$pid" ] && kill -0 $pid 2>&1 >/dev/null ; then
+    local pid=$1
+    if [ -n "$pid" ] && kill -0 $pid >/dev/null 2>&1 ; then
         return 1
     fi
 }
@@ -729,24 +735,20 @@ function term_process() {
         return
     fi
     echo "INFO: terminate process $pid"
-    kill "$pid"
-    if wait_cmd_success is_process_dead 3 5 ; then
+    kill $pid
+    if wait_cmd_success "is_process_dead $pid" 3 5 ; then
         return
     fi
     echo "INFO: kill process $pid"
-    kill -KILL "$pid" &>/dev/null
-    wait_cmd_success is_process_dead 3 5
+    kill -KILL $pid &>/dev/null
+    wait_cmd_success "is_process_dead $pid" 3 5
 }
 
 # send quit signal to root process
 function quit_root_process() {
-    kill -QUIT 1
-}
-
-# send SIGHUP signal to child process
-function send_sighup_child_process(){
-    local pid=$1
-    [ -n "$pid" ] && kill -HUP "$pid"
+    local mypid=$(cat /my.pid)
+    [ -n "$mypid" ] || mypid=1
+    kill -QUIT $mypid
 }
 
 # In release 5.0, vrouter to vrouter encryption
@@ -863,6 +865,11 @@ function check_and_launch_dhcp_clients() {
 function add_k8s_pod_cidr_route() {
     local pod_cidr=${KUBERNETES_POD_SUBNETS:-"10.32.0.0/12"}
     ip route add $pod_cidr via $VROUTER_GATEWAY dev vhost0 || ip route replace $pod_cidr via $VROUTER_GATEWAY dev vhost0
+}
+
+function del_k8s_pod_cidr_route() {
+    local pod_cidr=${KUBERNETES_POD_SUBNETS:-"10.32.0.0/12"}
+    ip route del $pod_cidr via $VROUTER_GATEWAY dev vhost0 || true
 }
 
 function mask2cidr() {
