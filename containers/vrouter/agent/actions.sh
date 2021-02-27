@@ -34,7 +34,7 @@ function prepare_agent_config_vars() {
     fi
     echo "INFO: Physical interface: $PHYS_INT, mac=$PHYS_INT_MAC, pci=$PCI_ADDRESS"
 
-    if [ "$CLOUD_ORCHESTRATOR" == "kubernetes" ] && [ ! -z $VROUTER_GATEWAY ]; then
+    if [ "$CLOUD_ORCHESTRATOR" == "kubernetes" ] && [ -n "$VROUTER_GATEWAY" ]; then
         # dont need k8s_pod_cidr_route if default gateway is vhost0
         add_k8s_pod_cidr_route
     fi
@@ -575,7 +575,7 @@ function set_traps() {
     trap 'trap_vrouter_agent_term' SIGTERM SIGINT
 
     # Send SIGHUP signal to child process
-    trap 'trap_vrouter_agent_hub' SIGHUP
+    trap 'trap_vrouter_agent_hup' SIGHUP
 }
 
 function get_parameters() {
