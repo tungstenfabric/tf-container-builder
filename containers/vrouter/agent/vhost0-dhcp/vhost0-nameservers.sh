@@ -28,6 +28,6 @@ EOF
 Domains=${search_suffix}
 EOF
     fi
-    kill -1 $resolved_pid
+    kill -HUP $resolved_pid
     ;;
 esac

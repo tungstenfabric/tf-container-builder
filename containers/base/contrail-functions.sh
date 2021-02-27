@@ -259,5 +259,7 @@ function wait_nic_up() {
 
 # Send SIGHUP to container process for reload config
 function reload_config() {
-    kill -HUP 1
+  local mypid=$(cat /my.pid)
+  [ -n "$mypid" ] || mypid=1
+  kill -HUP $mypid
 }

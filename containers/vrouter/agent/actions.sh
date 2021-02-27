@@ -503,6 +503,8 @@ function start_agent() {
             break
         fi
     done
+    rm -f /var/run/vrouter-agent.pid /my.pid
+    echo "INFO: exiting"
 }
 
 # Setup kernel module and settins needed for start vhost0 network interface
@@ -584,6 +586,8 @@ function vhost0_init() {
 # Setup sys signal listeners
 function set_traps() {
     echo "INFO: Start set_traps"
+
+    echo $$ > /my.pid
 
     # Clean up files and vhost0, when SIGQUIT signal by clean-up.sh
     trap 'trap_vrouter_agent_quit' SIGQUIT
