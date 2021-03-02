@@ -331,9 +331,8 @@ class IntrospectUtil(object):
         url = self._mk_url_str(path, secure=secure)
         if not secure:
             return requests.get(url, timeout=self._timeout)
-        return requests.get(
-            url, timeout=self._timeout,
-            verify=self._cacert, cert=(self._certfile, self._keyfile))
+        return requests.get(url, timeout=self._timeout,
+                            verify=self._cacert, cert=self._certs)
 
     def _load(self, path):
         try:
@@ -729,6 +728,8 @@ def main():
     options = parse_args()
     debug_output = options.debug
     output_format = options.format
+    if not debug_output:
+        requests.packages.urllib3.disable_warnings()
 
     ssl_enabled = yaml.load(os.getenv('INTROSPECT_SSL_ENABLE', 'False'))
     if not isinstance(ssl_enabled, bool):
