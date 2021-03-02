@@ -4,7 +4,8 @@ FROM ${CONTRAIL_REGISTRY}/contrail-base:${CONTRAIL_CONTAINER_TAG}
 
 ARG CONTAINER_NAME
 ENV NODE_TYPE=config \
-    SERVICE_NAME=dnsmasq
+    SERVICE_NAME=dnsmasq \
+    CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Contrail Dnsmasq" \
       description="Contrail Dnsmasq provides network infrastructure: DNS, DHCP, router advertisement and network boot." \

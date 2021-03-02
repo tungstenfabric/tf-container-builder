@@ -4,7 +4,8 @@ FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
 
 ARG CONTAINER_NAME
 ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG \
-    SERVICE_NAME=cassandra
+    SERVICE_NAME=cassandra \
+    CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Contrail Cassandra DB" \
       description="Configuration database for Contrail Controller." \

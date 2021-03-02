@@ -6,7 +6,8 @@ ARG CONTAINER_NAME
 ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG \
     SERVICE_NAME=rabbitmq \
     RABBITMQ_LOGS=- \
-    RABBITMQ_SASL_LOGS=-
+    RABBITMQ_SASL_LOGS=- \
+    CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Contrail RabbitMQ" \
       description="Contrail Rabbitmq is the message bus that different Contrail processes subscribe to." \

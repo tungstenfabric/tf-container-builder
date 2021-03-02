@@ -4,7 +4,8 @@ FROM ${CONTRAIL_REGISTRY}/contrail-base:${CONTRAIL_CONTAINER_TAG}
 
 ARG CONTAINER_NAME
 ENV NODE_TYPE=mesosphere \
-    SERVICE_NAME=mesos-manager
+    SERVICE_NAME=mesos-manager \
+    CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Mesosphere Manager" \
       description="Contrail Mesosphere Manager." \

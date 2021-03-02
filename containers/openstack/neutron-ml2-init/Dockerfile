@@ -3,6 +3,7 @@ ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
 
 ARG CONTAINER_NAME
+ENV CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Init container for OpenStack neutron-server with ml2 driver" \
       description="Sidecar container with libraries for neutron-server with ml2 driver." \

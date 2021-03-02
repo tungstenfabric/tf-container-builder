@@ -4,7 +4,8 @@ ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
 
 ARG RSYSLOG_VERSION=8.24.0
-ENV SERVICE_NAME=rsyslogd
+ENV SERVICE_NAME=rsyslogd \
+    CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Contrail rsyslogd" \
       description="Contrail rsyslogd support" \
