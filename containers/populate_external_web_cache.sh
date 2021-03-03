@@ -1,9 +1,13 @@
 #!/bin/bash -e
 
+if ! which wget; then
+   echo "ERROR: wget is not found. please install it. exit"
+   exit 1
+fi
 
 CACHE_DIR=${CACHE_DIR:-'/tmp/cache'}
 
-mkdir $CACHE_DIR
+mkdir -p $CACHE_DIR
 cd $CACHE_DIR
 
 wget -nv -t3 -P containernetworking/cni/releases/download/v0.3.0 https://github.com/containernetworking/cni/releases/download/v0.3.0/cni-v0.3.0.tgz
@@ -17,4 +21,3 @@ wget -nv -t3 -P 2.7 https://bootstrap.pypa.io/2.7/get-pip.py
 wget -nv -t3 -P dist/cassandra/3.11.3 https://archive.apache.org/dist/cassandra/3.11.3/apache-cassandra-3.11.3-bin.tar.gz
 wget -nv -t3 -P dist/zookeeper/zookeeper-3.6.1 https://archive.apache.org/dist/zookeeper/zookeeper-3.6.1/apache-zookeeper-3.6.1-bin.tar.gz
 wget -nv -t3 -P tungstenfabric/tf-third-party-cache/blob/master/kafka https://github.com/tungstenfabric/tf-third-party-cache/blob/master/kafka/kafka_2.11-2.3.1.tgz
-
