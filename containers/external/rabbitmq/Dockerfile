@@ -2,6 +2,7 @@ ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
 
+ARG SITE_MIRROR
 ARG CONTAINER_NAME
 ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG \
     SERVICE_NAME=rabbitmq \
@@ -18,12 +19,13 @@ COPY *.sh hostname_to_ip /
 
 # vim-common is needed because of xxd tool
 RUN /bin/bash -c 'for item in `ls /__*` ; do mv $item /${item:3} ; done' && \
-    curl -s https://packagecloud.io/install/repositories/rabbitmq/erlang/script.rpm.sh | bash && \
-    curl -s https://packagecloud.io/install/repositories/rabbitmq/rabbitmq-server/script.rpm.sh | bash && \
-    yum install -y erlang-21.3* rabbitmq-server-3.7.20* perl vim-common && \
+    wget -nv -t3 -O erlang-21.3.8.21-1.el7.x86_64.rpm  ${SITE_MIRROR:-"https://packagecloud.io"}/rabbitmq/erlang/packages/el/7/erlang-21.3.8.21-1.el7.x86_64.rpm/download.rpm && \
+    wget -nv -t3 -O rabbitmq-server-3.7.20-1.el7.noarch.rpm ${SITE_MIRROR:-"https://packagecloud.io"}/rabbitmq/rabbitmq-server/packages/el/7/rabbitmq-server-3.7.20-1.el7.noarch.rpm/download.rpm && \
+    yum install -y erlang-21.3.8.21-1.el7.x86_64.rpm rabbitmq-server-3.7.20-1.el7.noarch.rpm perl vim-common && \
     usermod -a -G $CONTRAIL_GID rabbitmq && \
     usermod -d /var/lib/rabbitmq rabbitmq && \
     rabbitmq-plugins enable --offline rabbitmq_management && \
+    rm -f *rpm && \
     yum clean all -y && \
     rm -rf /var/cache/yum
 

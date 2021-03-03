@@ -2,6 +2,7 @@ ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
 
+ARG SITE_MIRROR
 ARG CONTAINER_NAME
 ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG \
     SERVICE_NAME=cassandra \
@@ -21,14 +22,14 @@ ENV CASSANDRA_HOME=/opt/cassandra \
     PATH="/opt/cassandra/bin:$PATH"
 
 ARG CASSANDRA_VERSION=3.11.3
-ARG DIST_URL="https://archive.apache.org/dist/cassandra/$CASSANDRA_VERSION/apache-cassandra-$CASSANDRA_VERSION-bin.tar.gz"
+ARG DIST_URL="${SITE_MIRROR:-'https://archive.apache.org'}/dist/cassandra/$CASSANDRA_VERSION/apache-cassandra-$CASSANDRA_VERSION-bin.tar.gz"
 
 COPY *.sh /
 
 RUN set -eux && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
     yum install -y java java-1.8.0-openjdk numactl python3 openssl which && \
     if ! yum repolist | grep -q epel ; then \
-        yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm || exit 1 ; \
+        yum -y install ${SITE_MIRROR:-"https://dl.fedoraproject.org"}/pub/epel/epel-release-latest-7.noarch.rpm || exit 1 ; \
     fi && \
     yum install jemalloc -y && \
     groupadd -f -g 999 ${CASSANDRA_GROUP} && adduser -u 999 -M -g ${CASSANDRA_GROUP} ${CASSANDRA_USER} && \

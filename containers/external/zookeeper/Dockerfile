@@ -2,6 +2,7 @@ ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
 
+ARG SITE_MIRROR
 ARG CONTAINER_NAME
 ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG \
     SERVICE_NAME=zookeeper \
@@ -25,7 +26,7 @@ ENV ZOO_CONF_DIR=/conf \
     ZOO_AUTOPURGE_PURGEINTERVAL=0 \
     ZOO_AUTOPURGE_SNAPRETAINCOUNT=3 \
     ZOO_MAX_CLIENT_CNXNS=60 \
-    ZOO_URL="https://archive.apache.org/dist/zookeeper" \
+    ZOO_URL="${SITE_MIRROR:-'https://archive.apache.org'}/dist/zookeeper" \
     ZOO_USER="zookeeper" \
     ZOO_GROUP="zookeeper" \
     PATH=$PATH:/${ZOO_DISTRO_NAME}/bin \
