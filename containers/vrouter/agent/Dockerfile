@@ -3,7 +3,8 @@ ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-vrouter-base:${CONTRAIL_CONTAINER_TAG}
 
 ARG CONTAINER_NAME
-ENV SERVICE_NAME=agent
+ENV SERVICE_NAME=agent \
+    CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Contrail Vrouter Agent" \
       description="The vRouter agent is a user space process running inside Linux. It acts as the local, lightweight control plane." \

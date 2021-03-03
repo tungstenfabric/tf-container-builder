@@ -4,7 +4,8 @@ FROM ${CONTRAIL_REGISTRY}/contrail-base:${CONTRAIL_CONTAINER_TAG}
 
 ARG CONTAINER_NAME
 ENV NODE_TYPE=vcenter \
-    SERVICE_NAME=plugin
+    SERVICE_NAME=plugin \
+    CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="VMware vCenter plugin" \
       description="VMware vCenter plugin workflows are represented as simple workflows in vRO plugin." \

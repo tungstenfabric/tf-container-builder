@@ -4,7 +4,8 @@ FROM ${CONTRAIL_REGISTRY}/contrail-base:${CONTRAIL_CONTAINER_TAG}
 
 ARG CONTAINER_NAME
 ENV NODE_TYPE=vcenter-fabric-manager \
-    SERVICE_NAME=fabric-manager
+    SERVICE_NAME=fabric-manager \
+    CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Contrail vCenter Fabric Manager" \
       description="CVFM manages VMware datacenter underlay network configuration based on vCenter events" \

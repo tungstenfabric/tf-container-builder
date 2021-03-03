@@ -3,7 +3,8 @@ ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-vrouter-base:${CONTRAIL_CONTAINER_TAG}
 
 ARG CONTAINER_NAME
-ENV SERVICE_NAME=agent-dpdk
+ENV SERVICE_NAME=agent-dpdk \
+    CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Contrail DPDK poll mode driver" \
       description="DPDK support for Contrail vrouter agent" \

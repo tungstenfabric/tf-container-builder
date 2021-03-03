@@ -4,7 +4,8 @@ FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
 
 ARG CONTAINER_NAME
 ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG \
-    SERVICE_NAME=haproxy
+    SERVICE_NAME=haproxy \
+    CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
       summary="Contrail HAProxy" \
       description="Contrail HAProxy supports high availability for Contrail container subsystems." \
