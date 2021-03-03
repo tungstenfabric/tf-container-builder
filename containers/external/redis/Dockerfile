@@ -2,6 +2,7 @@ ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
 
+ARG SITE_MIRROR
 ARG CONTAINER_NAME
 ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG \
     SERVICE_NAME=redis \
@@ -13,13 +14,13 @@ LABEL name=$CONTAINER_NAME \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 ARG REDIS_RPM_NAME=redis40u-4.0.14-2.el7.ius.x86_64
-ARG REDIS_CACHE=https://github.com/tungstenfabric/tf-third-party-cache/blob/master/redis
+ARG REDIS_CACHE=${SITE_MIRROR:-'https://github.com'}/tungstenfabric/tf-third-party-cache/blob/master/redis
 
 COPY *.sh hostname_to_ip /
 
 RUN set -eux && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
     if ! yum repolist | grep -q epel ; then \
-        yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm || exit 1 ; \
+        yum -y install ${SITE_MIRROR:-"https://dl.fedoraproject.org"}/pub/epel/epel-release-latest-7.noarch.rpm || exit 1 ; \
     fi && \
     yum install perl -y && \
     wget -nv --tries=3 -c -O ${REDIS_RPM_NAME}.rpm ${REDIS_CACHE}/${REDIS_RPM_NAME}.rpm?raw=true && \
