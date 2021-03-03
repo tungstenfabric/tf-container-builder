@@ -23,6 +23,10 @@ LABEL vendor=$VENDOR_NAME \
 RUN mkdir /licenses
 COPY __licensing.txt /licenses/licensing.txt
 
+# user can put sources.list here which is mirrors definition
+# to let copy all files we have to create empty fake.list
+COPY *.list /etc/apt/
+
 # This image is used to build vrouter.ko for current ubuntu OS that it's running on.
 # This container uses rpm packages to obtain source of vrouter kernel driver.
 # The container needs /usr/src and /lib/modules mounted from the host to build driver.

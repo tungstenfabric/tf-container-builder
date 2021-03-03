@@ -56,11 +56,6 @@ docker_ver=$(sudo docker -v | awk -F' ' '{print $3}' | sed 's/,//g')
 log "Docker version: $docker_ver"
 
 was_errors=0
-if [[ "${CONTRAIL_PARALLEL_BUILD,,}" == 'true' ]] ; then
-  op='build_parallel'
-else
-  op='build'
-fi
 
 function process_container() {
   local dir=${1%/}
@@ -206,15 +201,24 @@ function update_file() {
   md5sum "$file" > "$file_md5"
 }
 
-function update_repos() {
-  local repo_ext="$1"
-  for rfile in $(ls $my_dir/../*.${repo_ext}.template) ; do
-    content=$(cat "$rfile" | sed -e "s|\${CONTRAIL_REPOSITORY}|${CONTRAIL_REPOSITORY}|g")
-    dfile=$(basename $rfile | sed 's/.template//')
+function update_yum_repos() {
+  local rfile
+  for rfile in $(ls $my_dir/../*.repo.template) ; do
+    local content=$(cat "$rfile" | sed -e "s|\${CONTRAIL_REPOSITORY}|${CONTRAIL_REPOSITORY}|g")
+    local dfile=$(basename $rfile | sed 's/.template//')
     update_file "general-base/$dfile" "$content"
     # this is special case - image derived directly from ubuntu image
     update_file "vrouter/kernel-build-init/$dfile" "$content"
   done
+}
+
+function update_apt_repos() {
+  local rfile="$my_dir/../sources.list"
+  if [ -e "$rfile" ]; then
+    local content=$(cat "$rfile")
+    update_file "vrouter/kernel-build-init/sources.list" "$content"
+    update_file "vrouter/plugin/mellanox/init/ubuntu/sources.list" "$content"
+  fi
 }
 
 function process_list() {
@@ -249,6 +253,10 @@ function process_all_parallel() {
 if [[ $path == 'list' ]] ; then
   op='list'
   path="."
+elif [[ "${CONTRAIL_PARALLEL_BUILD,,}" == 'true' ]] ; then
+  op='build_parallel'
+else
+  op='build'
 fi
 
 if [ -z $path ] || [ $path = 'all' ]; then
@@ -261,7 +269,8 @@ pushd $my_dir &>/dev/null
 case $op in
   'build_parallel')
     log "prepare Contrail repo file in base image"
-    update_repos "repo"
+    update_yum_repos
+    update_apt_repos
     if [[ "$path" == "." || "$path" == "all" ]] ; then
       process_all_parallel
     else
@@ -271,11 +280,13 @@ case $op in
 
   'build')
     log "prepare Contrail repo file in base image"
-    update_repos "repo"
+    update_yum_repos
+    update_apt_repos
     process_dir $path
     ;;
 
   *)
+    # either list or individual container
     process_dir $path
     ;;
 esac
