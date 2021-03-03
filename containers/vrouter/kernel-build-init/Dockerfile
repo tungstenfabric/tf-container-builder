@@ -30,6 +30,9 @@ COPY __licensing.txt /licenses/licensing.txt
 
 # this copy should be before yum install
 COPY *.repo /etc/yum.repos.d/
+# user can put sources.list here which is mirrors definition
+# to let copy all files we have to create empty fake.list
+COPY *.list /etc/apt/
 
 #TODO: need to get rid of apt-get update
 RUN mkdir -p /opt/contrail/src /contrail_tools /vrouter_src && \
