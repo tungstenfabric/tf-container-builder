@@ -136,11 +136,11 @@ EOM
 
     local tname=$(mktemp --dry-run)
     echo "$result_params" > $tname
-    mv $tname $PARAMETERS_FILE
+    mv -f $tname $PARAMETERS_FILE
 
     tname=$(mktemp --dry-run)
     echo "ready" > $tname
-    mv $tname /parameters_state
+    mv -f $tname /parameters_state
 
     cleanup_lbaas_netns_config
 }

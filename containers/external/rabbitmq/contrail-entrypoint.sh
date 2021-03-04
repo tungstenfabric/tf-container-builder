@@ -224,7 +224,7 @@ function setup_log_dir() {
     mkdir -p $log_dir
     # move old logs if any to new folder
     log_name=$(basename $path)
-    mv $(dirname $log_dir)/${log_name}* ${log_dir}/ 2>/dev/null
+    mv -n $(dirname $log_dir)/${log_name}* ${log_dir}/ 2>/dev/null
     touch "$path"
     chown rabbitmq:rabbitmq "$path"
   fi

@@ -169,7 +169,7 @@ function restore_phys_int() {
         declare i
         for i in $(ls | grep 'contrail\.org\.ifcfg\-' | sed 's/contrail\.org\.ifcfg\-//g') ; do
             echo "INFO: restore ifcfg-$i from contrail.org.ifcfg-$i"
-            mv contrail.org.ifcfg-$i ifcfg-$i
+            mv -f contrail.org.ifcfg-$i ifcfg-$i
             echo "INFO: reinit $i"
             ifdown $i >/dev/null 2>&1
             ifup $i
@@ -179,7 +179,7 @@ function restore_phys_int() {
         # from ifdown on host, and dpdk container in tripleo has this env defined as well)
         if [ -z "$BIND_INT" ] ; then
             echo "INFO: clean ifcfg-vhost0"
-            mv ifcfg-vhost0 contrail.prev.ifcfg-vhost0
+            mv -f ifcfg-vhost0 contrail.prev.ifcfg-vhost0
         fi
         popd
     else
@@ -266,11 +266,11 @@ function prepare_ifcfg() {
     pushd "$netscript_dir"
     if [[ -f route-${phys_int} ]] ; then
         if [[ ! -f contrail.org.route-${phys_int} ]] ; then
-            mv route-${phys_int} contrail.org.route-${phys_int}
+            mv -f route-${phys_int} contrail.org.route-${phys_int}
         fi
         if [[ ! -f route-vhost0 ]] ; then
             sed "s/${phys_int}/vhost0/g" contrail.org.route-${phys_int} > route-vhost0.tmp
-            mv route-vhost0.tmp route-vhost0
+            mv -f route-vhost0.tmp route-vhost0
         fi
     fi
     if [[ -f "ifcfg-${phys_int}" ]] ; then
@@ -286,7 +286,7 @@ function prepare_ifcfg() {
         sed -r "/(DEVICE|TYPE|ONBOOT|MACADDR|HWADDR|BONDING|SLAVE|VLAN|MTU|PHYSDEV|NAME|ONPARENT|VID)/! s/^[^#].*/#commented_by_contrail& /" contrail.org.ifcfg-${phys_int} > ifcfg-${phys_int}.tmp
         echo 'NM_CONTROLLED=no' >> ifcfg-${phys_int}.tmp
         echo 'BOOTPROTO=none' >> ifcfg-${phys_int}.tmp
-        mv ifcfg-${phys_int}.tmp ifcfg-${phys_int}
+        mv -f ifcfg-${phys_int}.tmp ifcfg-${phys_int}
     fi
     if [[ ! -f ifcfg-vhost0 ]] ; then
         sed "s/${phys_int}/vhost0/g" contrail.org.ifcfg-${phys_int} > ifcfg-vhost0.tmp
@@ -294,7 +294,7 @@ function prepare_ifcfg() {
         echo "TYPE=${bind_type}" >> ifcfg-vhost0.tmp
         echo 'NM_CONTROLLED=no' >> ifcfg-vhost0.tmp
         echo "BIND_INT=${bind_int}" >> ifcfg-vhost0.tmp
-        mv ifcfg-vhost0.tmp ifcfg-vhost0
+        mv -f ifcfg-vhost0.tmp ifcfg-vhost0
     fi
     popd
     return $ret
