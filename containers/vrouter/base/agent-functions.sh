@@ -823,7 +823,7 @@ function quit_root_process() {
 # In release 5.0, vrouter to vrouter encryption
 # works only on kernels 4.4 and above
 function is_encryption_supported() {
-    local enc="${VROUTER_ENCRYPTION:-TRUE}"
+    local enc="${VROUTER_ENCRYPTION:-FALSE}"
     if [[ "${enc^^}" == 'FALSE' ]]; then
         return 1
     fi
