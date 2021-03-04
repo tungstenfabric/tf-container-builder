@@ -7,7 +7,7 @@ function set_ctl() {
   local file=/etc/sysctl.d/60-$filename.conf
   local tmpfile=`mktemp -p /etc/sysctl.d/`
   echo "$var=$value" > $tmpfile
-  mv $tmpfile $file
+  mv -f $tmpfile $file
   sysctl -w ${var}=${value}
 }
 
@@ -141,7 +141,7 @@ EOM
   if [[ -n "$KEYSTONE_AUTH_SYNC_ON_DEMAND" ]] ; then
     echo "keystone_sync_on_demand = $KEYSTONE_AUTH_SYNC_ON_DEMAND" >> $tmp_file
   fi
-  mv $tmp_file /etc/contrail/contrail-keystone-auth.conf
+  mv -f $tmp_file /etc/contrail/contrail-keystone-auth.conf
 }
 
 function set_vnc_api_lib_ini(){
@@ -186,7 +186,7 @@ EOM
 AUTHN_TYPE = noauth
 EOM
   fi
-  mv $tmp_file /etc/contrail/vnc_api_lib.ini
+  mv -f $tmp_file /etc/contrail/vnc_api_lib.ini
 }
 
 function add_ini_params_from_env() {
