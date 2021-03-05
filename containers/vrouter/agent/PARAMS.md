@@ -102,7 +102,7 @@
 | VROUTER_CRYPT_INTERFACE            | crypt0                                              |
 | VROUTER_DECRYPT_INTERFACE          | decrypt0                                            |
 | VROUTER_DECRYPT_KEY                | 15                                                  |
-| VROUTER_ENCRYPTION                 | TRUE                                                |
+| VROUTER_ENCRYPTION                 | FALSE                                               |
 | VROUTER_GATEWAY                    |                                                     |
 | **XMPP**                           |                                                     |
 | SUBCLUSTER                         | ""                                                  |
