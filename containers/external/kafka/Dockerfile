@@ -2,6 +2,7 @@ ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
 
+ARG SITE_MIRROR
 ARG CONTAINER_NAME
 ENV SERVICE_NAME=kafka \
     CONTAINER_NAME=$CONTAINER_NAME
@@ -12,7 +13,7 @@ LABEL name=$CONTAINER_NAME \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 ARG KAFKA_DISTRO_NAME=kafka_2.11-2.3.1
-ARG KAFKA_CACHE=https://github.com/tungstenfabric/tf-third-party-cache/blob/master/kafka
+ARG KAFKA_CACHE=${SITE_MIRROR:-"https://github.com"}/tungstenfabric/tf-third-party-cache/blob/master/kafka
 
 ENV KAFKA_DIR=/opt/$KAFKA_DISTRO_NAME \
     KAFKA_CONF_DIR=/opt/$KAFKA_DISTRO_NAME/config \
@@ -25,7 +26,7 @@ COPY *.sh /
 
 RUN for item in `ls /__*` ; do mv $item /${item:3} ; done && \
     yum install -y java java-1.8.0-openjdk python3 openssl && \
-    wget -nv --tries=3 -c -O $KAFKA_DISTRO_NAME.tgz $KAFKA_CACHE/$KAFKA_DISTRO_NAME.tgz?raw=true && \
+    wget -nv --tries=3 -c -O $KAFKA_DISTRO_NAME.tgz ${KAFKA_CACHE}/$KAFKA_DISTRO_NAME.tgz?raw=true && \
     tar -xvf $KAFKA_DISTRO_NAME.tgz && \
     mkdir -p $KAFKA_CONF_DIR $LOG_DIR && \
     mv $KAFKA_DISTRO_NAME/* $KAFKA_DIR && \

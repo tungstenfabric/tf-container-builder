@@ -36,7 +36,11 @@ function append_log_file() {
   done
 }
 
+#SITE_MIRROR is an URL to the root of cache. This code will look for the files inside predefined folder
+[ -z "${SITE_MIRROR+x}" ] || SITE_MIRROR="${SITE_MIRROR}/external-web-cache"
+
 log "Target platform: $LINUX_DISTR:$LINUX_DISTR_VER"
+log "External Web Cache: $SITE_MIRROR"
 log "Contrail container tag: $CONTRAIL_CONTAINER_TAG"
 log "Contrail registry: $CONTRAIL_REGISTRY"
 log "Contrail repository: $CONTRAIL_REPOSITORY"
@@ -95,6 +99,7 @@ function process_container() {
   fi
   build_arg_opts+=" --build-arg CONTRAIL_REGISTRY=${CONTRAIL_REGISTRY}"
   build_arg_opts+=" --build-arg CONTRAIL_CONTAINER_TAG=${tag}"
+  build_arg_opts+=" --build-arg SITE_MIRROR=${SITE_MIRROR}"
   build_arg_opts+=" --build-arg LINUX_DISTR_VER=${LINUX_DISTR_VER}"
   build_arg_opts+=" --build-arg LINUX_DISTR=${LINUX_DISTR}"
   build_arg_opts+=" --build-arg GENERAL_EXTRA_RPMS=\"${GENERAL_EXTRA_RPMS}\""
