@@ -15,6 +15,10 @@ function prepare_agent_config_vars() {
         exit 1
     fi
     VROUTER_GATEWAY=${VROUTER_GATEWAY:-`get_default_vrouter_gateway`}
+    if [[ -z "$VROUTER_GATEWAY" ]] ; then
+        echo "ERROR: empty vrouter gateway: vhost0 interface is down or not initialized yet"
+        exit 1
+    fi
     echo "INFO: vhost0 cidr $VROUTER_CIDR, gateway $VROUTER_GATEWAY"
 
     # TODO: avoid duplication of reading parameters with init_vhost0
