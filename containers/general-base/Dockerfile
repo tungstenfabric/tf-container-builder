@@ -18,6 +18,9 @@ COPY licensing.txt /licenses
 
 ARG GENERAL_EXTRA_RPMS=""
 ARG YUM_ENABLE_REPOS=""
+ARG LC_ALL="en_US.UTF-8"
+ARG LANG="en_US.UTF-8"
+ARG LANGUAGE="en_US.UTF-8"
 
 # These definitions are just for build purposes and must not be changed at runtime
 # CONTRAIL_VERSION - used by contrail-version tool
