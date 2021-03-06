@@ -14,12 +14,7 @@ function prepare_agent_config_vars() {
         echo "ERROR: vhost0 interface is down or has no assigned IP"
         exit 1
     fi
-    VROUTER_GATEWAY=${VROUTER_GATEWAY:-`get_default_vrouter_gateway`}
-    if [[ -z "$VROUTER_GATEWAY" ]] ; then
-        echo "ERROR: empty vrouter gateway: vhost0 interface is down or not initialized yet"
-        exit 1
-    fi
-    echo "INFO: vhost0 cidr $VROUTER_CIDR, gateway $VROUTER_GATEWAY"
+    echo "INFO: vhost0 cidr $VROUTER_CIDR"
 
     # TODO: avoid duplication of reading parameters with init_vhost0
     local PHYS_INT_MAC PHYS_INT PCI_ADDRESS
@@ -37,6 +32,20 @@ function prepare_agent_config_vars() {
         exit 1
     fi
     echo "INFO: Physical interface: $PHYS_INT, mac=$PHYS_INT_MAC, pci=$PCI_ADDRESS"
+
+    VROUTER_GATEWAY=${VROUTER_GATEWAY:-`get_default_vrouter_gateway`}
+    if [[ -z "$VROUTER_GATEWAY" ]] ; then
+        # In case if there are 2+ NICs and default system gateway is set to different nic than vhost0
+        # then it is ok to have empty VROUTER_GATEWAY
+        # But in case of single-nic setups absence of this leads to
+        # broken external traffic (no internet connection)
+        local def_nic=$(get_default_nic)
+        if [[ -z "$def_nic" || "$def_nic" == "vhost0" ]] ; then
+            echo "ERROR: empty vrouter gateway but default route is over $def_nic (broken external connection)"
+            exit 1
+        fi
+    fi
+    echo "INFO: vrouter gateway: $VROUTER_GATEWAY"
 
     if [ "$CLOUD_ORCHESTRATOR" == "kubernetes" ] && [ -n "$VROUTER_GATEWAY" ]; then
         # dont need k8s_pod_cidr_route if default gateway is vhost0
