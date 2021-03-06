@@ -92,13 +92,8 @@ function find_my_ip_and_order_for_node_list() {
   local local_ips=",$(get_local_ips | tr '\n' ','),"
   local ord=1
   for server in "${server_list[@]}"; do
-    local server_ip=''
     local ret=0
-    if [ -f /hostname_to_ip ]; then
-      server_ip=`/hostname_to_ip $server` || ret=$?
-    else
-      server_ip=`python3 -c "import socket; print(socket.gethostbyname('$server'))"` || ret=$?
-    fi
+    local server_ip=`python3 -c "import socket; print(socket.gethostbyname('$server'))"` || ret=$?
     if [[ $ret == 0 && "$local_ips" =~ ",$server_ip," ]] ; then
       echo $server_ip $ord
       return

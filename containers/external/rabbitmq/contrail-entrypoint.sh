@@ -30,7 +30,7 @@ for server in $(echo ${RABBITMQ_NODES} | tr ',' ' '); do
   fi
   cluster_nodes+="'contrail@${server_hostname}',"
   server_names_list=($server_names_list $server_hostname)
-  if server_ip=`/hostname_to_ip $server` && [[ ",$server_ip," =~ ",$my_ip," ]] ; then
+  if server_ip=$(find_my_ip_and_order_for_node_list "$server" | cut -d ' ' -f 1) && [[ ",$server_ip," =~ ",$my_ip," ]] ; then
     my_node=$server_hostname
     echo "INFO: my_node=$server_hostname"
   fi
