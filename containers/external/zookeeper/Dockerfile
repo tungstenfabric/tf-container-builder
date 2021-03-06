@@ -32,10 +32,10 @@ ENV ZOO_CONF_DIR=/conf \
     PATH=$PATH:/${ZOO_DISTRO_NAME}/bin \
     ZOOCFGDIR=/conf
 
-COPY *.sh hostname_to_ip /
+COPY *.sh /
 
 RUN set -eux && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
-    yum install -y java java-1.8.0-openjdk perl nmap-ncat openssl && \
+    yum install -y java java-1.8.0-openjdk python3 nmap-ncat openssl && \
     groupadd -f -g 1000 $ZOO_GROUP && adduser -u 1000 -M -g $ZOO_GROUP $ZOO_USER && \
     usermod -a -G $CONTRAIL_GID $ZOO_USER && \
     mkdir -p "$ZOO_DATA_LOG_DIR" "$ZOO_DATA_DIR" "$ZOO_CONF_DIR" "$ZOO_LOG_DIR" && \

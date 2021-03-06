@@ -16,15 +16,11 @@ LABEL name=$CONTAINER_NAME \
 ARG REDIS_RPM_NAME=redis40u-4.0.14-2.el7.ius.x86_64
 ARG REDIS_CACHE=${SITE_MIRROR:-'https://github.com'}/tungstenfabric/tf-third-party-cache/blob/master/redis
 
-COPY *.sh hostname_to_ip /
+COPY *.sh /
 
 RUN set -eux && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
-    if ! yum repolist | grep -q epel ; then \
-        yum -y install ${SITE_MIRROR:-"https://dl.fedoraproject.org"}/pub/epel/epel-release-latest-7.noarch.rpm || exit 1 ; \
-    fi && \
-    yum install perl -y && \
     wget -nv --tries=3 -c -O ${REDIS_RPM_NAME}.rpm ${REDIS_CACHE}/${REDIS_RPM_NAME}.rpm?raw=true && \
-    yum install ${REDIS_RPM_NAME}.rpm -y && \
+    yum install python3 ${REDIS_RPM_NAME}.rpm -y && \
     usermod -a -G $CONTRAIL_GID redis && \
     rm -rf ${REDIS_RPM_NAME}.rpm && \
     yum clean all -y && rm -rf /var/cache/yum
