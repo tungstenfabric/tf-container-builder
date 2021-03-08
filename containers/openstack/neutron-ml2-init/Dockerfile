@@ -13,7 +13,7 @@ LABEL name=$CONTAINER_NAME \
 COPY *.sh /
 
 # run _prepare_packages.sh as a last step cause it can break some repositories
-RUN wget -nv -c --tries=3 -O /tmp/get-pip.py ${SITE_MIRROR:-"https://bootstrap.pypa.io"}/2.7/get-pip.py && \
+RUN wget -nv -c --tries=3 -O /tmp/get-pip.py ${SITE_MIRROR:-"https://bootstrap.pypa.io"}/pip/2.7/get-pip.py && \
     python2 /tmp/get-pip.py 'pip==20.1' && \   
     mkdir -p /opt/contrail/site-packages && \
     pip install --no-compile --target=/opt/contrail/site-packages future && \
