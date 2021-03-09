@@ -658,8 +658,8 @@ function init_vhost0_l3mh() {
     fi
 
     local control_node_ip=$(resolve_1st_control_node_ip)
-    local phys_ints_arr=( $(ip route show $control_node_ip | grep "nexthop via" | awk '{print $5}' | tr '\n' ' ') )
-    if [[ -z "${phys_ints_arr[@]}" ]]; then
+    local phys_int_arr=( $(ip route show $control_node_ip | grep "nexthop via" | awk '{print $5}' | tr '\n' ' ') )
+    if [[ -z "${phys_int_arr[@]}" ]]; then
         echo "ERROR: Physical NIC-s couldn't be derived from routing to control node. Please check routes."
         exit 1
     fi
@@ -989,11 +989,11 @@ function ip_in_cidr() {
     local cidr=$2
 
     local ip_parts=( $(echo $ip | tr '.' ' ') )
-    local ip_start=$(( ip_parts[0]*(2**24) + ip_parts[1]*(2**16) + ip_parts[2]*(2**8) + ip_parts[3] ))
+    local ip_addr=$(( ip_parts[0]*(2**24) + ip_parts[1]*(2**16) + ip_parts[2]*(2**8) + ip_parts[3] ))
     local cidr_parts=( $(echo $cidr | tr '.' ' ' | tr '/' ' ') )
     local cidr_start=$(( cidr_parts[0]*(2**24) + cidr_parts[1]*(2**16) + cidr_parts[2]*(2**8) + cidr_parts[3] ))
     local cidr_end=$(( cidr_start + 2**(32-cidr_parts[4]) ))
-    if (( cidr_start <= ip )) && (( ip < cidr_end )) ; then
+    if (( cidr_start <= ip_addr )) && (( ip_addr < cidr_end )) ; then
         return 0
     fi
     return 1
