@@ -11,6 +11,21 @@ function set_ctl() {
   sysctl -w ${var}=${value}
 }
 
+function set_sysctls() {
+  local target_filename="/etc/sysctl.d/$1"
+  shift
+  local tmpfile=$(mktemp -u)
+  while true; do
+    local var=$1
+    local value=$2
+    [ -n "$var" ] && [ -n "$value" ] || break
+    echo "$var=$value" >> $tmpfile
+    sysctl -w ${var}=${value}
+    shift 2
+  done
+  mv -f $tmpfile $target_filename
+}
+
 function is_ssl_enabled() {
   is_enabled "$SSL_ENABLE" \
    || is_enabled "$XMPP_SSL_ENABLE" \
