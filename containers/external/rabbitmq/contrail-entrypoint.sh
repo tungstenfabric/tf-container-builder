@@ -3,6 +3,20 @@
 source /common.sh
 source /functions.sh
 
+function test_in_cluster() {
+  if local status=$(rabbitmqctl cluster_status --node $1 --formatter json) ; then
+    echo "$status" | python -c "$(cat <<SCRIPT
+import sys, json
+x=json.load(sys.stdin)
+for i in filter(lambda j: j == "$2", x.get("nodes", {}).get("disc", [])):
+  print(i)
+SCRIPT
+)"
+    return
+  fi
+  return 1
+}
+
 # In all in one deployment there is the race between vhost0 initialization
 # and own IP detection, so there is 10 retries
 for i in {1..10} ; do
@@ -89,19 +103,6 @@ if [[ -n "$RABBITMQ_ERLANG_COOKIE" ]] ; then
   chown rabbitmq:rabbitmq $cookie_file
 fi
 
-# It looks that there is a race in rabbitmq auto-cluster discovery that
-# leads to a split-brain on cluster start and cluster is setup
-# incorrectly - some of nodes decide to form own cluster instead to join to others.
-if [[ "${server_names_list[0]}" != "$my_node" ]] ; then
-  echo "INFO: delay node $my_node start until first node starts: ${i}/10..."
-  for i in {1..20} ; do
-    sleep 3
-    echo "INFO: check if the node contrail@${server_names_list[0]} started: ${i}/20..."
-    if rabbitmqctl -q -n contrail@${server_names_list[0]} cluster_status ; then
-      break
-    fi
-  done
-fi
 if is_enabled $RABBITMQ_USE_SSL ; then
   cat << EOF > /etc/rabbitmq/rabbitmq.config
 [
@@ -233,5 +234,52 @@ function setup_log_dir() {
 setup_log_dir $RABBITMQ_LOGS
 setup_log_dir "$RABBITMQ_SASL_LOGS"
 
+# NB. wait & join explicitly an existing cluster started by
+# the first server otherwise we face a race incurring a
+# partitioning.
+leader_node="${server_names_list[0]}"
+if [[ "${leader_node}" != "$my_node" ]] ; then
+  echo "INFO: delay node $my_node start until first node starts..."
+  leader_nodename=contrail@$leader_node
+  while true; do
+    rabbitmqctl --node "${RABBITMQ_NODENAME}" shutdown || true
+    /docker-entrypoint.sh rabbitmq-server -detached || exit 1
+    
+    # NB. working ping doesn't mean the process is able to report status
+    while ! rabbitmqctl --node $RABBITMQ_NODENAME ping ; do
+      sleep $(( 5 + $RANDOM % 5 ))
+      date
+    done  
+    sleep $(( 5 + $RANDOM % 5 ))
+    
+    in_cluster=""
+    for i in {1..5} ; do
+      if in_cluster=$(test_in_cluster $RABBITMQ_NODENAME $bootstrap_node) ; then
+        break
+      fi
+      sleep $(( 5 + $RANDOM % 5 ))
+      date
+    done
+    if [ -n "$in_cluster" ] ; then
+      # alrady in cluster
+      break
+    fi
+
+    # need to re-join
+    # stop app
+    rabbitmqctl --node $RABBITMQ_NODENAME stop_app
+    # wait main bootstrap node
+    while ! rabbitmqctl --node $bootstrap_node ping ; do
+      sleep $(( 5 + $RANDOM % 5 ))
+      date
+    done
+    sleep $(( 5 + $RANDOM % 5 ))
+    rabbitmqctl --node $bootstrap_node forget_cluster_node $RABBITMQ_NODENAME
+    rabbitmqctl --node $RABBITMQ_NODENAME reset
+    rabbitmqctl --node $RABBITMQ_NODENAME join_cluster $bootstrap_node || continue
+    break
+  done
+  rabbitmqctl --node "${RABBITMQ_NODENAME}" shutdown
+fi
 echo "INFO: $(date): /docker-entrypoint.sh $@"
 exec  /docker-entrypoint.sh "$@"
