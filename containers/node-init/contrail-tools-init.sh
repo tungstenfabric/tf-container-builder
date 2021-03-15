@@ -24,6 +24,14 @@ vol_opts+=' -v /var/lib/containers:/var/lib/containers'
 if [[ -e /etc/contrail ]] ; then
   vol_opts+=' -v /etc/contrail:/etc/contrail:ro'
 fi
+
+image=$(echo ${CONTRAIL_STATUS_IMAGE} | sed 's/contrail-status:/contrail-tools:/')
+tmp_suffix="--rm --pid host --net host --privileged ${image}"
+tmp_file=/host/usr/bin/contrail-tools.tmp.${RANDOM}
+cat > $tmp_file << EOM
+#!/bin/bash
+
+vol_opts=$vol_opts
 if [[ -n "${SERVER_CA_CERTFILE}" ]] && [[ -e ${SERVER_CA_CERTFILE} ]] ; then
   # In case of FreeIPA CA file is palced in /etc/ipa/ca.crt
   # and should be mounted additionally
@@ -31,13 +39,6 @@ if [[ -n "${SERVER_CA_CERTFILE}" ]] && [[ -e ${SERVER_CA_CERTFILE} ]] ; then
     vol_opts+=" -v ${SERVER_CA_CERTFILE}:${SERVER_CA_CERTFILE}:ro"
   fi
 fi
-
-
-image=$(echo ${CONTRAIL_STATUS_IMAGE} | sed 's/contrail-status:/contrail-tools:/')
-tmp_suffix="--rm --pid host --net host --privileged ${image}"
-tmp_file=/host/usr/bin/contrail-tools.tmp.${RANDOM}
-cat > $tmp_file << EOM
-#!/bin/bash
 
 interactive_key='-i'
 [ -t 0 ] && interactive_key+='t'
@@ -57,14 +58,14 @@ fi
 u=\$(which docker 2>/dev/null)
 if pidof dockerd >/dev/null 2>&1 || pidof dockerd-current >/dev/null 2>&1 ; then
     trap "\$u rm -f \$cont_name" SIGHUP
-    \$u run \$name_opts $vol_opts \$entrypoint_arg \$interactive_key $tmp_suffix
+    \$u run \$name_opts \$vol_opts \$entrypoint_arg \$interactive_key $tmp_suffix
     rm -f \$entrypoint
     exit \$?
 fi
 u=\$(which podman 2>/dev/null)
 if ((\$? == 0)); then
     trap "\$u rm -f \$cont_name" SIGHUP
-    r="\$u run \$name_opts $vol_opts \$entrypoint_arg "
+    r="\$u run \$name_opts \$vol_opts \$entrypoint_arg "
     r+=' --volume=/run/runc:/run/runc'
     r+=' --volume=/sys/fs:/sys/fs'
     r+=' --cap-add=ALL --security-opt seccomp=unconfined'
