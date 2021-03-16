@@ -31,7 +31,7 @@ tmp_file=/host/usr/bin/contrail-tools.tmp.${RANDOM}
 cat > $tmp_file << EOM
 #!/bin/bash
 
-vol_opts=$vol_opts
+vol_opts="$vol_opts"
 if [[ -n "${SERVER_CA_CERTFILE}" ]] && [[ -e ${SERVER_CA_CERTFILE} ]] ; then
   # In case of FreeIPA CA file is palced in /etc/ipa/ca.crt
   # and should be mounted additionally
