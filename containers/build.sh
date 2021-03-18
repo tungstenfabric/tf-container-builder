@@ -37,7 +37,9 @@ function append_log_file() {
 }
 
 #SITE_MIRROR is an URL to the root of cache. This code will look for the files inside predefined folder
-[ -z "${SITE_MIRROR+x}" ] || SITE_MIRROR="${SITE_MIRROR}/external-web-cache"
+if [[ -n "${SITE_MIRROR}" ]]; then
+  export SITE_MIRROR="${SITE_MIRROR}/external-web-cache"
+fi
 
 log "Target platform: $LINUX_DISTR:$LINUX_DISTR_VER"
 log "External Web Cache: $SITE_MIRROR"
