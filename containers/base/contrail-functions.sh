@@ -237,9 +237,14 @@ function resolve_1st_control_node_ip() {
 }
 
 function get_iface_for_vrouter_from_control() {
-  local node_ip=`echo $VROUTER_GATEWAY`
-  if [[ -z "$node_ip" ]] ; then
-    node_ip=$(resolve_1st_control_node_ip)
+  local node_ip
+  if [[ -n "$L3MH_CDIR" ]]; then
+    node_ip=$(get_default_ip)
+  else
+    node_ip=`echo $VROUTER_GATEWAY`
+    if [[ -z "$node_ip" ]] ; then
+      node_ip=$(resolve_1st_control_node_ip)
+    fi
   fi
   local iface=$(get_gateway_nic_for_ip $node_ip)
   echo $iface
@@ -267,7 +272,12 @@ function nic_has_ip() {
 
 function wait_nic_up() {
   local nic=$1
-  printf "INFO: wait for $nic is up"
+  if [[ -n "$L3MH_CIDR" ]]; then
+    echo "INFO: L3MH mode is set. skipping wait_nic_up"
+    return
+  fi
+
+  echo "INFO: wait for $nic is up"
   wait_cmd_success "nic_has_ip $nic" || { echo -e "\nERROR: $nic is not up" && return 1; }
   echo -e "\nINFO: $nic is up"
 }
