@@ -4,6 +4,7 @@ import logging
 import operator
 import optparse
 import os
+import time
 import socket
 import struct
 import subprocess
@@ -692,6 +693,19 @@ def print_containers(containers):
 def craft_client():
     if utils.is_running_in_docker():
         return DockerContainersInterface()
+
+    if not os.path.exists('/run/.containerenv'):
+      # NB. CRIO is not fast enough when it comes to creating
+      # the mark file after container start.
+      # anyway let's try to connect to containerd first when
+      # the mark is absent and if it fails because of the socket
+      # absence make another attempt after the timeout to detect
+      # a ct engine hoping CRIO has created the file finally.
+      try:
+          return CriContainersInterface(
+              cri.CriContainersInterface.craft_containerd_peer())
+      except LookupError:
+          time.sleep(3)
 
     if not os.path.exists('/run/.containerenv'):
         return CriContainersInterface(
