@@ -9,12 +9,20 @@ function prepare_agent_config_vars() {
     echo "INFO: Start prepare_agent_config_vars"
 
     # check vhost0 first
-    local VROUTER_CIDR=$(get_cidr_for_nic 'vhost0')
-    if [[ -z "$VROUTER_CIDR" ]] ; then
-        echo "ERROR: vhost0 interface is down or has no assigned IP"
-        exit 1
+    local VROUTER_CIDR=""
+    local vrouter_ip
+    if [[ -z "$L3MH_CIDR" ]]; then
+        VROUTER_CIDR=$(get_cidr_for_nic 'vhost0')
+        if [[ -z "$VROUTER_CIDR" ]] ; then
+            echo "ERROR: vhost0 interface is down or has no assigned IP"
+            exit 1
+        fi
+        echo "INFO: vhost0 cidr $VROUTER_CIDR"
+        vrouter_ip=${VROUTER_CIDR%/*}
+    else
+        echo "INFO: l3mh mode is set. VROUTER_CIDR can't be evaluated"
+        vrouter_ip=$(get_default_ip)
     fi
-    echo "INFO: vhost0 cidr $VROUTER_CIDR"
 
     # TODO: avoid duplication of reading parameters with init_vhost0
     local PHYS_INT_MAC PHYS_INT PCI_ADDRESS
@@ -61,7 +69,6 @@ function prepare_agent_config_vars() {
         HYPERVISOR_TYPE=${HYPERVISOR_TYPE:-'kvm'}
     fi
 
-    local vrouter_ip=${VROUTER_CIDR%/*}
     local AGENT_NAME=${VROUTER_HOSTNAME:-"$(resolve_hostname_by_ip $vrouter_ip)"}
     [ -z "$AGENT_NAME" ] && AGENT_NAME="$(get_default_hostname)"
 
@@ -120,7 +127,12 @@ function prepare_agent_config_vars() {
         INTROSPECT_IP=$vrouter_ip
     fi
 
-    local COMPUTE_NODE_ADDRESS=${VROUTER_COMPUTE_NODE_ADDRESS:-$vrouter_ip}
+    local COMPUTE_NODE_ADDRESS
+    if [[ -n "$L3MH_CIDR" ]]; then
+        COMPUTE_NODE_ADDRESS=${VROUTER_COMPUTE_NODE_ADDRESS:-$(eval_l3mh_loopback_ip)}
+    else
+        COMPUTE_NODE_ADDRESS=${VROUTER_COMPUTE_NODE_ADDRESS:-$vrouter_ip}
+    fi
 
     local XMPP_SERVERS_LIST=${XMPP_SERVERS:-`get_server_list CONTROL ":$XMPP_SERVER_PORT "`}
     local CONTROL_NETWORK_IP=$(get_ip_for_vrouter_from_control)
@@ -627,5 +639,5 @@ function prepare_agent() {
     set_traps
     vhost0_init
     wait_vhost0
-    prepare_agent_config_vars  $@
+    prepare_agent_config_vars $@
 }

@@ -539,10 +539,18 @@ function dbg_trace_agent_vers() {
     echo "DEBUG: versions: agent=$agent_ver, loaded_vrouter=$loaded_vrouter_ver, available_vrouter=$available_vrouter_ver"
 }
 
+function check_vhost0() {
+    if [[ -z "$L3MH_CIDR" ]]; then
+        [ -n "$(get_cidr_for_nic vhost0)" ] || return 1
+        return
+    fi
+
+    ip link sh dev vhost0 >/dev/null 2>&1 || return 1
+}
+
 function init_vhost0() {
-    # Probe vhost0
-    local vrouter_cidr="$(get_cidr_for_nic vhost0)"
-    if [[ "$vrouter_cidr" != '' ]] ; then
+    # check vhost0
+    if check_vhost0 ; then
         echo "INFO: vhost0 is already up"
         dbg_trace_agent_vers
         ensure_host_resolv_conf

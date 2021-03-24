@@ -227,9 +227,13 @@ function wait_vhost0() {
     local max=${1:-60}
     local pause=${2:-5}
     local i=0
+    local grep_str="inet "
+    if [[ -n "$L3MH_CIDR" ]]; then
+        grep_str="ether $L3MH_VRRP_MAC"
+    fi
     for (( i=0; i<max; i+=1 )) ; do
         echo "INFO: wait vhost0 to be initilaized... ${i}/${max}"
-        if ip addr show dev vhost0 2>/dev/null | grep -q "inet " ; then
+        if ip addr show dev vhost0 2>/dev/null | grep -q "$grep_str" ; then
             echo "INFO: vhost0 is ready."
             return 0
         fi

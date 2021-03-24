@@ -177,6 +177,7 @@ vrouter)
     echo "ERROR: vhost0 is not up .. exit to allow docker policy to restart container if needed"
     exit 1
   fi
+  # in case of L3MH here will be default nic/IP
   host_ip=$(get_ip_for_vrouter_from_control)
   vhost_if=$(get_iface_for_vrouter_from_control)
   if_cidr=$(get_cidr_for_nic $vhost_if)
