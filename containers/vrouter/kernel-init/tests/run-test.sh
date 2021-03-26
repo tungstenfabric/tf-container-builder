@@ -10,7 +10,10 @@ source "$my_dir/../kernel-init-functions.sh"
 list_dirs_modules="/opt/contrail/vrouter-kernel-modules/3.10.0-229.el7.x86_64/vrouter.ko
 /opt/contrail/vrouter-kernel-modules/3.10.0-514.el7.x86_64/vrouter.ko
 /opt/contrail/vrouter-kernel-modules/3.10.0-1062.1.1.el7.x86_64/vrouter.ko
-/opt/contrail/vrouter-kernel-modules/3.10.0-1062.9.1.el7.x86_64/vrouter.ko"
+/opt/contrail/vrouter-kernel-modules/3.10.0-1062.9.1.el7.x86_64/vrouter.ko
+/opt/contrail/vrouter-kernel-modules/3.10.0-1062.12.1.el7.x86_64/vrouter.ko
+/opt/contrail/vrouter-kernel-modules/3.10.0-1127.el7.x86_64/vrouter.ko
+/opt/contrail/vrouter-kernel-modules/4.18.0-193.28.1.el8_2.x86_64/vrouter.ko"
 
 list_dirs_kernels="/lib/modules/3.10.0-327.el7.x86_64
 /lib/modules/3.10.0-1062.el7.x86_64
@@ -21,7 +24,8 @@ list_dirs_kernels="/lib/modules/3.10.0-327.el7.x86_64
 /lib/modules/3.10.0-862.el7.x86_64
 /lib/modules/3.10.0-957.el7.x86_64
 /lib/modules/3.10.0-1062.9.1.el7.x86_64
-/lib/modules/3.10.0-1062.12.1.el7.x86_64"
+/lib/modules/3.10.0-1062.12.1.el7.x86_64
+/lib/modules/4.18.0-193.19.1.el8_2.x86_64"
 
 declare -A RESULTS
 unset -f enable_kernel_module
@@ -48,7 +52,8 @@ install_kernel_modules "$available_modules" "$installed_kernels"
 [[ "${RESULTS["3.10.0-1062.1.2.el7.x86_64"]}" == '3.10.0-1062.1.1.el7.x86_64' ]] || FAILED_KERNELS+=('3.10.0-1062.1.2.el7.x86_64')
 [[ "${RESULTS["3.10.0-1062.7.1.el7.x86_64"]}" == '3.10.0-1062.1.1.el7.x86_64' ]] || FAILED_KERNELS+=('3.10.0-1062.7.1.el7.x86_64')
 [[ "${RESULTS["3.10.0-1062.9.1.el7.x86_64"]}" == '3.10.0-1062.9.1.el7.x86_64' ]] || FAILED_KERNELS+=('3.10.0-1062.9.1.el7.x86_64')
-[[ "${RESULTS["3.10.0-1062.12.1.el7.x86_64"]}" == '3.10.0-1062.9.1.el7.x86_64' ]] || FAILED_KERNELS+=('3.10.0-1062.12.1.el7.x86_64')
+[[ "${RESULTS["3.10.0-1062.12.1.el7.x86_64"]}" == '3.10.0-1062.12.1.el7.x86_64' ]] || FAILED_KERNELS+=('3.10.0-1062.12.1.el7.x86_64')
+[[ "${RESULTS["4.18.0-193.19.1.el8_2.x86_64"]}" == '4.18.0-193.28.1.el8_2.x86_64' ]] || FAILED_KERNELS+=('4.18.0-193.19.1.el8_2.x86_64')
 
 # Report
 set +x
