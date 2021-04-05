@@ -2,6 +2,21 @@
 
 . ./network-functions-vrouter
 
+function pkt_create_configs () {
+    if [[ -d /etc/sysconfig/network-scripts ]]; then
+       #Creating ifcfg files for pkt interfaces. It prevents NetworkManager from creating incorrect files after restart
+       local int
+       for int in {0..3}; do
+          local cfg="/etc/sysconfig/network-scripts/ifcfg-pkt${int}"
+          echo "#This file prevents NetworkManager to create incorrect ifcfg-pkt* after restart" > $cfg
+          echo "NAME=pkt${int}" >> $cfg
+          echo "BOOTPROTO=none" >> $cfg
+          echo "NM_CONTROLLED=no" >> $cfg
+          echo "ONBOOT=no" >> $cfg
+       done
+    fi
+}
+
 function pkt_setup () {
     [ ! -f /sys/class/net/$1/queues/rx-0/rps_cpus ] && return 0
     declare q r s mask str i
@@ -36,6 +51,7 @@ function create_vhost0() {
     pkt_setup pkt1
     pkt_setup pkt2
     pkt_setup pkt3
+    pkt_create_configs
     vif --create vhost0 --mac $phys_int_mac
     vif --add $phys_int --mac $phys_int_mac --vrf 0 --vhost-phys --type physical
     vif --add vhost0 --mac $phys_int_mac --vrf 0 --type vhost --xconnect $phys_int
