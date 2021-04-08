@@ -244,17 +244,17 @@ if [[ "${leader_node}" != "$my_node" ]] ; then
   while true; do
     rabbitmqctl --node "${RABBITMQ_NODENAME}" shutdown || true
     /docker-entrypoint.sh rabbitmq-server -detached || exit 1
-    
+
     # NB. working ping doesn't mean the process is able to report status
     while ! rabbitmqctl --node $RABBITMQ_NODENAME ping ; do
       sleep $(( 5 + $RANDOM % 5 ))
       date
-    done  
+    done
     sleep $(( 5 + $RANDOM % 5 ))
-    
+
     in_cluster=""
     for i in {1..5} ; do
-      if in_cluster=$(test_in_cluster $RABBITMQ_NODENAME $bootstrap_node) ; then
+      if in_cluster=$(test_in_cluster $RABBITMQ_NODENAME $leader_nodename) ; then
         break
       fi
       sleep $(( 5 + $RANDOM % 5 ))
@@ -269,14 +269,14 @@ if [[ "${leader_node}" != "$my_node" ]] ; then
     # stop app
     rabbitmqctl --node $RABBITMQ_NODENAME stop_app
     # wait main bootstrap node
-    while ! rabbitmqctl --node $bootstrap_node ping ; do
+    while ! rabbitmqctl --node $leader_nodename ping ; do
       sleep $(( 5 + $RANDOM % 5 ))
       date
     done
     sleep $(( 5 + $RANDOM % 5 ))
-    rabbitmqctl --node $bootstrap_node forget_cluster_node $RABBITMQ_NODENAME
+    rabbitmqctl --node $leader_nodename forget_cluster_node $RABBITMQ_NODENAME
     rabbitmqctl --node $RABBITMQ_NODENAME reset
-    rabbitmqctl --node $RABBITMQ_NODENAME join_cluster $bootstrap_node || continue
+    rabbitmqctl --node $RABBITMQ_NODENAME join_cluster $leader_nodename || continue
     break
   done
   rabbitmqctl --node "${RABBITMQ_NODENAME}" shutdown
