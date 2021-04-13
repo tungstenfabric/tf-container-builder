@@ -597,6 +597,7 @@ def get_value_from_env(env, key):
     # If env value is not found return none
     return value.split('=')[1] if value else None
 
+
 def get_full_env_of_container(cid):
     cnt_full = client.inspect(cid)
     return cnt_full['Config'].get('Env')
@@ -695,17 +696,17 @@ def craft_client():
         return DockerContainersInterface()
 
     if not os.path.exists('/run/.containerenv'):
-      # NB. CRIO is not fast enough when it comes to creating
-      # the mark file after container start.
-      # anyway let's try to connect to containerd first when
-      # the mark is absent and if it fails because of the socket
-      # absence make another attempt after the timeout to detect
-      # a ct engine hoping CRIO has created the file finally.
-      try:
-          return CriContainersInterface(
-              cri.CriContainersInterface.craft_containerd_peer())
-      except LookupError:
-          time.sleep(3)
+        # NB. CRIO is not fast enough when it comes to creating
+        # the mark file after container start.
+        # anyway let's try to connect to containerd first when
+        # the mark is absent and if it fails because of the socket
+        # absence make another attempt after the timeout to detect
+        # a ct engine hoping CRIO has created the file finally.
+        try:
+            return CriContainersInterface(
+                cri.CriContainersInterface.craft_containerd_peer())
+        except LookupError:
+            time.sleep(3)
 
     if not os.path.exists('/run/.containerenv'):
         return CriContainersInterface(
