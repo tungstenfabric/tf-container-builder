@@ -275,7 +275,7 @@ if [[ "${leader_node}" != "$my_node" ]] ; then
     done
     sleep $(( 5 + $RANDOM % 5 ))
     rabbitmqctl --node $leader_nodename forget_cluster_node $RABBITMQ_NODENAME
-    rabbitmqctl --node $RABBITMQ_NODENAME reset
+    rabbitmqctl --node $RABBITMQ_NODENAME force_reset
     rabbitmqctl --node $RABBITMQ_NODENAME join_cluster $leader_nodename || continue
     break
   done
