@@ -238,7 +238,7 @@ function resolve_1st_control_node_ip() {
 
 function get_iface_for_vrouter_from_control() {
   local node_ip
-  if [[ -n "$L3MH_CDIR" ]]; then
+  if [[ -n "$L3MH_CIDR" ]]; then
     node_ip=$(get_default_ip)
   else
     node_ip=`echo $VROUTER_GATEWAY`
