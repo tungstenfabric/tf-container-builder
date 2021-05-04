@@ -389,16 +389,11 @@ function read_phys_int_mac_pci_dpdk() {
     ifcfg_read_phys_int_mac_pci_dpdk
 }
 
-function read_and_save_dpdk_params() {
+function read_and_save_dpdk_params_for_phys_int() {
+    local phys_int=$1
+    local phys_int_mac=$2
+    local pci=$3
     local binding_data_dir='/var/run/vrouter'
-    if [ -f $binding_data_dir/nic ] ; then
-        echo "WARNING: binding information is already saved"
-        return
-    fi
-
-    declare phys_int phys_int_mac pci
-    IFS=' ' read -r phys_int phys_int_mac pci <<< $(read_phys_int_mac_pci_dpdk)
-
     local addrs
     local mtu
     local routes
@@ -471,10 +466,42 @@ function read_and_save_dpdk_params() {
         echo "$mode $policy $slaves $pci $bond_numa $lacp_rate" > $binding_data_dir/${nic}_bond
         echo "INFO: bonding: $mode $policy $slaves $pci $bond_numa $lacp_rate"
     fi
+}
 
-    # Save this file latest because it is used
-    # as an sign that params where saved succesfully
-    echo "$nic" > $binding_data_dir/nic
+
+function read_and_save_dpdk_params() {
+    local binding_data_dir='/var/run/vrouter'
+    if [ -f $binding_data_dir/nic ] ; then
+        echo "WARNING: binding information is already saved"
+        return
+    fi
+
+    declare phys_int phys_int_mac pci
+
+    if [[ -n "$L3MH_CIDR" ]]; then
+        local phys_ints=$(ip route show $control_node_ip | grep "nexthop via" | awk '{print $5}' | tr '\n' ' ')
+        local nic_list=''
+        for phys_int in $phys_ints; do
+            phys_int_mac=$(get_iface_mac $phys_int)
+            pci=$(get_pci_address_for_nic $phys_int)
+            read_and_save_dpdk_params_for_phys_int $phys_int $phys_int_mac $pci
+            if [ -z $nic_list ]; then
+                nic_list+=$phys_int
+            else
+                nic_list+=":$phys_int"
+            fi
+        done
+        # Save this file latest because it is used
+        # as an sign that params where saved succesfully
+        echo "$nic_list" > $binding_data_dir/nic
+    else
+        IFS=' ' read -r phys_int phys_int_mac pci <<< $(read_phys_int_mac_pci_dpdk)
+        read_and_save_dpdk_params_for_phys_int $phys_int $phys_int_mac $pci
+        # Save this file latest because it is used
+        # as an sign that params where saved succesfully
+        echo "$nic" > $binding_data_dir/nic
+    fi
+
 }
 
 function ensure_hugepages() {
@@ -546,6 +573,30 @@ function check_vhost0() {
     fi
 
     ip link sh dev vhost0 >/dev/null 2>&1 || return 1
+}
+
+function l3mh_dpdk_create_interfaces_and_routes() {
+    if ! is_dpdk; then return; fi
+    local phys_int
+    local phys_int_mac
+    local phys_int_ip
+    local i=0
+    local tap
+    local ip_loopback
+    for phys_int in $PHYS_INT; do
+        tap="tap${i}"
+        phys_int_mac=$(cat $binding_data_dir/${phys_int}_mac)
+        phys_int_ip=$(get_cidr_for_nic ${phys_int})
+        ip tuntap add ${tap} mode tap
+        ip link set dev ${tap} address ${phys_int_mac}
+        ip addr add ${phys_int_ip} dev ${tap}
+        ip link set dev ${tap} up
+        i=$[$i+1]
+    done
+    #Adding static routes
+    ip_loopback=$(eval_l3mh_loopback_ip)
+    ip route add table 100 to default dev vhost0
+    ip rule add from ${ip_loopback} table 100
 }
 
 function init_vhost0() {
@@ -711,6 +762,7 @@ function init_vhost0_l3mh() {
         fi
     fi
 
+    l3mh_dpdk_create_interfaces_and_routes || ret=1;
     [[ $ret == 0 ]] && ensure_host_resolv_conf
     dbg_trace_agent_vers
     return $ret
@@ -1011,7 +1063,7 @@ function eval_l3mh_loopback_ip() {
     if [[ -z "$L3MH_CIDR" ]]; then
         return
     fi
-    # ip tool shows additional loopback interfaces 
+    # ip tool shows additional loopback interfaces
     local ip
     for ip in $(ip addr | awk '/inet /{print $2}' | cut -d '/' -f 1 ) ; do
         if ip_in_cidr $ip $L3MH_CIDR ; then

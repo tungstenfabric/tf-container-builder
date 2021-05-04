@@ -31,9 +31,27 @@ function prepare_agent_config_vars() {
         PCI_ADDRESS=$(get_pci_address_for_nic $PHYS_INT)
     else
         binding_data_dir='/var/run/vrouter'
-        PHYS_INT=`cat $binding_data_dir/nic`
-        PHYS_INT_MAC=`cat $binding_data_dir/${PHYS_INT}_mac`
-        PCI_ADDRESS=`cat $binding_data_dir/${PHYS_INT}_pci`
+        PHYS_INT=$(cat $binding_data_dir/nic)
+        local phys_int
+        if [[ -n "$L3MH_CIDR" ]]; then
+           for phys_int in $PHYS_INT; do
+               if [ -z $PHYS_INT_MAC ]; then
+                  PHYS_INT_MAC+=$(cat $binding_data_dir/${phys_int}_mac)
+               else
+                  PHYS_INT_MAC+=" "
+                  PHYS_INT_MAC+=$(cat $binding_data_dir/${phys_int}_mac)
+               fi
+               if [ -z $PCI_ADDRESS ]; then
+                  PCI_ADDRESS+=$(cat $binding_data_dir/${phys_int}_mac)
+               else
+                  PCI_ADDRESS+=" "
+                  PCI_ADDRESS+=$(cat $binding_data_dir/${phys_int}_mac)
+               fi
+           done
+        else
+           PHYS_INT_MAC=$(cat $binding_data_dir/${PHYS_INT}_mac)
+           PCI_ADDRESS=$(cat $binding_data_dir/${PHYS_INT}_pci)
+        fi
     fi
     if [[ -z "$PHYS_INT" || -z "$PHYS_INT_MAC" ]] ; then
         echo "ERROR: Empty one of required data: nic=$PHYS_INT, mac=$PHYS_INT_MAC"
