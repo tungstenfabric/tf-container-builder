@@ -342,7 +342,7 @@ class IntrospectUtil(object):
     def _load(self, path):
         try:
             resp = self._make_request(path, ssl_enabled)
-        except requests.ConnectionError:
+        except requests.exceptions.ConnectionError:
             resp = self._make_request(path, not ssl_enabled)
         if resp.status_code != requests.codes.ok:
             print_debug('PATH: %s : HTTP error: %s' % (path, str(resp.status_code)))
@@ -474,7 +474,19 @@ def config_api(container, options):
     http_server_port = get_http_server_port(svc_name, container['Env'], None)
     if http_server_port:
         svc_config_introspect = IntrospectUtil(http_server_port, options)
-        config_worker_uves = svc_config_introspect.get_uve('ConfigApiWorker')
+        try:
+            config_worker_uves = svc_config_introspect.get_uve('ConfigApiWorker')
+        except (requests.Timeout, socket.timeout) as te:
+            print_debug('Timeout error : %s' % (str(te)))
+            svc_uve_status = "connection-timeout"
+            return get_svc_status(svc_name, svc_uve_status, svc_uve_description, svc_status)
+        except (requests.exceptions.ConnectionError, IOError) as e:
+            print_debug('Socket Connection error : %s' % (str(e)))
+            svc_uve_status = "connection-error"
+            return get_svc_status(svc_name, svc_uve_status, svc_uve_description, svc_status)
+        if not config_worker_uves:
+            return get_svc_status(svc_name, svc_uve_status, svc_uve_description, svc_status)
+
         worker_id = None
         for uve in config_worker_uves:
             try:
@@ -482,12 +494,12 @@ def config_api(container, options):
                 worker_id = int(uve.get('worker_id'))
                 svc_uve_status, svc_uve_description = \
                     get_svc_uve_status(svc_name, introspect_port, options)
-            except (requests.ConnectionError, IOError) as e:
-                print_debug('Socket Connection error : %s' % (str(e)))
-                svc_uve_status = "initializing"
             except (requests.Timeout, socket.timeout) as te:
                 print_debug('Timeout error : %s' % (str(te)))
                 svc_uve_status = "timeout"
+            except (requests.exceptions.ConnectionError, IOError) as e:
+                print_debug('Socket Connection error : %s' % (str(e)))
+                svc_uve_status = "initializing"
 
             worker_status = get_svc_status(svc_name, svc_uve_status, svc_uve_description, svc_status)
             svc_status_list[worker_id] = worker_status
@@ -504,12 +516,12 @@ def vcenter_plugin(container, options):
         # Now check the NodeStatus UVE
         svc_introspect = IntrospectUtil(8234, options)
         node_status = svc_introspect.get_data("Snh_VCenterPluginInfo", 'VCenterPlugin')
-    except (requests.ConnectionError, IOError) as e:
-        print_debug('Socket Connection error : %s' % (str(e)))
-        return "initializing"
     except (requests.Timeout, socket.timeout) as te:
         print_debug('Timeout error : %s' % (str(te)))
         return "timeout"
+    except (requests.exceptions.ConnectionError, IOError) as e:
+        print_debug('Socket Connection error : %s' % (str(e)))
+        return "initializing"
 
     if node_status is None:
         print_debug('{0}: NodeStatusUVE not found'.format(svc_name))
