@@ -1,0 +1,15 @@
+#!/bin/bash -e
+
+my_file="$(readlink -e "$0")"
+my_dir="$(dirname "$my_file")"
+
+if ! python=$(which python) ; then
+  if ! python=$(which python3); then
+    if ! python=$(which python2); then
+      echo "ERROR: Can't find python/python2/python3. Failed to run python script vrouter-port-control $@"
+      exit 1
+    fi
+  fi
+fi
+
+$python $my_dir/vrouter-port-control.py $@
