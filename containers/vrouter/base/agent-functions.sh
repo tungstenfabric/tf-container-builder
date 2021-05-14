@@ -696,7 +696,7 @@ function init_vhost0_l3mh() {
     fi
 
     local ret=0
-    if [[ ifcfg_files == 1 || -e /etc/sysconfig/network-scripts/ifcfg-vhost0 ]]; then
+    if [[ $ifcfg_files == 1 || -e /etc/sysconfig/network-scripts/ifcfg-vhost0 ]]; then
         echo "INFO: creating ifcfg-vhost0 and initialize it via ifup"
         if [ -z "$BIND_INT" ] ; then
             prepare_ifcfg_l3mh $(echo ${phys_int_arr[@]} | tr ' ' ',') 'kernel' $mtu || true
