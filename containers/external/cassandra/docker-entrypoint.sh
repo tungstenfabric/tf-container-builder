@@ -30,6 +30,36 @@ _sed-in-place() {
 	rm "$tempFile"
 }
 
+function is_process_dead() {
+	if kill -0 $cassandra_pid >/dev/null 2>&1; then
+		return 1
+	fi
+}
+
+function trap_cassandra_term() {
+	if [ -z "$cassandra_pid" ]; then
+		return
+	fi
+	if is_process_dead; then
+		return
+	fi
+	if ! ${CASSANDRA_HOME}/bin/nodetool -p ${CASSANDRA_JMX_LOCAL_PORT} stopdaemon 2>&1 ; then
+		echo "WARN: stopping the daemon has failed"
+	fi
+	if is_process_dead; then
+		return
+	fi
+	echo "INFO: terminate process $cassandra_pid"
+	kill $cassandra_pid
+	if wait_cmd_success "is_process_dead" 3 5 ; then
+		return
+	fi
+	echo "INFO: kill process $cassandra_pid"
+	kill -KILL $cassandra_pid &>/dev/null
+	wait_cmd_success "is_process_dead" 3 5
+	exit $?
+}
+
 if [ "$1" = 'cassandra' ]; then
 	: ${CASSANDRA_RPC_ADDRESS='0.0.0.0'}
 
@@ -87,4 +117,8 @@ chown -R ${CASSANDRA_USER}:${CASSANDRA_GROUP} $CASSANDRA_CONFIG $CASSANDRA_LIB $
 CONTRAIL_UID=$( id -u $CASSANDRA_USER )
 CONTRAIL_GID=$( id -g $CASSANDRA_GROUP )
 
-do_run_service "$@"
+trap 'trap_cassandra_term' SIGTERM SIGINT
+do_run_service "$@" &
+cassandra_pid=$!
+
+wait $cassandra_pid
