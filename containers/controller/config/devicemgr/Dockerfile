@@ -2,6 +2,7 @@ ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-controller-config-base:${CONTRAIL_CONTAINER_TAG}
 
+ARG SITE_MIRROR
 ARG CONTAINER_NAME
 ENV SERVICE_NAME=device-manager \
     CONTAINER_NAME=$CONTAINER_NAME
@@ -12,6 +13,7 @@ LABEL name=$CONTAINER_NAME \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 # git rpm cannot be remove as it removes contrail-utils, and common by deps
+# use direct download to be able to download from cache instead of `ansible-galaxy install Juniper.junos,2.4.2`
 RUN pip install --no-compile \
         "markdown==3.1.1" \
         "markupSafe==1.1.1" \
@@ -32,9 +34,10 @@ RUN pip install --no-compile \
         "selectors2==2.0.1" \
         "timeout-decorator==0.4.1" && \
     yum install -y git iputils && \
-    ansible-galaxy install Juniper.junos,2.4.2 && \
     yum clean all -y && \
-    rm -rf /var/cache/yum
+    rm -rf /var/cache/yum && \
+    wget -nv --tries=3 -c -O Juniper.junos ${SITE_MIRROR:-"https://github.com"}/Juniper/ansible-junos-stdlib/archive/2.4.2.tar.gz && \
+    ansible-galaxy install Juniper.junos
 
 COPY *.sh /
 
