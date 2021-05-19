@@ -288,7 +288,7 @@ function prepare_ifcfg() {
         if [[ "${bp,,}" == 'dhcp' || "${nm,,}" == 'yes' ]] ; then
             ret=1
         fi
-        # always recreate ifcfg-${phys_int} becuase cloud-init script restores it on reboot 
+        # always recreate ifcfg-${phys_int} becuase cloud-init script restores it on reboot
         sed -r "/(DEVICE|TYPE|ONBOOT|MACADDR|HWADDR|BONDING|SLAVE|VLAN|MTU|PHYSDEV|NAME|ONPARENT|VID)/! s/^[^#].*/#commented_by_contrail& /" contrail.org.ifcfg-${phys_int} > ifcfg-${phys_int}.tmp
         echo 'NM_CONTROLLED=no' >> ifcfg-${phys_int}.tmp
         echo 'BOOTPROTO=none' >> ifcfg-${phys_int}.tmp
