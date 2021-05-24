@@ -471,7 +471,7 @@ function read_and_save_dpdk_params_for_phys_int() {
 
 function read_and_save_dpdk_params() {
     local binding_data_dir='/var/run/vrouter'
-    if [ -f $binding_data_dir/nic ] ; then
+    if [ -f $binding_data_dir/nic ] && [ ! -s $binding_data_dir/nic ] ; then
         echo "WARNING: binding information is already saved"
         return
     fi
@@ -488,9 +488,14 @@ function read_and_save_dpdk_params() {
             if [ -z $nic_list ]; then
                 nic_list+=$phys_int
             else
-                nic_list+=":$phys_int"
+                nic_list+=" $phys_int"
             fi
         done
+        #Get static dpdk routes for every control node
+        local control_nodes_ip_list=$(echo $CONTROL_NODES | tr ',' ' ')
+        local static_route_list=$(get_static_dpdk_routes $control_nodes_ip_list)
+        echo "$static_route_list" > $binding_data_dir/static_dpdk_routes
+        echo "INFO: saving dpdk static routes: $static_route_list"
         # Save this file latest because it is used
         # as an sign that params where saved succesfully
         echo "$nic_list" > $binding_data_dir/nic
@@ -499,7 +504,7 @@ function read_and_save_dpdk_params() {
         read_and_save_dpdk_params_for_phys_int $phys_int $phys_int_mac $pci
         # Save this file latest because it is used
         # as an sign that params where saved succesfully
-        echo "$nic" > $binding_data_dir/nic
+        echo "$phys_int" > $binding_data_dir/nic
     fi
 
 }
@@ -577,25 +582,33 @@ function check_vhost0() {
 
 function l3mh_dpdk_create_interfaces_and_routes() {
     if ! is_dpdk; then return; fi
+    local phys_int_arr="$@"
     local phys_int
     local phys_int_mac
     local phys_int_ip
     local i=0
     local tap
     local ip_loopback
-    for phys_int in $PHYS_INT; do
+    echo "INFO: Creating tuntap interfaces and routes (L3MH-DPDK case)"
+    for phys_int in ${phys_int_arr[@]}; do
         tap="tap${i}"
         phys_int_mac=$(cat $binding_data_dir/${phys_int}_mac)
-        phys_int_ip=$(get_cidr_for_nic ${phys_int})
+        phys_int_ip=$(cat $binding_data_dir/${phys_int}_ip_addresses | cut -d ' ' -f1)
+        echo "DEBUG: ip tuntap add ${tap} mode tap"
         ip tuntap add ${tap} mode tap
+        echo "DEBUG: ip link set dev ${tap} address ${phys_int_mac}"
         ip link set dev ${tap} address ${phys_int_mac}
+        echo "DEBUG: ip addr add ${phys_int_ip} dev ${tap}"
         ip addr add ${phys_int_ip} dev ${tap}
+        echo "DEBUG: ip link set dev ${tap} up"
         ip link set dev ${tap} up
         i=$[$i+1]
     done
     #Adding static routes
     ip_loopback=$(eval_l3mh_loopback_ip)
+    echo "DEBUG: ip route add table 100 to default dev vhost0"
     ip route add table 100 to default dev vhost0
+    echo "DEBUG: ip rule add from ${ip_loopback} table 100"
     ip rule add from ${ip_loopback} table 100
 }
 
@@ -716,21 +729,34 @@ function init_vhost0_l3mh() {
         return 0
     fi
 
-    local control_node_ip=$(resolve_1st_control_node_ip)
-    local phys_int_arr=( $(ip route show $control_node_ip | grep "nexthop via" | awk '{print $5}' | tr '\n' ' ') )
-    if [[ -z "${phys_int_arr[@]}" ]]; then
-        echo "ERROR: Physical NIC-s couldn't be derived from routing to control node. Please check routes."
-        exit 1
-    fi
     declare phys_int_mac_arr
-    local mtu=$(get_iface_mtu ${phys_int_arr[0]})
-    local _mtu
-    local i=${#phys_int_arr[@]}
+    local phys_int_arr mtu _mtu i bind_type
+    local binding_data_dir='/var/run/vrouter'
+    if ! is_dpdk ; then
+        bind_type='kernel'
+        local control_node_ip=$(resolve_1st_control_node_ip)
+        phys_int_arr=( $(ip route show $control_node_ip | grep "nexthop via" | awk '{print $5}' | tr '\n' ' ') )
+        if [[ -z "${phys_int_arr[@]}" ]]; then
+            echo "ERROR: Physical NIC-s couldn't be derived from routing to control node. Please check routes."
+            exit 1
+        fi
+        mtu=$(get_iface_mtu ${phys_int_arr[0]})
+    else
+        bind_type='dpdk'
+        phys_int_arr=( $(cat ${binding_data_dir}/nic) )
+        mtu=$(cat ${binding_data_dir}/${phys_int_arr[0]}_mtu)
+        prepare_vif_config $AGENT_MODE
+    fi
+    i=${#phys_int_arr[@]}
     local ifcfg_files=1
     for ((i--;i>=0;i--)); do
         local phys_int=${phys_int_arr[$i]}
         phys_int_mac_arr=( $phys_int_mac_arr $(get_iface_mac $phys_int) )
-        _mtu=$(get_iface_mtu $phys_int)
+        if ! is_dpdk ; then
+            _mtu=$(get_iface_mtu $phys_int)
+        else
+            _mtu=$(cat ${binding_data_dir}/${phys_int}_mtu)
+        fi
         if [[ "$mtu" != "$_mtu" ]]; then
             echo "ERROR: MTU(=$_mtu) for interface $phys_int != MTU(=$mtu) of interface ${phys_int_arr[0]}"
             exit 1
@@ -740,17 +766,25 @@ function init_vhost0_l3mh() {
         fi
     done
 
-    echo "INFO: creating vhost0 for L3MH mode. nics: $phys_int_arr, macs: $phys_int_mac_arr"
-    if ! create_vhost0 $(echo "${phys_int_arr[@]}" | tr ' ' ',') $(echo "${phys_int_mac_arr[@]}" | tr ' ' ',') $L3MH_VRRP_MAC ; then
-        dbg_trace_agent_vers
-        return 1
+    if ! is_dpdk ; then
+        echo "INFO: creating vhost0 for L3MH mode. nics: $phys_int_arr, macs: $phys_int_mac_arr"
+        if ! create_vhost0 $(echo "${phys_int_arr[@]}" | tr ' ' ',') $(echo "${phys_int_mac_arr[@]}" | tr ' ' ',') $L3MH_VRRP_MAC ; then
+            dbg_trace_agent_vers
+            return 1
+        fi
+    else
+        echo "INFO: creating vhost0 for L3MH-DPDK mode. nics: ${phys_int_arr[@]}"
+        if ! create_vhost0_l3mh_dpdk; then
+            dbg_trace_agent_vers
+            return 1
+        fi
     fi
 
     local ret=0
     if [[ $ifcfg_files == 1 || -e /etc/sysconfig/network-scripts/ifcfg-vhost0 ]]; then
         echo "INFO: creating ifcfg-vhost0 and initialize it via ifup"
         if [ -z "$BIND_INT" ] ; then
-            prepare_ifcfg_l3mh $(echo ${phys_int_arr[@]} | tr ' ' ',') 'kernel' $mtu || true
+            prepare_ifcfg_l3mh $(echo ${phys_int_arr[@]} | tr ' ' ',') $bind_type $mtu || true
         fi
         ip link set dev vhost0 down
         ifup vhost0 || { echo "ERROR: failed to ifup vhost0." && ret=1; }
@@ -762,7 +796,7 @@ function init_vhost0_l3mh() {
         fi
     fi
 
-    l3mh_dpdk_create_interfaces_and_routes || ret=1;
+    l3mh_dpdk_create_interfaces_and_routes ${phys_int_arr[@]} || ret=1;
     [[ $ret == 0 ]] && ensure_host_resolv_conf
     dbg_trace_agent_vers
     return $ret
