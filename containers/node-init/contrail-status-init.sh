@@ -41,7 +41,7 @@ if [[ -n "${SERVER_CA_CERTFILE}" ]] && [[ -e ${SERVER_CA_CERTFILE} ]] ; then
   fi
 fi
 tmp_argv="/root/contrail-status.py \$cmd_args \$@"
-tmp_suffix="--rm --pid host --net host --privileged ${CONTRAIL_STATUS_IMAGE} \${tmp_argv}"
+tmp_suffix="--rm --pid host --net host ${CONTRAIL_STATUS_IMAGE} \${tmp_argv}"
 
 u=\$(which docker 2>/dev/null)
 if pidof dockerd >/dev/null 2>&1 || pidof dockerd-current >/dev/null 2>&1 ; then
