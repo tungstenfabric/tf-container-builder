@@ -12,7 +12,8 @@ LABEL name=$CONTAINER_NAME \
 RUN yum install -y python2-docker PyYAML podman contrail-nodemgr && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
-    pip2 install --no-compile grpcio==1.29.0 protobuf==3.12.1
+    pip2 install --no-compile grpcio==1.29.0 protobuf==3.12.1 && \
+    sed -i -e 's|overlay|vfs|g' /etc/containers/storage.conf
 
 COPY contrail-status.py /root
 COPY entrypoint.sh /
