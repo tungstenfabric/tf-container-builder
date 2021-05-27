@@ -16,10 +16,7 @@ LABEL name=$CONTAINER_NAME \
 RUN   yum install -y contrail-nodemgr python2-docker-2.4.2-1.2.el7.noarch chrony ntp python3-contrail podman && \
       yum clean all -y && \
       rm -rf /var/cache/yum && \
-      pip2 install --no-compile grpcio==1.29.0 protobuf==3.12.1 && \
-      sed -i -e 's|overlay|vfs|g' /etc/containers/storage.conf
-
-
+      pip2 install --no-compile grpcio==1.29.0 protobuf==3.12.1
 
 COPY *.sh /
 ENTRYPOINT ["/entrypoint.sh"]
