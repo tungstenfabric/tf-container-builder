@@ -42,10 +42,10 @@ function prepare_agent_config_vars() {
                   PHYS_INT_MAC+=$(cat $binding_data_dir/${phys_int}_mac)
                fi
                if [ -z $PCI_ADDRESS ]; then
-                  PCI_ADDRESS+=$(cat $binding_data_dir/${phys_int}_mac)
+                  PCI_ADDRESS+=$(cat $binding_data_dir/${phys_int}_pci)
                else
                   PCI_ADDRESS+=" "
-                  PCI_ADDRESS+=$(cat $binding_data_dir/${phys_int}_mac)
+                  PCI_ADDRESS+=$(cat $binding_data_dir/${phys_int}_pci)
                fi
            done
         else
@@ -235,18 +235,33 @@ EOM
     fi
 
     local vrouter_opts=''
+    local nic=''
+    local phys_ints phys_ips gateway ipaddr
+    local binding_data_dir='/var/run/vrouter'
     if [[ -n "$L3MH_CIDR" ]]; then
-        local control_node_ip=$(resolve_1st_control_node_ip)
-        local phys_ints=$(ip route show $control_node_ip | grep "nexthop via" | awk '{print $5}' | tr '\n' ' ')
-        local phys_ips=''
-        local nic=''
-        for nic in $phys_ints ; do
-            phys_ips+=" $(get_cidr_for_nic $nic)"
-        done
+        if is_dpdk; then
+            phys_ints=$(cat $binding_data_dir/nic)
+            phys_ips=''
+            for nic in $phys_ints ; do
+                phys_ips+=" $(cat $binding_data_dir/${nic}_ip_addresses | cut -d ' ' -f1)"
+            done
+            gateway=''
+            for ipaddr in $(cat $binding_data_dir/static_dpdk_routes | grep -Eo 'via [0-9.]+ ' | cut -d ' ' -f2); do
+                gateway+=" $ipaddr"
+            done
+        else
+            local control_node_ip=$(resolve_1st_control_node_ip)
+            phys_ints=$(ip route show $control_node_ip | grep "nexthop via" | awk '{print $5}' | tr '\n' ' ')
+            phys_ips=''
+            for nic in $phys_ints ; do
+                phys_ips+=" $(get_cidr_for_nic $nic)"
+            done
+            gateway=$(ip route show $control_node_ip | grep "nexthop via" | awk '{print $3}' | tr '\n' ' ')
+        fi
         read -r -d '' vrouter_opts << EOM || true
 physical_interface=${phys_ints}
 physical_interface_addr=${phys_ips}
-gateway=$(ip route show $control_node_ip | grep "nexthop via" | awk '{print $3}' | tr '\n' ' ')
+gateway=${gateway}
 loopback_ip=$(eval_l3mh_loopback_ip)
 EOM
     else
