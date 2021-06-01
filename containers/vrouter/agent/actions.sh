@@ -535,12 +535,10 @@ function vhost0_init() {
     # Update /dhclient-vhost0.conf with the system /etc/dhcp/dhclient.conf
     [ -e /etc/dhcp/dhclient.conf ] && cat /etc/dhcp/dhclient.conf >> /dhclient-vhost0.conf
 
-    # For Ubuntu we have to run dhclient to obtain DNS information for vhost0
-    # DNS servers are bound to specific interface - it's a behaviour of systemd-resolve
     # For Google and Azure the underlying physical inetrface has network plumbed differently.
     # We need the following to initialize vhost0 in GC and Azure
     azure_or_gcp_or_aws=$(cat /sys/devices/virtual/dmi/id/chassis_vendor && cat /sys/devices/virtual/dmi/id/product_version)
-    if ls -1 /host/etc/ | grep -q apt || [[ "${azure_or_gcp_or_aws,,}" =~ ^(.*microsoft*.|.*google*.|.*amazon*.) ]]; then
+    if [[ "${azure_or_gcp_or_aws,,}" =~ ^(.*microsoft*.|.*google*.|.*amazon*.) ]]; then
         pids=$(check_vhost0_dhcp_clients)
         if [ -z "$pids" ] ; then
             check_and_launch_dhcp_clients
