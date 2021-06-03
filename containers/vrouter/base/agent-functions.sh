@@ -471,7 +471,7 @@ function read_and_save_dpdk_params_for_phys_int() {
 
 function read_and_save_dpdk_params() {
     local binding_data_dir='/var/run/vrouter'
-    if [ -f $binding_data_dir/nic ] && [ ! -s $binding_data_dir/nic ] ; then
+    if [ -s $binding_data_dir/nic ] ; then
         echo "WARNING: binding information is already saved"
         return
     fi
@@ -594,8 +594,6 @@ function l3mh_dpdk_create_interfaces_and_routes() {
         tap="tap${i}"
         phys_int_mac=$(cat $binding_data_dir/${phys_int}_mac)
         phys_int_ip=$(cat $binding_data_dir/${phys_int}_ip_addresses | cut -d ' ' -f1)
-        echo "DEBUG: ip tuntap add ${tap} mode tap"
-        ip tuntap add ${tap} mode tap
         echo "DEBUG: ip link set dev ${tap} address ${phys_int_mac}"
         ip link set dev ${tap} address ${phys_int_mac}
         echo "DEBUG: ip addr add ${phys_int_ip} dev ${tap}"
