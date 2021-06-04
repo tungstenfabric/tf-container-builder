@@ -497,6 +497,9 @@ spec:
       - name: contrail-analytics-collector
         image: "{{CONTRAIL_REGISTRY}}/contrail-analytics-collector:{{CONTRAIL_CONTAINER_TAG}}"
         imagePullPolicy: ""
+        securityContext:
+          capabilities:
+            add: ["SYS_PTRACE"]
         envFrom:
         - configMapRef:
             name: env
@@ -881,6 +884,9 @@ spec:
       - name: contrail-controller-control
         image: "{{CONTRAIL_REGISTRY}}/contrail-controller-control-control:{{CONTRAIL_CONTAINER_TAG}}"
         imagePullPolicy: ""
+        securityContext:
+          capabilities:
+            add: ["SYS_PTRACE"]
         envFrom:
         - configMapRef:
             name: env
@@ -890,6 +896,9 @@ spec:
       - name: contrail-controller-control-dns
         image: "{{CONTRAIL_REGISTRY}}/contrail-controller-control-dns:{{CONTRAIL_CONTAINER_TAG}}"
         imagePullPolicy: ""
+        securityContext:
+          capabilities:
+            add: ["SYS_PTRACE"]
         envFrom:
         - configMapRef:
             name: env
