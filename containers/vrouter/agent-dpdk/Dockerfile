@@ -11,9 +11,7 @@ LABEL name=$CONTAINER_NAME \
       $VENDOR_DOMAIN".service"=$SERVICE_NAME \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
-# contrail-vrouter-dpdk-init contains dpdk_nic_bind.py that is used by this container.
-
-RUN yum install -y dhclient NetworkManager contrail-vrouter-dpdk contrail-vrouter-dpdk-init && \
+RUN yum install -y dhclient NetworkManager contrail-vrouter-dpdk && \
     yum clean all -y && \
     rm -rf /var/cache/yum /etc/sysconfig/network-scripts && \
     ldconfig
