@@ -15,10 +15,15 @@ function trap_dpdk_agent_quit() {
         echo "ERROR: failed to terminate process"
         res=1
     fi
-    if [ -n "$pci_address" ] ; then
-        restore_phys_int_dpdk "$pci_address"
+
+    if [[ -n "$L3MH_CIDR" ]]; then
+        restore_phys_int_dpdk_l3mh
     else
-        echo "WARNING: PCIs list is empty, nothing to rebind to initial net driver"
+        if [ -n "$pci_address" ] ; then
+            restore_phys_int_dpdk "$pci_address"
+        else
+            echo "WARNING: PCIs list is empty, nothing to rebind to initial net driver"
+        fi
     fi
     cleanup_vrouter_agent_files
     exit $res

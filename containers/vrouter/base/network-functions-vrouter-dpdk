@@ -233,6 +233,34 @@ function restore_phys_int_dpdk() {
     rm -f "$binding_data_dir/nic"
 }
 
+function restore_phys_int_dpdk_l3mh() {
+    local drv=${1:-${DPDK_UIO_DRIVER}}
+    declare phys_int_list phys_int restore_ip_cmd routes
+    local binding_data_dir='/var/run/vrouter'
+    [ -f "$binding_data_dir/nic" ] && phys_int_list=$(cat $binding_data_dir/nic)
+    for phys_int in $phys_int_list; do
+        local pci=$(cat $binding_data_dir/$phys_int_pci)
+        local netscript_dir='/etc/sysconfig/network-scripts'
+        if [ ! -d "$netscript_dir" ] ; then
+            restore_ip_cmd=$(gen_ip_addr_add_cmd vhost0 $phys_int)
+            [ -f "$binding_data_dir/${phys_int}_routes" ] && routes=$(cat $binding_data_dir/${phys_int}_routes)
+            del_dev_routes vhost0 "$routes"
+        fi
+        restore_iface_driver $pci $drv
+        if [ -n "$phys_int" ] ; then
+            restore_phys_int $phys_int "$restore_ip_cmd" "$routes"
+            rm -f "$binding_data_dir/${phys_int}"*
+        else
+            echo "WARNING: there is info about phys_int to restore"
+        fi
+    done
+    if [ -f "$binding_data_dir/static_dpdk_routes" ] && grep -q nexthop "$binding_data_dir/static_dpdk_routes"; then
+        local static_routes=$(cat binding_data_dir/static_dpdk_routes)
+        ip route add $static_routes
+    fi
+    rm -f "$binding_data_dir/nic"
+}
+
 
 # ifup interface
 #   there are variables from ifcfg-vhost0:
@@ -306,7 +334,11 @@ function ifdown_vhost_post() {
         echo "ERROR: container context... should not be called from container" && return 1 ; }
     local pci=${BIND_INT}
     [ -z "$pci" ] && { echo "ERROR: BIND_INT in not set in ifcfg-vhost0" && return 1; }
-    restore_phys_int_dpdk $pci $DRIVER
+    if [[ -n "$L3MH_CIDR" ]]; then
+        restore_phys_int_dpdk_l3mh $DRIVER
+    else
+        restore_phys_int_dpdk $pci $DRIVER
+    fi
 }
 
 
