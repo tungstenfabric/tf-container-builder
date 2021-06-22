@@ -26,7 +26,7 @@ if [[ -e /etc/contrail ]] ; then
 fi
 
 image=$(echo ${CONTRAIL_STATUS_IMAGE} | sed 's/contrail-status:/contrail-tools:/')
-tmp_suffix="--rm --pid host --net host ${image}"
+tmp_suffix="--rm --pid host --net host --privileged ${image}"
 tmp_file=/host/usr/bin/contrail-tools.tmp.${RANDOM}
 cat > $tmp_file << EOM
 #!/bin/bash
@@ -58,7 +58,7 @@ fi
 u=\$(which docker 2>/dev/null)
 if pidof dockerd >/dev/null 2>&1 || pidof dockerd-current >/dev/null 2>&1 ; then
     trap "\$u rm -f \$cont_name" SIGHUP
-    \$u run \$name_opts \$vol_opts \$entrypoint_arg \$interactive_key --privileged $tmp_suffix
+    \$u run \$name_opts \$vol_opts \$entrypoint_arg \$interactive_key $tmp_suffix
     rm -f \$entrypoint
     exit \$?
 fi
