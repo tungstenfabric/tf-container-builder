@@ -587,10 +587,9 @@ function vhost0_init() {
             exit 1
         fi
     else
-        local l3mh_loopback_ip=$(eval_l3mh_loopback_ip)
         local res=0
-        if [[ -n "$l3mh_loopback_ip" ]] ; then
-            init_vhost0_l3mh $l3mh_loopback_ip || res=1
+        if [[ -n "$L3MH_CIDR" ]]; then
+            init_vhost0_l3mh || res=1
         else
             init_vhost0 || res=1
         fi
