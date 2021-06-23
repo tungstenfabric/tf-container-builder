@@ -78,7 +78,13 @@ function get_bond_numa() {
 
 function get_ifname_by_pci() {
     local pci=$1
-    ls "/sys/bus/pci/devices/${pci}/net"
+    local module_path=$(realpath /sys/bus/pci/devices/${pci}/driver/module)
+    local module=${module_path##*/}
+    if [[ ${module} == virtio_pci ]]; then
+        ls "/sys/bus/pci/devices/${pci}/"virtio*/net
+    else
+        ls "/sys/bus/pci/devices/${pci}/net"
+    fi
 }
 
 function prepare_vif_config() {
