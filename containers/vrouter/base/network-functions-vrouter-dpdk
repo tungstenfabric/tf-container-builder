@@ -19,15 +19,12 @@ function wait_dpdk_start() {
 }
 
 #L3MH case
-function get_static_dpdk_routes() {
-    #List of control nodes ip addresses (separated by spaces)
-    local control_node_list=$1
-    local ipaddr route
-    for ipaddr in $control_node_list; do
-        #Getting route and join it in one line
-        route=$(ip route show $ipaddr | sed -E 's/dev [a-z0-9]+ //' | tr '\n' ' ' | sed -E 's/\s+/ /g')
-        echo "$route"
-    done
+function get_static_dpdk_route() {
+    local control_node_ip=$1
+    local route
+    #Getting route and join it in one line
+    route=$(ip route show $control_node_ip | sed -E 's/dev [a-z0-9]+ //' | tr '\n' ' ' | sed -E 's/\s+/ /g')
+    echo "$route"
 }
 
 function create_vhost0_dpdk() {

@@ -479,6 +479,7 @@ function read_and_save_dpdk_params() {
     declare phys_int phys_int_mac pci
 
     if [[ -n "$L3MH_CIDR" ]]; then
+        local control_node_ip=$(resolve_1st_control_node_ip)
         local phys_ints=$(ip route show $control_node_ip | grep "nexthop via" | awk '{print $5}' | tr '\n' ' ')
         local nic_list=''
         for phys_int in $phys_ints; do
@@ -491,11 +492,10 @@ function read_and_save_dpdk_params() {
                 nic_list+=" $phys_int"
             fi
         done
-        #Get static dpdk routes for every control node
-        local control_nodes_ip_list=$(echo $CONTROL_NODES | tr ',' ' ')
-        local static_route_list=$(get_static_dpdk_routes $control_nodes_ip_list)
-        echo "$static_route_list" > $binding_data_dir/static_dpdk_routes
-        echo "INFO: saving dpdk static routes: $static_route_list"
+        #Get static dpdk routes 1st control node
+        local static_route=$(get_static_dpdk_route $control_node_ip)
+        echo "$static_route" > $binding_data_dir/static_dpdk_routes
+        echo "INFO: saving dpdk static route: $static_route"
         # Save this file latest because it is used
         # as an sign that params where saved succesfully
         echo "$nic_list" > $binding_data_dir/nic
