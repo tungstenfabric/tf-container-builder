@@ -35,6 +35,7 @@ data:
   RABBITMQ_NODES: {{ RABBITMQ_NODES }}
   RABBITMQ_NODE_PORT: "{{ RABBITMQ_NODE_PORT }}"
   VROUTER_GATEWAY: {{ VROUTER_GATEWAY }}
+  HUGE_PAGES_2MB: "128"
   WEBUI_NODES: {{ WEBUI_NODES }}
   WEBUI_VIP: "{{ WEBUI_VIP }}"
 ---
@@ -1468,6 +1469,13 @@ spec:
         # e.g. https://github.com/Juniper/contrail-controller/blob/master/src/vnsw/agent/contrail/linux/pkt0_interface.cc: 48.
         securityContext:
           privileged: true
+        resources:
+          limits:
+            hugepages-2Mi: 256Mi
+            memory: 256Mi
+          requests:
+            hugepages-2Mi: 256Mi
+            memory: 256Mi
         envFrom:
         - configMapRef:
             name: env
@@ -1478,6 +1486,8 @@ spec:
         volumeMounts:
         - mountPath: /dev
           name: dev
+        - mountPath: /var/run
+          name: var-run
         - mountPath: /etc/sysconfig/network-scripts
           name: network-scripts
         - mountPath: /host/bin
@@ -1541,6 +1551,9 @@ spec:
       - name: dev
         hostPath:
           path: /dev
+      - name: var-run
+        hostPath:
+          path: /var/run
       - name: network-scripts
         hostPath:
           path: /etc/sysconfig/network-scripts
