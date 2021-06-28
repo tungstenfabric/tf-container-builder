@@ -251,12 +251,12 @@ EOM
             done
         else
             local control_node_ip=$(resolve_1st_control_node_ip)
-            phys_ints=$(ip route show $control_node_ip | grep "nexthop via" | awk '{print $5}' | tr '\n' ' ')
+            phys_ints=$(l3mh_nics $control_node_ip)
             phys_ips=''
             for nic in $phys_ints ; do
                 phys_ips+=" $(get_cidr_for_nic $nic)"
             done
-            gateway=$(ip route show $control_node_ip | grep "nexthop via" | awk '{print $3}' | tr '\n' ' ')
+            gateway=$(l3mh_gw $control_node_ip)
         fi
         read -r -d '' vrouter_opts << EOM || true
 physical_interface=${phys_ints}
