@@ -1472,7 +1472,6 @@ spec:
         resources:
           limits:
             hugepages-2Mi: 256Mi
-            memory: 256Mi
           requests:
             hugepages-2Mi: 256Mi
             memory: 256Mi
