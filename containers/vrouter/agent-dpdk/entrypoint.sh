@@ -83,9 +83,52 @@ function assert_file() {
     fi
 }
 
+cmd="$@ --no-daemon $DPDK_COMMAND_ADDITIONAL_ARGS"
+# update command with taskset options (core mask)
+# TODO: consider to avoid taskset here and leave to manage by Docker
+if [[ -n "$CPU_CORE_MASK" ]] ; then
+    taskset_param="$CPU_CORE_MASK"
+    if [[ "${CPU_CORE_MASK}" =~ [,-] ]]; then
+        taskset_param="-c $CPU_CORE_MASK"
+    fi
+    cmd="/bin/taskset $taskset_param $cmd"
+fi
+
+# update command with socket mem option
+dpdk_socket_mem=''
+for _ in /sys/devices/system/node/node*/hugepages ; do
+    if [[ -z "${dpdk_socket_mem}" ]] ; then
+        dpdk_socket_mem="${DPDK_MEM_PER_SOCKET}"
+    else
+        dpdk_socket_mem+=",${DPDK_MEM_PER_SOCKET}"
+    fi
+done
+[ -z "${dpdk_socket_mem}" ] && dpdk_socket_mem="${DPDK_MEM_PER_SOCKET}"
+cmd+=" --socket-mem $dpdk_socket_mem"
+
+if [[ -n "$SERVICE_CORE_MASK" ]] ; then
+    if [[ ! "$SERVICE_CORE_MASK" =~ "0x" ]] ; then
+        SERVICE_CORE_MASK="(${SERVICE_CORE_MASK})"
+    fi
+    cmd+=" --service_core_mask $SERVICE_CORE_MASK"
+fi
+
+if [[ -n "$DPDK_CTRL_THREAD_MASK" ]] ; then
+    if [[ ! "$DPDK_CTRL_THREAD_MASK" =~ "0x" ]] ; then
+        DPDK_CTRL_THREAD_MASK="(${DPDK_CTRL_THREAD_MASK})"
+    fi
+    cmd+=" --dpdk_ctrl_thread_mask $DPDK_CTRL_THREAD_MASK"
+fi
+
+
+if is_enabled ${NIC_OFFLOAD_ENABLE} ; then
+    cmd+=" --offloads"
+fi
+
 binding_data_dir='/var/run/vrouter'
 assert_file "$binding_data_dir/nic"
 phys_int_list=$(cat "$binding_data_dir/nic")
+
 for phys_int in $phys_int_list; do
     assert_file "$binding_data_dir/${phys_int}_mac"
     phys_int_mac=$(cat "$binding_data_dir/${phys_int}_mac")
@@ -101,49 +144,6 @@ for phys_int in $phys_int_list; do
     if [[ -f "$binding_data_dir/${phys_int}_bond" ]] ; then
         bond_data=$(cat "$binding_data_dir/${phys_int}_bond")
         echo "INFO: bond_data: $bond_data"
-    fi
-
-    # base command
-    cmd="$@ --no-daemon $DPDK_COMMAND_ADDITIONAL_ARGS"
-
-    # update command with taskset options (core mask)
-    # TODO: consider to avoid taskset here and leave to manage by Docker
-    if [[ -n "$CPU_CORE_MASK" ]] ; then
-        taskset_param="$CPU_CORE_MASK"
-        if [[ "${CPU_CORE_MASK}" =~ [,-] ]]; then
-            taskset_param="-c $CPU_CORE_MASK"
-        fi
-        cmd="/bin/taskset $taskset_param $cmd"
-    fi
-
-    if [[ -n "$SERVICE_CORE_MASK" ]] ; then
-        if [[ ! "$SERVICE_CORE_MASK" =~ "0x" ]] ; then
-            SERVICE_CORE_MASK="(${SERVICE_CORE_MASK})"
-        fi
-        cmd+=" --service_core_mask $SERVICE_CORE_MASK"
-    fi
-
-    if [[ -n "$DPDK_CTRL_THREAD_MASK" ]] ; then
-        if [[ ! "$DPDK_CTRL_THREAD_MASK" =~ "0x" ]] ; then
-            DPDK_CTRL_THREAD_MASK="(${DPDK_CTRL_THREAD_MASK})"
-        fi
-        cmd+=" --dpdk_ctrl_thread_mask $DPDK_CTRL_THREAD_MASK"
-    fi
-
-    # update command with socket mem option
-    dpdk_socket_mem=''
-    for _ in /sys/devices/system/node/node*/hugepages ; do
-        if [[ -z "${dpdk_socket_mem}" ]] ; then
-            dpdk_socket_mem="${DPDK_MEM_PER_SOCKET}"
-        else
-            dpdk_socket_mem+=",${DPDK_MEM_PER_SOCKET}"
-        fi
-    done
-    [ -z "${dpdk_socket_mem}" ] && dpdk_socket_mem="${DPDK_MEM_PER_SOCKET}"
-    cmd+=" --socket-mem $dpdk_socket_mem"
-
-    if is_enabled ${NIC_OFFLOAD_ENABLE} ; then
-        cmd+=" --offloads"
     fi
 
     # update command with vlan & bond options

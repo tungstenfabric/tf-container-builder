@@ -32,7 +32,7 @@ function create_vhost0_dpdk() {
     local phys_int=$1
     local phys_int_mac=$2
     echo "INFO: Creating ${phys_int} interface with mac $phys_int_mac via vif utility..."
-    if ! vif --add 0 --mac ${phys_int_mac} --vrf 0 --vhost-phys --type physical --pmd --id 0 ; then
+    if ! vif --add ${phys_int} --mac ${phys_int_mac} --vrf 0 --vhost-phys --type physical --pmd --id 0 ; then
         echo "ERROR: Failed to adding ${phys_int} interface"
         return 1
     fi
@@ -60,8 +60,9 @@ function create_vhost0_l3mh_dpdk() {
     for phys_int in $phys_int_list; do
         phys_int_mac=$(cat ${binding_data_dir}/${phys_int}_mac)
         echo "INFO: Creating $phys_int interface with mac $phys_int_mac via vif utility. (id=$i)"
-        echo "DEBUG: vif --add 0 --mac ${phys_int_mac} --vrf 0 --vhost-phys --type physical --pmd --id ${i}"
-        if ! vif --add ${i} --mac ${phys_int_mac} --vrf 0 --vhost-phys --type physical --pmd --id ${i} ; then
+
+        echo "DEBUG: vif --add ${phys_int} --mac ${phys_int_mac} --vrf 0 --vhost-phys --type physical --pmd --id ${i}"
+        if ! vif --add ${phys_int} --mac ${phys_int_mac} --vrf 0 --vhost-phys --type physical --pmd --id ${i} ; then
             echo "ERROR: Failed to adding ${phys_int} interface via vif"
             return 1
         fi
