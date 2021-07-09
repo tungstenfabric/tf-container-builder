@@ -11,7 +11,8 @@ LABEL name=$CONTAINER_NAME \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 # tshark is needed for sandump tool which is included into contrail-tools package
-RUN yum install -y python-paramiko python-yaml python-crypto sudo openssh-clients contrail-tools bzip2 && \
+RUN yum install -y python-paramiko python-yaml python-crypto sudo openssh-clients bzip2 \
+                   contrail-tools contrail-vrouter-dpdk-tools && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
     wget -nv -c --tries=3 -O /tmp/tshark3_2.tar.bz2 ${SITE_MIRROR:-"https://github.com"}/tungstenfabric/tf-third-party-cache/raw/master/tshark/tshark3_2.tar.bz2 && \
