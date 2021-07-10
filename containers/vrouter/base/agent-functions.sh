@@ -1034,12 +1034,20 @@ function check_and_launch_dhcp_clients() {
 
 function add_k8s_pod_cidr_route() {
     local pod_cidr=${KUBERNETES_POD_SUBNETS:-"10.32.0.0/12"}
-    ip route add $pod_cidr via $VROUTER_GATEWAY dev vhost0 || ip route replace $pod_cidr via $VROUTER_GATEWAY dev vhost0
+    local via_opts=""
+    if [[ -z "$L3MH_CIDR" ]]; then
+        via_opts="via $VROUTER_GATEWAY"
+    fi
+    ip route add $pod_cidr $via_opts dev vhost0 || ip route replace $pod_cidr $via_opts dev vhost0
 }
 
 function del_k8s_pod_cidr_route() {
     local pod_cidr=${KUBERNETES_POD_SUBNETS:-"10.32.0.0/12"}
-    ip route del $pod_cidr via $VROUTER_GATEWAY dev vhost0 || true
+    local via_opts=""
+    if [[ -z "$L3MH_CIDR" ]]; then
+        via_opts="via $VROUTER_GATEWAY"
+    fi
+    ip route del $pod_cidr $via_opts dev vhost0 || true
 }
 
 function mask2cidr() {
