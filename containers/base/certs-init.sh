@@ -57,16 +57,20 @@ if [[ -f "$k8s_token_file"  && -f "$k8s_ca_file" ]] ; then
   ca_provider='kubernetes'
 fi
 
-full_host_name="$(hostname -f)"
 short_host_name="$(hostname -s)"
+full_host_name="$(hostname -f)"
 
+dns_names_all="$short_host_name $full_host_name $(getent hosts | grep "$full_host_name" | cut -d ' ' -f2- | xargs)"
+dns_names=$(echo "$dns_names_all" | tr ' ' '\n' | sort -u)
+
+alt_names=""
 alt_name_num=1
-alt_names="DNS.${alt_name_num} = $full_host_name"
-(( alt_name_num+=1 ))
-if [[ "$full_host_name" != "$short_host_name" ]] ; then
-  alt_names+="\nDNS.${alt_name_num} = $short_host_name"
+for n in $dns_names ; do
+  [ -z "$alt_names" ] || alt_names+="\n"
+  alt_names+="DNS.${alt_name_num} = $n"
   (( alt_name_num+=1 ))
-fi
+done
+
 if is_enabled $SELFSIGNED_CERTS_WITH_IPS ; then
   # start IP.x from 1
   alt_name_num=1
