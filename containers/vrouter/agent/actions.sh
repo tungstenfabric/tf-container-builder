@@ -25,29 +25,45 @@ function prepare_agent_config_vars() {
     fi
 
     # TODO: avoid duplication of reading parameters with init_vhost0
-    local PHYS_INT_MAC PHYS_INT PCI_ADDRESS
+    local PHYS_INT_MAC PHYS_INT PCI_ADDRESS PHYS_INT_IPS
     if ! is_dpdk ; then
-        IFS=' ' read -r PHYS_INT PHYS_INT_MAC <<< $(get_physical_nic_and_mac)
-        PCI_ADDRESS=$(get_pci_address_for_nic $PHYS_INT)
+        if [ -n "$L3MH_CIDR" ] ; then
+            local control_node_ip=$(resolve_1st_control_node_ip)
+            PHYS_INT=$(l3mh_nics $control_node_ip)
+            local nic
+            for nic in $PHYS_INT ; do
+                [ -n "$PHYS_INT_IPS" ] && PHYS_INT_IPS+=" "
+                PHYS_INT_IPS+="$(get_cidr_for_nic $nic)"
+                [ -n "$PCI_ADDRESS" ] && PCI_ADDRESS+=" "
+                PCI_ADDRESS+="$(get_pci_address_for_nic $nic)"
+                [ -n "$PHYS_INT_MAC" ] && PHYS_INT_MAC+=" "
+                PHYS_INT_MAC+="$(get_iface_mac $nic)"
+            done
+            VROUTER_GATEWAY=${VROUTER_GATEWAY:-$(l3mh_gw $control_node_ip)}
+        else
+            IFS=' ' read -r PHYS_INT PHYS_INT_MAC <<< $(get_physical_nic_and_mac)
+            PCI_ADDRESS=$(get_pci_address_for_nic $PHYS_INT)
+        fi
     else
         binding_data_dir='/var/run/vrouter'
         PHYS_INT=$(cat $binding_data_dir/nic)
         local phys_int
         if [[ -n "$L3MH_CIDR" ]]; then
-           for phys_int in $PHYS_INT; do
-               if [ -z $PHYS_INT_MAC ]; then
-                  PHYS_INT_MAC+=$(cat $binding_data_dir/${phys_int}_mac)
-               else
-                  PHYS_INT_MAC+=" "
-                  PHYS_INT_MAC+=$(cat $binding_data_dir/${phys_int}_mac)
-               fi
-               if [ -z $PCI_ADDRESS ]; then
-                  PCI_ADDRESS+=$(cat $binding_data_dir/${phys_int}_pci)
-               else
-                  PCI_ADDRESS+=" "
-                  PCI_ADDRESS+=$(cat $binding_data_dir/${phys_int}_pci)
-               fi
-           done
+            for phys_int in $PHYS_INT; do
+                [ -n "$PHYS_INT_MAC" ] && PHYS_INT_MAC+=" "
+                PHYS_INT_MAC+=$(cat $binding_data_dir/${phys_int}_mac)
+                [ -n "$PCI_ADDRESS" ] && PCI_ADDRESS+=" "
+                PCI_ADDRESS+=$(cat $binding_data_dir/${phys_int}_pci)
+                [ -n "$PHYS_INT_IPS" ] && PHYS_INT_IPS+=" "
+                PHYS_INT_IPS+="$(cat $binding_data_dir/${nic}_ip_addresses | cut -d ' ' -f1)"
+            done
+            if [ -z "$VROUTER_GATEWAY" ] ; then
+                local ipaddr
+                for ipaddr in $(cat $binding_data_dir/static_dpdk_routes | grep -Eo 'via [0-9.]+ ' | cut -d ' ' -f2); do
+                    [ -n "$VROUTER_GATEWAY" ] && VROUTER_GATEWAY+=" "
+                    VROUTER_GATEWAY+=" $ipaddr"
+                done
+            fi
         else
            PHYS_INT_MAC=$(cat $binding_data_dir/${PHYS_INT}_mac)
            PCI_ADDRESS=$(cat $binding_data_dir/${PHYS_INT}_pci)
@@ -239,30 +255,11 @@ EOM
     local phys_ints phys_ips gateway ipaddr
     local binding_data_dir='/var/run/vrouter'
     if [[ -n "$L3MH_CIDR" ]]; then
-        if is_dpdk; then
-            phys_ints=$(cat $binding_data_dir/nic)
-            phys_ips=''
-            for nic in $phys_ints ; do
-                phys_ips+=" $(cat $binding_data_dir/${nic}_ip_addresses | cut -d ' ' -f1)"
-            done
-            gateway=''
-            for ipaddr in $(cat $binding_data_dir/static_dpdk_routes | grep -Eo 'via [0-9.]+ ' | cut -d ' ' -f2); do
-                gateway+=" $ipaddr"
-            done
-        else
-            local control_node_ip=$(resolve_1st_control_node_ip)
-            phys_ints=$(l3mh_nics $control_node_ip)
-            phys_ips=''
-            for nic in $phys_ints ; do
-                phys_ips+=" $(get_cidr_for_nic $nic)"
-            done
-            gateway=$(l3mh_gw $control_node_ip)
-        fi
         read -r -d '' vrouter_opts << EOM || true
-physical_interface=${phys_ints}
-physical_interface_addr=${phys_ips}
-gateway=${gateway}
-loopback_ip=$(eval_l3mh_loopback_ip)
+physical_interface=${PHYS_INT}
+physical_interface_addr=${PHYS_INT_IPS}
+gateway=${VROUTER_GATEWAY}
+loopback_ip=${COMPUTE_NODE_ADDRESS}
 EOM
     else
         vrouter_opts="physical_interface=$PHYS_INT"
