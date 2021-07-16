@@ -541,6 +541,12 @@ function ensure_hugepages() {
 }
 
 function check_vrouter_agent_settings() {
+
+    if [ -n "$L3MH_CIDR" ] ; then
+        echo "WARNING: check_vrouter_agent_settings is skiped for l3mh."
+        return
+    fi
+
     # check that all control nodes accessible via the same interface and this interface is vhost0
     local nodes=(`echo $CONTROL_NODES | tr ',' ' '`)
     if [[ ${#nodes} == 0 ]]; then
@@ -782,7 +788,7 @@ function init_vhost0_l3mh() {
     done
 
     if ! is_dpdk ; then
-        echo "INFO: creating vhost0 for L3MH mode. nics: $phys_int_arr, macs: $phys_int_mac_arr"
+        echo "INFO: creating vhost0 for L3MH mode. nics: ${phys_int_arr[@]}, macs: ${phys_int_mac_arr[@]}"
         if ! create_vhost0 $(echo "${phys_int_arr[@]}" | tr ' ' ',') $(echo "${phys_int_mac_arr[@]}" | tr ' ' ',') $L3MH_VRRP_MAC ; then
             dbg_trace_agent_vers
             return 1
