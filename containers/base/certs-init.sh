@@ -60,7 +60,7 @@ fi
 short_host_name="$(hostname -s)"
 full_host_name="$(hostname -f)"
 
-dns_names_all="$short_host_name $full_host_name $(getent hosts | grep "$full_host_name" | cut -d ' ' -f2- | xargs)"
+dns_names_all="$short_host_name $full_host_name $(getent hosts | grep "$short_host_name" | cut -d ' ' -f2- | xargs)"
 dns_names=$(echo "$dns_names_all" | tr ' ' '\n' | sort -u)
 
 alt_names=""

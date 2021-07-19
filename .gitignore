@@ -1,5 +1,6 @@
 *.log
 .vscode
+.DS_Store
 Dockerfile.nofromargs
 Dockerfile.*.nofromargs
 common.env
