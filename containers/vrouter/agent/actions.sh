@@ -181,7 +181,7 @@ vmware_mode = vcenter
 EOM
     fi
 
-    local agent_mode_options="physical_interface_mac = $PHYS_INT_MAC"
+    local agent_mode_options="physical_interface_mac=$PHYS_INT_MAC"
     if [[ "$AGENT_MODE" == 'dpdk' ]]; then
         if [[ -z "$PHYS_INT_MAC" || -z "$PCI_ADDRESS" ]] ; then
             echo "ERROR: Empty one of required data: mac=$PHYS_INT_MAC, pci=$PCI_ADDRESS"
