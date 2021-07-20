@@ -59,7 +59,7 @@ if ((\$? == 0)); then
 fi
 u=\$(which ctr 2>/dev/null)
 if ((\$? == 0)); then
-    r="\$u --namespace k8s.io run --rm --privileged"
+    r="\$u --namespace k8s.io run --rm --privileged --net-host"
     r+=' --mount type=bind,src=/etc/localtime,dst=/etc/localtime,options=rbind:ro'
     r+=' --mount type=bind,src=/etc/hosts,dst=/etc/hosts,options=rbind:ro'
     r+=' --mount type=bind,src=/run/containerd,dst=/run/containerd,options=rbind:rw'
