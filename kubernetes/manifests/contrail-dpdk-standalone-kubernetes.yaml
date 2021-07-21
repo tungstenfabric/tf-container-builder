@@ -1,15 +1,10 @@
 # Configs section
 # TODOs for new kubernetes:
-# 1) Rework the way of providing docker socket in nodemgr container.
-#    Use new volume type Socket after switching to new kubernetes:
-#       hostPath:
-#         path: /var/run/docker.sock
-#         type: Socket
-# 2) Avoid using ".." for numberic types (ports, etc), because in v1 there is a bug
+# 1) Avoid using ".." for numberic types (ports, etc), because in v1 there is a bug
 # which leads to an error
 # "..error unmarshaling JSON: json: cannot unmarshal number into Go value of type string.."
 # (https://github.com/kubernetes/kubernetes/issues/2763)
-# 3) Use new type HugePages instead of mapping it from host folder
+# 2) Use new type HugePages instead of mapping it from host folder
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -70,14 +65,6 @@ data:
   ZOOKEEPER_NODES: {{ CONFIGDB_NODES }}
   ZOOKEEPER_PORT: "{{ ZOOKEEPER_PORT }}"
   ZOOKEEPER_PORTS: "{{ ZOOKEEPER_PORTS }}"
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: nodemgr-config
-  namespace: kube-system
-data:
-  DOCKER_HOST: "unix://mnt/docker.sock"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -245,8 +232,6 @@ spec:
         - configMapRef:
             name: env
         - configMapRef:
-            name: nodemgr-config
-        - configMapRef:
             name: contrail-analyticsdb-config
         env:
         - name: NODE_TYPE
@@ -255,9 +240,11 @@ spec:
           value: "2"
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: analyticsdb-logs
-        - mountPath: /mnt
-          name: docker-unix-socket
+          name: contrail-logs
+        - mountPath: /var/run
+          name: var-run
+        - mountPath: /run/runc
+          name: run-runc
       - name: contrail-analyticsdb-provisioner
         image: "{{CONTRAIL_REGISTRY}}/contrail-provisioner:{{CONTRAIL_CONTAINER_TAG}}"
         imagePullPolicy: ""
@@ -269,8 +256,6 @@ spec:
         - configMapRef:
             name: defaults-env
         - configMapRef:
-            name: nodemgr-config
-        - configMapRef:
             name: contrail-analyticsdb-config
         env:
         - name: NODE_TYPE
@@ -279,7 +264,7 @@ spec:
           value: "2"
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: analyticsdb-logs
+          name: contrail-logs
       - name: contrail-analyticsdb
         image: "{{CONTRAIL_REGISTRY}}/contrail-external-cassandra:{{CONTRAIL_CONTAINER_TAG}}"
         securityContext:
@@ -312,7 +297,7 @@ spec:
             name: configzookeeperenv
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: analyticsdb-logs
+          name: contrail-logs
       imagePullSecrets:
       - name: {{ KUBERNETES_SECRET_CONTRAIL_REPO }}
       volumes:
@@ -321,10 +306,16 @@ spec:
           path: /var/lib/contrail/analyticsdb
       - name: analyticsdb-logs
         hostPath:
-          path: /var/log/contrail/analyticsdb
-      - name: docker-unix-socket
+          path: /var/log/contrail/database
+      - name: contrail-logs
+        hostPath:
+          path: /var/log/contrail
+      - name: var-run
         hostPath:
           path: /var/run
+      - name: run-runc
+        hostPath:
+          path: /run/runc
       - name: host-usr-bin
         hostPath:
           path: /usr/bin
@@ -363,13 +354,13 @@ spec:
       containers:
       - name: contrail-configdb
         image: "{{CONTRAIL_REGISTRY}}/contrail-external-cassandra:{{CONTRAIL_CONTAINER_TAG}}"
-        imagePullPolicy: ""
         securityContext:
           capabilities:
             add: ["SYS_NICE"]
+        imagePullPolicy: ""
         env:
         - name: NODE_TYPE
-          value: config-databaseconfig-database
+          value: config-database
         envFrom:
         - configMapRef:
             name: contrail-configdb-config
@@ -385,24 +376,19 @@ spec:
         - configMapRef:
             name: env
         - configMapRef:
-            name: nodemgr-config
-        - configMapRef:
             name: contrail-configdb-config
         env:
         - name: NODE_TYPE
           value: config-database
         - name: CONFIG_DATABASE_NODEMGR__DEFAULTS__minimum_diskGB
           value: "2"
-# todo: there is type Socket in new kubernetes, it is possible to use full
-# path:
-# hostPath:
-#   path: /var/run/docker.sock and
- #   type: Socket
         volumeMounts:
-        - mountPath: /var/log/contrail/config-database
-          name: configdb-logs
-        - mountPath: /mnt
-          name: docker-unix-socket
+        - mountPath: /var/log/contrail
+          name: contrail-logs
+        - mountPath: /var/run
+          name: var-run
+        - mountPath: /run/runc
+          name: run-runc
       - name: contrail-config-database-provisioner
         image: "{{CONTRAIL_REGISTRY}}/contrail-provisioner:{{CONTRAIL_CONTAINER_TAG}}"
         imagePullPolicy: ""
@@ -412,8 +398,6 @@ spec:
         - configMapRef:
             name: defaults-env
         - configMapRef:
-            name: nodemgr-config
-        - configMapRef:
             name: contrail-configdb-config
         env:
         - name: NODE_TYPE
@@ -422,7 +406,7 @@ spec:
           value: "2"
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: configdb-logs
+          name: contrail-logs
       imagePullSecrets:
       - name: {{ KUBERNETES_SECRET_CONTRAIL_REPO }}
       volumes:
@@ -432,12 +416,19 @@ spec:
       - name: configdb-logs
         hostPath:
           path: /var/log/contrail/config-database
-      - name: docker-unix-socket
+      - name: var-run
         hostPath:
           path: /var/run
+      - name: run-runc
+        hostPath:
+          path: /run/runc
       - name: host-usr-bin
         hostPath:
           path: /usr/bin
+      - name: contrail-logs
+        hostPath:
+          path: /var/log/contrail
+
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -493,7 +484,7 @@ spec:
             name: configzookeeperenv
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: analytics-logs
+          name: contrail-logs
       - name: contrail-analytics-collector
         image: "{{CONTRAIL_REGISTRY}}/contrail-analytics-collector:{{CONTRAIL_CONTAINER_TAG}}"
         imagePullPolicy: ""
@@ -505,7 +496,7 @@ spec:
             name: env
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: analytics-logs
+          name: contrail-logs
       - name: contrail-analytics-nodemgr
         image: "{{CONTRAIL_REGISTRY}}/contrail-nodemgr:{{CONTRAIL_CONTAINER_TAG}}"
         imagePullPolicy: ""
@@ -514,21 +505,16 @@ spec:
             name: env
         - configMapRef:
             name: configzookeeperenv
-        - configMapRef:
-            name: nodemgr-config
         env:
         - name: NODE_TYPE
           value: analytics
-# todo: there is type Socket in new kubernetes, it is possible to use full
-# path:
-# hostPath:
-#   path: /var/run/docker.sock and
-#   type: Socket
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: analytics-logs
-        - mountPath: /mnt
-          name: docker-unix-socket
+          name: contrail-logs
+        - mountPath: /var/run
+          name: var-run
+        - mountPath: /run/runc
+          name: run-runc
       - name: contrail-analytics-provisioner
         image: "{{CONTRAIL_REGISTRY}}/contrail-provisioner:{{CONTRAIL_CONTAINER_TAG}}"
         imagePullPolicy: ""
@@ -539,26 +525,28 @@ spec:
             name: defaults-env
         - configMapRef:
             name: configzookeeperenv
-        - configMapRef:
-            name: nodemgr-config
         env:
         - name: NODE_TYPE
           value: analytics
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: analytics-logs
+          name: contrail-logs
       imagePullSecrets:
       - name: {{ KUBERNETES_SECRET_CONTRAIL_REPO }}
       volumes:
-      - name: analytics-logs
-        hostPath:
-          path: /var/log/contrail/analytics
-      - name: docker-unix-socket
+      - name: var-run
         hostPath:
           path: /var/run
+      - name: run-runc
+        hostPath:
+          path: /run/runc
       - name: host-usr-bin
         hostPath:
           path: /usr/bin
+      - name: contrail-logs
+        hostPath:
+          path: /var/log/contrail
+
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -620,7 +608,7 @@ spec:
             name: env
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: analytics-snmp-logs
+          name: contrail-logs
         env:
         - name: NODE_TYPE
           value: analytics-snmp
@@ -634,7 +622,7 @@ spec:
             name: env
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: analytics-snmp-logs
+          name: contrail-logs
         env:
         - name: NODE_TYPE
           value: analytics-snmp
@@ -647,17 +635,17 @@ spec:
         - configMapRef:
             name: env
         - configMapRef:
-            name: nodemgr-config
-        - configMapRef:
             name: contrail-analyticsdb-config
         env:
         - name: NODE_TYPE
           value: analytics-snmp
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: analytics-snmp-logs
-        - mountPath: /mnt
-          name: docker-unix-socket
+          name: contrail-logs
+        - mountPath: /var/run
+          name: var-run
+        - mountPath: /run/runc
+          name: run-runc
       - name: contrail-analytics-snmp-provisioner
         image: "{{CONTRAIL_REGISTRY}}/contrail-provisioner:{{CONTRAIL_CONTAINER_TAG}}"
         imagePullPolicy: ""
@@ -669,27 +657,28 @@ spec:
         - configMapRef:
             name: defaults-env
         - configMapRef:
-            name: nodemgr-config
-        - configMapRef:
             name: contrail-analyticsdb-config
         env:
         - name: NODE_TYPE
           value: analytics-snmp
         volumeMounts:
         - mountPath: /var/log/contrail
-          name: analytics-snmp-logs
+          name: contrail-logs
       imagePullSecrets:
       - name: {{ KUBERNETES_SECRET_CONTRAIL_REPO }}
       volumes:
-      - name: analytics-snmp-logs
+      - name: contrail-logs
         hostPath:
-          path: /var/log/contrail/analytics-snmp
+          path: /var/log/contrail
       - name: host-var-lib
         hostPath:
           path: /var/lib
-      - name: docker-unix-socket
+      - name: var-run
         hostPath:
           path: /var/run
+      - name: run-runc
+        hostPath:
+          path: /run/runc
       - name: host-usr-bin
         hostPath:
           path: /usr/bin
@@ -788,16 +777,16 @@ spec:
             name: env
         - configMapRef:
             name: contrail-analyticsdb-config
-        - configMapRef:
-            name: nodemgr-config
         env:
         - name: NODE_TYPE
           value: analytics-alarm
         volumeMounts:
         - mountPath: /var/log/contrail
           name: contrail-logs
-        - mountPath: /mnt
-          name: docker-unix-socket
+        - mountPath: /var/run
+          name: var-run
+        - mountPath: /run/runc
+          name: run-runc
       - name: contrail-analytics-alarm-provisioner
         image: "{{CONTRAIL_REGISTRY}}/contrail-provisioner:{{CONTRAIL_CONTAINER_TAG}}"
         imagePullPolicy: ""
@@ -810,8 +799,6 @@ spec:
             name: defaults-env
         - configMapRef:
             name: contrail-analyticsdb-config
-        - configMapRef:
-            name: nodemgr-config
         env:
         - name: NODE_TYPE
           value: analytics-alarm
@@ -827,9 +814,12 @@ spec:
       - name: host-var-lib
         hostPath:
           path: /var/lib
-      - name: docker-unix-socket
+      - name: var-run
         hostPath:
           path: /var/run
+      - name: run-runc
+        hostPath:
+          path: /run/runc
       - name: host-usr-bin
         hostPath:
           path: /usr/bin
@@ -928,21 +918,16 @@ spec:
             name: env
         - configMapRef:
             name: configzookeeperenv
-        - configMapRef:
-            name: nodemgr-config
         env:
         - name: NODE_TYPE
           value: control
-# todo: there is type Socket in new kubernetes, it is possible to use full
-# path:
-# hostPath:
-#   path: /var/run/docker.sock and
-#   type: Socket
         volumeMounts:
         - mountPath: /var/log/contrail
           name: contrail-logs
-        - mountPath: /mnt
-          name: docker-unix-socket
+        - mountPath: /var/run
+          name: var-run
+        - mountPath: /run/runc
+          name: run-runc
       - name: contrail-controller-provisioner
         image: "{{CONTRAIL_REGISTRY}}/contrail-provisioner:{{CONTRAIL_CONTAINER_TAG}}"
         imagePullPolicy: ""
@@ -953,8 +938,6 @@ spec:
             name: defaults-env
         - configMapRef:
             name: configzookeeperenv
-        - configMapRef:
-            name: nodemgr-config
         env:
         - name: NODE_TYPE
           value: control
@@ -967,9 +950,12 @@ spec:
       - name: contrail-logs
         hostPath:
           path: /var/log/contrail
-      - name: docker-unix-socket
+      - name: var-run
         hostPath:
           path: /var/run
+      - name: run-runc
+        hostPath:
+          path: /run/runc
       - name: dns-config
         emptyDir: {}
       - name: host-usr-bin
@@ -1072,8 +1058,6 @@ spec:
             name: env
         - configMapRef:
             name: configzookeeperenv
-        - configMapRef:
-            name: nodemgr-config
         env:
         - name: NODE_TYPE
           value: config
@@ -1083,16 +1067,13 @@ spec:
           value: "7201"
         - name: CONFIG_NODEMGR__DEFAULTS__minimum_diskGB
           value: "2"
-# todo: there is type Socket in new kubernetes, it is possible to use full
-# path:
-# hostPath:
-#   path: /var/run/docker.sock and
-#   type: Socket
         volumeMounts:
         - mountPath: /var/log/contrail
           name: contrail-logs
-        - mountPath: /mnt
-          name: docker-unix-socket
+        - mountPath: /var/run
+          name: var-run
+        - mountPath: /run/runc
+          name: run-runc
       - name: contrail-controller-config-provisioner
         image: "{{CONTRAIL_REGISTRY}}/contrail-provisioner:{{CONTRAIL_CONTAINER_TAG}}"
         imagePullPolicy: ""
@@ -1103,8 +1084,6 @@ spec:
             name: defaults-env
         - configMapRef:
             name: configzookeeperenv
-        - configMapRef:
-            name: nodemgr-config
         env:
         - name: NODE_TYPE
           value: config
@@ -1119,9 +1098,12 @@ spec:
       - name: contrail-logs
         hostPath:
           path: /var/log/contrail
-      - name: docker-unix-socket
+      - name: var-run
         hostPath:
           path: /var/run
+      - name: run-runc
+        hostPath:
+          path: /run/runc
       - name: host-usr-bin
         hostPath:
           path: /usr/bin
@@ -1543,21 +1525,16 @@ spec:
         envFrom:
         - configMapRef:
             name: env
-        - configMapRef:
-            name: nodemgr-config
         env:
         - name: NODE_TYPE
           value: vrouter
-# todo: there is type Socket in new kubernetes, it is possible to use full
-# path:
-# hostPath:
-#   path: /var/run/docker.sock and
-#   type: Socket
         volumeMounts:
         - mountPath: /var/log/contrail
           name: contrail-logs
-        - mountPath: /mnt
+        - mountPath: /var/run
           name: var-run
+        - mountPath: /run/runc
+          name: run-runc
         - mountPath: /var/lib/contrail/loadbalancer
           name: lb-nodemgr
       - name: contrail-agent-provisioner
@@ -1568,8 +1545,6 @@ spec:
             name: env
         - configMapRef:
             name: defaults-env
-        - configMapRef:
-            name: nodemgr-config
         env:
         - name: NODE_TYPE
           value: vrouter
@@ -1585,12 +1560,18 @@ spec:
       - name: etc-net-scripts
         hostPath:
           path: /etc/sysconfig/network-scripts
-      - name: var-run
+      - name: host-bin
         hostPath:
-          path: /var/run
+          path: /bin
       - name: host-etc
         hostPath:
           path: /etc
+      - name: var-run
+        hostPath:
+          path: /var/run
+      - name: run-runc
+        hostPath:
+          path: /run/runc
       - name: pod-secret
         secret:
           secretName: contrail-kube-manager-token
