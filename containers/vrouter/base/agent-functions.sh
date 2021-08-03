@@ -1107,11 +1107,11 @@ function set_qos() {
     local interface_list mode policy slaves pci_addresses bond_numa
     if [[ -n "${PRIORITY_ID}" ]] || [[ -n "${QOS_QUEUE_ID}" ]]; then
         if is_dpdk ; then
-        echo "INFO: Qos provisioning not supported for dpdk vrouter. Skipping."
+            echo "INFO: Qos provisioning not supported for dpdk vrouter. Skipping."
         else
             interface_list="${PHYS_INT}"
             if is_bonding ${PHYS_INT} ; then
-                IFS=' ' read -r mode policy slaves pci_addresses bond_numa <<< $(get_bonding_parameters $phys_int)
+                IFS=' ' read -r mode policy slaves pci_addresses bond_numa <<< $(get_bonding_parameters $PHYS_INT)
                 interface_list="${slaves//,/ }"
             fi
             /opt/contrail/utils/qosmap.py --interface_list ${interface_list}
