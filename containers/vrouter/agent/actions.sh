@@ -55,7 +55,7 @@ function prepare_agent_config_vars() {
                 [ -n "$PCI_ADDRESS" ] && PCI_ADDRESS+=" "
                 PCI_ADDRESS+=$(cat $binding_data_dir/${phys_int}_pci)
                 [ -n "$PHYS_INT_IPS" ] && PHYS_INT_IPS+=" "
-                PHYS_INT_IPS+="$(cat $binding_data_dir/${nic}_ip_addresses | cut -d ' ' -f1)"
+                PHYS_INT_IPS+="$(cat $binding_data_dir/${phys_int}_ip_addresses | cut -d ' ' -f1 | head -n 1)"
             done
             if [ -z "$VROUTER_GATEWAY" ] ; then
                 local ipaddr
