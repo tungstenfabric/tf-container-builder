@@ -60,7 +60,7 @@ fi
 u=\$(which ctr 2>/dev/null)
 if ((\$? == 0)); then
     if ! \$u --namespace k8s.io image list | grep -q ${CONTRAIL_STATUS_IMAGE} ; then
-      \$u --namespace k8s.io image pull ${CONTRAIL_STATUS_IMAGE}
+      \$u --namespace k8s.io image pull ${CONTRAIL_STATUS_IMAGE} &>/dev/null
     fi
     r="\$u --namespace k8s.io run --rm --privileged --net-host"
     r+=' --mount type=bind,src=/etc/localtime,dst=/etc/localtime,options=rbind:ro'
