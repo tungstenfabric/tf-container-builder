@@ -94,7 +94,7 @@ function find_my_ip_and_order_for_node_list() {
   for server in "${server_list[@]}"; do
     local ret=0
     local server_ip=`python3 -c "import socket; print(socket.gethostbyname('$server'))"` || ret=$?
-    if [[ $ret == 0 && "$local_ips" =~ ",$server_ip," ]] ; then
+    if [[ $ret == 0 && -n "$server_ip" && "$local_ips" =~ ",$server_ip," ]] ; then
       echo $server_ip $ord
       return
     fi
