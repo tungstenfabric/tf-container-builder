@@ -101,6 +101,20 @@ INDEXED_SERVICES = [
     'tor-agent',
 ]
 
+CONTRAIL_SERVICES_TO_INTROSPECT_VAR = {
+    'contrail-vrouter-agent': 'VROUTER_AGENT_INTROSPECT_PORT',
+    'contrail-tor-agent': 'TOR_HTTP_SERVER_PORT',
+    'contrail-dns': 'DNS_INTROSPECT_PORT',
+    'contrail-control': 'CONTROL_INTROSPECT_PORT',
+    'contrail-topology': 'TOPOLOGY_INTROSPECT_PORT',
+    'contrail-snmp-collector': 'SNMPCOLLECTOR_INTROSPECT_PORT',
+    'contrail-alarm-gen': 'ALARMGEN_INTROSPECT_PORT',
+    'contrail-collector': 'COLLECTOR_INTROSPECT_PORT',
+    'contrail-query-engine': 'QUERYENGINE_INTROSPECT_PORT',
+    'contrail-analytics-api': 'ANALYTICS_API_INTROSPECT_PORT',
+    'contrail-api': 'CONFIG_API_INTROSPECT_PORT',
+}
+
 
 class DockerContainersInterface:
     def __init__(self):
@@ -365,8 +379,11 @@ class IntrospectUtil(object):
 
 def get_http_server_port(svc_name, env, port_env_key):
     port = None
+    if not port_env_key:
+        port_env_key = CONTRAIL_SERVICES_TO_INTROSPECT_VAR.get(svc_name)
     if port_env_key:
-        port = int(get_value_from_env(env, port_env_key))
+        p = get_value_from_env(env, port_env_key)
+        port = int(p) if p else None
     if not port:
         port = vns_constants.ServiceHttpPortMap.get(svc_name)
     if port:
@@ -548,12 +565,6 @@ def vcenter_plugin(container, options):
     if description:
         return "initializing (" + ", ".join(description) + ")"
     return "active"
-
-
-# predefined name as POD_SERVICE. shouldn't be changed.
-def toragent_tor_agent(container, options):
-    return get_svc_uve_info(vns_constants.SERVICE_TOR_AGENT,
-                            container, 'TOR_HTTP_SERVER_PORT', options)
 
 
 def contrail_pod_status(pod_name, pod_services, options):
