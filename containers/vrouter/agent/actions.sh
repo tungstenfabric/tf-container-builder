@@ -350,6 +350,11 @@ EOM
         collector_stats_config=''
     fi
 
+    introspect_opts="http_server_ip=$INTROSPECT_IP"
+    if [ -n "$VROUTER_AGENT_INTROSPECT_PORT" ] ; then
+        introspect_opts=$(echo -e "$introspect_opts\nhttp_server_port=$VROUTER_AGENT_INTROSPECT_PORT")
+    fi
+
     upgrade_old_logs "vrouter-agent"
     mkdir -p /etc/contrail
     cat << EOM > /etc/contrail/contrail-vrouter-agent.conf
@@ -358,7 +363,7 @@ servers=$XMPP_SERVERS_LIST
 $subcluster_option
 
 [DEFAULT]
-http_server_ip=$INTROSPECT_IP
+$introspect_opts
 collectors=$COLLECTOR_SERVERS
 log_file=$CONTAINER_LOG_DIR/contrail-vrouter-agent.log
 log_level=$LOG_LEVEL
