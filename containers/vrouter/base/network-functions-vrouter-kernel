@@ -56,11 +56,11 @@ function create_vhost0() {
     local phys_int=$1
     local phys_int_mac=$2
     local vhost0_mac=${3:-$phys_int_mac}
+    pkt_create_configs
     load_vrouter
     pkt_setup pkt1
     pkt_setup pkt2
     pkt_setup pkt3
-    pkt_create_configs
     vif --create vhost0 --mac $vhost0_mac
     local phys_int_arr=( $(echo $phys_int | tr ',' ' ') )
     local phys_int_mac_arr=( $(echo $phys_int_mac | tr ',' ' ') )
