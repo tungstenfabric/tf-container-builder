@@ -47,11 +47,11 @@ function load_vrouter() {
 function create_vhost0() {
     local phys_int=$1
     local phys_int_mac=$2
+    pkt_create_configs
     load_vrouter
     pkt_setup pkt1
     pkt_setup pkt2
     pkt_setup pkt3
-    pkt_create_configs
     vif --create vhost0 --mac $phys_int_mac
     vif --add $phys_int --mac $phys_int_mac --vrf 0 --vhost-phys --type physical
     vif --add vhost0 --mac $phys_int_mac --vrf 0 --type vhost --xconnect $phys_int
