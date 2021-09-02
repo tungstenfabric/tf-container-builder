@@ -32,6 +32,7 @@ function pkt_setup () {
             done
         fi
         echo $str > $f/rps_cpus
+        echo -e "INFO: $f/rps_cpus\n$(cat $f/rps_cpus)"
     done
     ip link set dev $1 up
 }

@@ -473,8 +473,20 @@ function l3mh_nics() {
         echo ${PHYSICAL_INTERFACE//,/ }
         return
     fi
+    # derive NICs via route if provided by user
     local control_node_ip=${1:-$(resolve_1st_control_node_ip)}
-    ip route show $control_node_ip | grep "nexthop via" | awk '{print $5}' | tr '\n' ' '
+    local nics=$(ip route show $control_node_ip | grep "nexthop via" | awk '{print $5}' | sort -u | tr '\n' ' ')
+    if [[ -n "$nics" ]] ; then
+        echo "$nics"
+        return
+    fi
+    # derive via GWs
+    local i
+    for i in ${VROUTER_GATEWAY//,/ } ; do
+        [ -z "$nics" ] || nics+=" "
+        nics+=$(ip route get $i | grep -o ' dev .*' | awk '{print($2)}' | grep -v '^lo$')
+    done
+    [ -z "$nics" ] || echo "$nics" | tr ' ' '\n' | sort -u | xargs
 }
 
 function l3mh_gw() {
@@ -497,7 +509,7 @@ function read_and_save_dpdk_params() {
 
     if [[ -n "$L3MH_CIDR" ]]; then
         local control_node_ip=$(resolve_1st_control_node_ip)
-        local phys_ints=$(l3mh_nics)
+        local phys_ints=$(l3mh_nics $control_node_ip)
         local nic_list=''
         for phys_int in $phys_ints; do
             phys_int_mac=$(get_iface_mac $phys_int)
@@ -756,7 +768,7 @@ function init_vhost0_l3mh() {
     if ! is_dpdk ; then
         bind_type='kernel'
         local control_node_ip=$(resolve_1st_control_node_ip)
-        phys_int_arr=( $(l3mh_nics) )
+        phys_int_arr=( $(l3mh_nics $control_node_ip) )
         if [[ -z "${phys_int_arr[@]}" ]]; then
             echo "ERROR: Physical NIC-s couldn't be derived from routing to control node. Please check routes."
             exit 1
