@@ -68,7 +68,7 @@ if ((\$? == 0)); then
     r="\$u run \$name_opts \$vol_opts \$entrypoint_arg "
     r+=' --volume=/run/runc:/run/runc'
     r+=' --volume=/sys/fs:/sys/fs'
-    r+=' --cap-add=ALL --security-opt seccomp=unconfined'
+    r+=' --security-opt seccomp=unconfined'
     \$r \$interactive_key $tmp_suffix
     rm -f \$entrypoint
     exit \$?

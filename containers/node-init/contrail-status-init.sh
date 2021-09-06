@@ -51,9 +51,11 @@ fi
 u=\$(which podman 2>/dev/null)
 if ((\$? == 0)); then
     r="\$u run \$ca_vol_opts $vol_opts $env_opts "
-    r+=' --volume=/run/runc:/run/runc'
-    r+=' --volume=/sys/fs:/sys/fs'
-    r+=' --cap-add=ALL --security-opt seccomp=unconfined'
+    r+=' -v /run/runc:/run/runc'
+    r+=' -v /sys/fs:/sys/fs'
+    r+=' -v /etc/containers:/etc/containers:ro'
+    r+=' -v /usr/share/containers:/usr/share/containers:ro'
+    r+=' --security-opt seccomp=unconfined'
     \$r \$tmp_suffix
     exit \$?
 fi
