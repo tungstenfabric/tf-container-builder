@@ -258,13 +258,13 @@ EOM
         read -r -d '' vrouter_opts << EOM || true
 physical_interface=${PHYS_INT}
 physical_interface_addr=${PHYS_INT_IPS}
-gateway=${VROUTER_GATEWAY}
+gateway=${VROUTER_GATEWAY//,/ }
 loopback_ip=${COMPUTE_NODE_ADDRESS}
 EOM
     else
         vrouter_opts="physical_interface=$PHYS_INT"
         if [[ -n "$VROUTER_GATEWAY" ]] ; then
-            vrouter_opts+=$'\n'"gateway=$VROUTER_GATEWAY"
+            vrouter_opts+=$'\n'"gateway=${VROUTER_GATEWAY//,/ }"
         fi
     fi
 
