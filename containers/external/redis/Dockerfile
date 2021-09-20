@@ -12,7 +12,7 @@ LABEL name=$CONTAINER_NAME \
       $VENDOR_DOMAIN".service"=$SERVICE_NAME \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
-ARG REDIS_RPM_NAME=redis40u-4.0.14-2.el7.ius.x86_64
+ARG REDIS_RPM_NAME=redis-6.0.15-1.el7.remi.x86_64
 ARG REDIS_CACHE=${SITE_MIRROR:-'https://github.com'}/tungstenfabric/tf-third-party-cache/blob/master/redis
 
 COPY *.sh /
