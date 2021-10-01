@@ -20,7 +20,7 @@ COPY entrypoint.sh /
 COPY conf/* /etc/scripts/
 
 RUN yum install -y gcc make && \
-    wget -nv --tries=3 -c ${SITE_MIRROR:-"http://www.thekelleys.org.uk"}/dnsmasq/dnsmasq-2.80.tar.xz && \
+    wget -nv --tries=3 -c --no-check-certificate ${SITE_MIRROR:-"https://thekelleys.org.uk"}/dnsmasq/dnsmasq-2.80.tar.xz && \
     tar -xvf dnsmasq-2.80.tar.xz && \
     pushd dnsmasq-2.80 && \
     make && \
