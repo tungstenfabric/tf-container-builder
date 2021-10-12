@@ -87,6 +87,10 @@ function process_container() {
   log "Building $container_name" | append_log_file $logfile true
 
   local build_arg_opts='--network host'
+  if [[ "$LINUX_ID" == 'rhel' && "${LINUX_VER_ID//.[0-9]*/}" == '8' ]] ; then
+    # podman case
+    build_arg_opts+=' -v /etc/resolv.conf:/etc/resolv.conf:ro'
+  fi
   if [[ "$docker_ver" < '17.06' ]] ; then
     # old docker can't use ARG-s before FROM:
     # comment all ARG-s before FROM

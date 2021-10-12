@@ -1,6 +1,8 @@
 #!/bin/bash
 # Internal script for parsing common.env. Run by other executable scripts
 
+[[ "${DEBUG,,}" != 'true' ]] || set -x
+
 env_dir="${BASH_SOURCE%/*}"
 if [[ ! -d "$env_dir" ]]; then env_dir="$PWD"; fi
 env_file="$env_dir/common.env"
@@ -17,7 +19,8 @@ if [[ "$linux_id" == 'centos' ]] ; then
   # ver id is taken from available versions from docker.io
   linux_ver_id=`cat /etc/redhat-release | awk '{print($4)}'`
 else
-  # for ubuntu ver id matchs 14.04, 16.04, etc from host system/
+  # for ubuntu ver id matchs 14.04, 16.04
+  # for rhel ver id matchs 7.9, 8.4
   linux_ver_id=$(awk -F"=" '/^VERSION_ID=/{print $2}' /etc/os-release | tr -d '"')
 fi
 

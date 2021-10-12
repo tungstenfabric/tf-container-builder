@@ -41,6 +41,7 @@ COPY *.repo /etc/yum.repos.d/
 RUN YUM_ENABLE_REPOS=$(echo $YUM_ENABLE_REPOS | tr -d '"') && \
     if [[ -n "$YUM_ENABLE_REPOS" ]] ; then \
         echo "INFO: contrail-general-base: enable repos $YUM_ENABLE_REPOS" && \
+        if ! which yum-config-manager ; then yum install -y yum-utils ; fi && \
         yum-config-manager --enable $YUM_ENABLE_REPOS ; \
         yum clean metadata ; \
     fi && \

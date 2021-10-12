@@ -28,7 +28,7 @@ function get_static_dpdk_route() {
 }
 
 function create_vhost0_dpdk() {
-    echo "$DEBUG: create_vhost0_dpdk()"
+    echo "INFO: create_vhost0_dpdk()"
     local phys_int=$1
     local phys_int_mac=$2
     echo "INFO: Creating ${phys_int} interface with mac $phys_int_mac via vif utility..."
@@ -52,7 +52,7 @@ function create_vhost0_dpdk() {
 }
 
 function create_vhost0_l3mh_dpdk() {
-    echo "DEBUG: create_vhost0_l3mh_dpdk()"
+    echo "INFO: create_vhost0_l3mh_dpdk()"
     local binding_data_dir='/var/run/vrouter'
     local phys_int_list=$(cat ${binding_data_dir}/nic)
     local phys_int phys_int_mac

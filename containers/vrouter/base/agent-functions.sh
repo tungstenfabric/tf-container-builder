@@ -603,7 +603,7 @@ function dbg_trace_agent_vers() {
     local agent_ver=$BUILD_VERSION
     local loaded_vrouter_ver=$(cat /sys/module/vrouter/version)
     local available_vrouter_ver=$(modinfo -F version  vrouter)
-    echo "DEBUG: versions: agent=$agent_ver, loaded_vrouter=$loaded_vrouter_ver, available_vrouter=$available_vrouter_ver"
+    echo "INFO: versions: agent=$agent_ver, loaded_vrouter=$loaded_vrouter_ver, available_vrouter=$available_vrouter_ver"
 }
 
 function check_vhost0() {
