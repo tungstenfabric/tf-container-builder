@@ -19,7 +19,7 @@ COPY *.sh /
 
 RUN set -eux && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
     wget -nv --tries=3 -c -O ${REDIS_RPM_NAME}.rpm ${REDIS_CACHE}/${REDIS_RPM_NAME}.rpm?raw=true && \
-    yum install python3 ${REDIS_RPM_NAME}.rpm -y && \
+    yum install ${REDIS_RPM_NAME}.rpm -y && \
     usermod -a -G $CONTRAIL_GID redis && \
     rm -rf ${REDIS_RPM_NAME}.rpm && \
     yum clean all -y && rm -rf /var/cache/yum

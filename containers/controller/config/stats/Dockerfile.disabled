@@ -12,7 +12,7 @@ RUN   yum install -y git && \
       git config --global http.lowSpeedTime 350 && \
       git clone --single-branch https://github.com/tungstenfabric/tf-controller.git && \
       cd contrail-controller/src/stats && \
-      python setup.py install --no-compile && \
+      python2 setup.py install --no-compile && \
       yum autoremove -y git && \
       yum clean all -y && \
       rm -rf /var/cache/yum && \

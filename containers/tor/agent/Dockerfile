@@ -13,7 +13,7 @@ LABEL name=$CONTAINER_NAME \
       $VENDOR_DOMAIN".service"=$SERVICE_NAME \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
-RUN   yum install -y contrail-vrouter-agent python-contrail-vrouter-api openssl && \
+RUN   yum install -y contrail-vrouter-agent python-contrail-vrouter-api && \
       yum clean all -y && \
       rm -rf /var/cache/yum
 

@@ -13,11 +13,9 @@ LABEL name=$CONTAINER_NAME \
 COPY *.sh /
 
 # run _prepare_packages.sh as a last step cause it can break some repositories
-RUN wget -nv -c --tries=3 -O /tmp/get-pip.py ${SITE_MIRROR:-"https://bootstrap.pypa.io"}/pip/2.7/get-pip.py && \
-    python2 /tmp/get-pip.py 'pip==20.1' && \
+RUN \
     mkdir -p /opt/contrail/site-packages /opt/contrail_python3/site-packages && \
-    pip install --no-compile --target=/opt/contrail/site-packages future && \
-    yum install -y python3 python3-setuptools && \
+    python2 -m pip install --no-compile --target=/opt/contrail/site-packages future && \
     python3 -m pip install --no-compile --target=/opt/contrail_python3/site-packages "future==0.18.2" && \
     rpm -Uvh --nodeps $(repoquery --location python-contrail) && \
     rpm -Uvh --nodeps $(repoquery --location neutron-plugin-contrail) && \
@@ -27,7 +25,7 @@ RUN wget -nv -c --tries=3 -O /tmp/get-pip.py ${SITE_MIRROR:-"https://bootstrap.p
     cp -rf /usr/lib/python2.7/site-packages/neutron_plugin_contrail* /opt/contrail_python3/site-packages && \
     cp -rf /usr/lib/python2.7/site-packages/vnc_api* /opt/contrail_python3/site-packages && \
     cp -rf /usr/lib/python2.7/site-packages/cfgm_common* /opt/contrail_python3/site-packages && \
-    yum autoremove -y python-contrail neutron-plugin-contrail python3 python3-setuptools && \
+    yum autoremove -y python-contrail neutron-plugin-contrail && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
     /_prepare_packages.sh && rm -f /_prepare_packages.sh

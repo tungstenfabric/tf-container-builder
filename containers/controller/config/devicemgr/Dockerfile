@@ -14,7 +14,7 @@ LABEL name=$CONTAINER_NAME \
 
 # git rpm cannot be remove as it removes contrail-utils, and common by deps
 # use direct download to be able to download from cache instead of `ansible-galaxy install Juniper.junos,2.4.2`
-RUN pip install --no-compile \
+RUN python2 -m pip install --no-compile \
         "markdown==3.1.1" \
         "markupSafe==1.1.1" \
         "ansible==2.6.13" \

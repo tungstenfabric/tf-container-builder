@@ -25,7 +25,7 @@ ENV KAFKA_DIR=/opt/kafka \
 COPY *.sh /
 
 RUN for item in `ls /__*` ; do mv $item /${item:3} ; done && \
-    yum install -y java java-1.8.0-openjdk python3 openssl && \
+    yum install -y java java-1.8.0-openjdk && \
     wget -nv --tries=3 -c -O $KAFKA_DISTRO_NAME.tgz ${KAFKA_URL}/$KAFKA_DISTRO_NAME.tgz --no-check-certificate && \
     tar -xvf $KAFKA_DISTRO_NAME.tgz && \
     mkdir -p $KAFKA_CONF_DIR $LOG_DIR && \

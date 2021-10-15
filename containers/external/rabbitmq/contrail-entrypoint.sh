@@ -5,7 +5,7 @@ source /functions.sh
 
 function test_in_cluster() {
   if local status=$(rabbitmqctl cluster_status --node $1 --formatter json) ; then
-    echo "$status" | python -c "$(cat <<SCRIPT
+    echo "$status" | python3 -c "$(cat <<SCRIPT
 import sys, json
 x=json.load(sys.stdin)
 for i in filter(lambda j: j == "$2", x.get("nodes", {}).get("disc", [])):

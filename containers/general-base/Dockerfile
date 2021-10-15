@@ -41,17 +41,22 @@ COPY *.repo /etc/yum.repos.d/
 RUN YUM_ENABLE_REPOS=$(echo $YUM_ENABLE_REPOS | tr -d '"') && \
     if [[ -n "$YUM_ENABLE_REPOS" ]] ; then \
         echo "INFO: contrail-general-base: enable repos $YUM_ENABLE_REPOS" && \
-        if ! which yum-config-manager ; then yum install -y yum-utils ; fi && \
+        if ! type -p yum-config-manager ; then yum install -y yum-utils ; fi && \
         yum-config-manager --enable $YUM_ENABLE_REPOS ; \
         yum clean metadata ; \
     fi && \
     yum update -y && \
-    yum install -y hostname iproute less wget && \
+    yum install -y hostname iproute less wget openssl-1.0.2k && \
     GENERAL_EXTRA_RPMS=$(echo $GENERAL_EXTRA_RPMS | tr -d '"' | tr ',' ' ') && \
     if [[ -n "$GENERAL_EXTRA_RPMS" ]] ; then \
         echo "INFO: contrail-general-base: install $GENERAL_EXTRA_RPMS" && \
         yum install -y $GENERAL_EXTRA_RPMS ; \
     fi && \
+    wget -nv -c --tries=3 -O /tmp/get-pip.py ${SITE_MIRROR:-"https://bootstrap.pypa.io"}/pip/2.7/get-pip.py && \
+    python2 /tmp/get-pip.py 'pip==20.1' && \
+    type -p pip || alternatives --verbose --install /usr/bin/pip pip $(type -p pip2) 100 && \
+    type -p python || alternatives --verbose --set python /usr/bin/python2 && \
+    yum install -y python3 python3-setuptools && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
     groupadd --gid $CONTRAIL_GID --system $CONTRAIL_USER && \
