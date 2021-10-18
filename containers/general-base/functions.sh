@@ -180,8 +180,8 @@ function do_run_service() {
 function run_service() {
   if [[ -n "$CONTRAIL_UID" && -n "$CONTRAIL_GID" ]] ; then
     local owner_opts="$CONTRAIL_UID:$CONTRAIL_GID"
-    mkdir -p /etc/contrail
-    chown $owner_opts /etc/contrail
+    mkdir -p /etc/contrail /var/lib/contrail
+    chown $owner_opts /etc/contrail /var/lib/contrail
     find /etc/contrail -uid 0 -exec chown $owner_opts {} + ;
     chmod 755 /etc/contrail
   fi

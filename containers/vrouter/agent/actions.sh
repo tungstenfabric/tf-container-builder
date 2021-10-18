@@ -671,6 +671,8 @@ function prepare_agent() {
     source /common.sh
     source /agent-functions.sh
     set_traps
+    mkdir -p /var/lib/contrail/dhcp /var/lib/contrail/backup
+    chmod 0750 /var/lib/contrail/dhcp /var/lib/contrail/backup
     vhost0_init
     wait_vhost0
     prepare_agent_config_vars $@
