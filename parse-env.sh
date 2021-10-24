@@ -86,9 +86,9 @@ export GENERAL_EXTRA_RPMS=${GENERAL_EXTRA_RPMS-""}
 export BASE_EXTRA_RPMS=${BASE_EXTRA_RPMS-"https://repos.fedorapeople.org/repos/openstack/openstack-queens/rdo-release-queens-2.noarch.rpm"}
 export DOCKER_REPO=${DOCKER_REPO:-'https://download.docker.com/linux/centos/docker-ce.repo'}
 export YUM_ENABLE_REPOS=${YUM_ENABLE_REPOS:-}
-if [[ "$LINUX_DISTR" =~ 'ub8' ]] ; then
+if [[ "$LINUX_DISTR" =~ 'ubi8' ]] ; then
   [ -z "$GENERAL_EXTRA_RPMS" ] || GENERAL_EXTRA_RPMS+=','
-  GENERAL_EXTRA_RPMS+="python2,glibc-langpack-en"
+  GENERAL_EXTRA_RPMS+="python2,glibc-langpack-en,compat-openssl10"
 fi
 if [[ "$LINUX_DISTR" =~ 'rhel' ]] ; then
   export RHEL_FORCE_REGISTRATION=${RHEL_FORCE_REGISTRATION:-'false'}
