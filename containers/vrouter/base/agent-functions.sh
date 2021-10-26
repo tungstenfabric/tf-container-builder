@@ -615,36 +615,6 @@ function check_vhost0() {
     ip link sh dev vhost0 >/dev/null 2>&1 || return 1
 }
 
-function l3mh_dpdk_create_interfaces_and_routes() {
-    if ! is_dpdk; then return; fi
-    local phys_int_arr="$@"
-    local phys_int
-    local phys_int_mac
-    local phys_int_ip
-    local i=0
-    local tap
-    local ip_loopback
-    echo "INFO: Creating tuntap interfaces and routes (L3MH-DPDK case)"
-    for phys_int in ${phys_int_arr[@]}; do
-        tap="tap${i}"
-        phys_int_mac=$(cat $binding_data_dir/${phys_int}_mac)
-        phys_int_ip=$(cat $binding_data_dir/${phys_int}_ip_addresses | cut -d ' ' -f1)
-        echo "DEBUG: ip link set dev ${tap} address ${phys_int_mac}"
-        ip link set dev ${tap} address ${phys_int_mac}
-        echo "DEBUG: ip addr add ${phys_int_ip} dev ${tap}"
-        ip addr add ${phys_int_ip} dev ${tap}
-        echo "DEBUG: ip link set dev ${tap} up"
-        ip link set dev ${tap} up
-        i=$[$i+1]
-    done
-    #Adding static routes
-    ip_loopback=$(eval_l3mh_loopback_ip)
-    echo "DEBUG: ip route add table 100 to default dev vhost0"
-    ip route add table 100 to default dev vhost0
-    echo "DEBUG: ip rule add from ${ip_loopback} table 100"
-    ip rule add from ${ip_loopback} table 100
-}
-
 function init_vhost0() {
     # check vhost0
     if check_vhost0 ; then
@@ -829,7 +799,10 @@ function init_vhost0_l3mh() {
         fi
     fi
 
-    l3mh_dpdk_create_interfaces_and_routes ${phys_int_arr[@]} || ret=1;
+    if is_dpdk ; then
+        l3mh_dpdk_create_interfaces_and_routes ${phys_int_arr[@]} || ret=1;
+    fi
+
     [[ $ret == 0 ]] && ensure_host_resolv_conf
     dbg_trace_agent_vers
     return $ret
