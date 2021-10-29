@@ -18,6 +18,8 @@ ENV CASSANDRA_HOME=/opt/cassandra \
     CASSANDRA_LOG=/var/log/cassandra \
     CASSANDRA_USER=cassandra \
     CASSANDRA_GROUP=cassandra \
+    CASSANDRA_UID=2000 \
+    CASSANDRA_GID=2000 \
     PATH="/opt/cassandra/bin:$PATH"
 
 ARG CASSANDRA_VERSION=3.11.3
@@ -27,7 +29,7 @@ COPY *.sh /
 
 RUN set -eux && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
     yum install -y java java-1.8.0-openjdk numactl which jemalloc -y && \
-    groupadd -f -g 999 ${CASSANDRA_GROUP} && adduser -u 999 -M -g ${CASSANDRA_GROUP} ${CASSANDRA_USER} && \
+    groupadd -f -g ${CASSANDRA_GID} ${CASSANDRA_GROUP} && adduser -u ${CASSANDRA_UID} -M -g ${CASSANDRA_GROUP} ${CASSANDRA_USER} && \
     usermod -a -G $CONTRAIL_GID ${CASSANDRA_USER} && \
     wget -nv --tries=3 -c $DIST_URL && \
     mkdir -p ${CASSANDRA_HOME} && \

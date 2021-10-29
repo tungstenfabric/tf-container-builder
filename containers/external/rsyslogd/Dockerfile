@@ -3,7 +3,6 @@ ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
 
-ARG RSYSLOG_VERSION=8.24.0
 ENV SERVICE_NAME=rsyslogd \
     CONTAINER_NAME=$CONTAINER_NAME
 LABEL name=$CONTAINER_NAME \
@@ -14,7 +13,14 @@ LABEL name=$CONTAINER_NAME \
 
 COPY *.sh /
 
-RUN /bin/bash -c 'for item in `ls /__*` ; do mv $item /${item:3} ; done' && \
+RUN \
+    /bin/bash -c 'for item in `ls /__*` ; do mv $item /${item:3} ; done' && \
+    source /etc/os-release && \
+    if [[ "$ID" == 'rhel' && "$VERSION_ID" == '8.4' ]] ; then \
+        RSYSLOG_VERSION=8.37.0 ; \
+    else \
+        RSYSLOG_VERSION=8.24.0 ; \
+    fi && \
     yum -y install rsyslog-$RSYSLOG_VERSION && \
     yum clean all -y && \
     rm -rf /var/cache/yum
