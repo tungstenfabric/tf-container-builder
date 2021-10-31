@@ -28,7 +28,7 @@ RUN \
     if [[ "$ID" == 'rhel' && "$VERSION_ID" == '8.4' ]] ; then \
         devel_pkgs="gcc make redhat-rpm-config python2-devel" ; \
         yum install -y $devel_pkgs ; \
-        python2 -m pip install --no-compile "gevent>=1.0" greenlet && \
+        python2 -m pip install --no-compile "gevent>=1.0,<1.5.0" greenlet && \
         yum autoremove -y $devel_pkgs ; \
     fi && \
     yum install -y contrail-lib contrail-setup contrail-utils python-contrail && \
