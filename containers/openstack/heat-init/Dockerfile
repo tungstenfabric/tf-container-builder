@@ -14,10 +14,10 @@ COPY *.sh /
 
 RUN \
     mkdir -p /opt/contrail/site-packages /opt/contrail_python3/site-packages && \
-    python2 -m pip install --target=/opt/contrail/site-packages future six && \
+    python2 -m pip install --no-compile --target=/opt/contrail/site-packages future six && \
     python3 -m pip install --no-compile --target=/opt/contrail_python3/site-packages "future==0.18.2" "six==1.13.0" && \
-    rpm -Uvh --nodeps $(repoquery --location python-contrail) && \
-    rpm -Uvh --nodeps $(repoquery --location contrail-heat) && \
+    rpm -Uvh --nodeps $(repoquery -q --location python-contrail) && \
+    rpm -Uvh --nodeps $(repoquery -q --location contrail-heat) && \
     cp -rf /usr/lib/python2.7/site-packages/contrail_heat* /opt/contrail/site-packages && \
     cp -rf /usr/lib/python2.7/site-packages/vnc_api* /opt/contrail/site-packages && \
     cp -rf /usr/lib/python2.7/site-packages/cfgm_common* /opt/contrail/site-packages && \

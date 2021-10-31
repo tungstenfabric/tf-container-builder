@@ -12,7 +12,7 @@ pkd_dir="/opt/packages"
 mkdir -p $pkd_dir
 for version in newton ocata queens rocky stein; do
   echo "INFO: Using $version"
-  url=$(repoquery --location python-neutron-lbaas-${version})
+  url=$(repoquery -q --location python-neutron-lbaas-${version})
   if [[ -z "$url" ]]; then
     echo "ERROR: python-neutron-lbaas-$version couldn't be found in repo but it must be present somewhere."
     exit 1

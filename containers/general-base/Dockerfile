@@ -38,20 +38,27 @@ ENV VENDOR_DOMAIN=$VENDOR_DOMAIN \
 # this copy should be before yum install
 COPY *.repo /etc/yum.repos.d/
 
-RUN YUM_ENABLE_REPOS=$(echo $YUM_ENABLE_REPOS | tr -d '"') && \
+RUN \
+    source /etc/os-release && \
+    YUM_ENABLE_REPOS=$(echo $YUM_ENABLE_REPOS | tr -d '"') && \
     if [[ -n "$YUM_ENABLE_REPOS" ]] ; then \
         echo "INFO: contrail-general-base: enable repos $YUM_ENABLE_REPOS" && \
-        if ! type -p yum-config-manager ; then yum install -y yum-utils ; fi && \
-        yum-config-manager --enable $YUM_ENABLE_REPOS ; \
+        if ! type -p yum-config-manager ; then \
+            yum install -y yum-utils ; \
+        fi && \
+        yum-config-manager --enable $YUM_ENABLE_REPOS && \
         yum clean metadata ; \
     fi && \
     yum update -y && \
-    yum install -y hostname iproute less wget openssl && \
+    pkgs="hostname iproute less wget openssl" && \
     GENERAL_EXTRA_RPMS=$(echo $GENERAL_EXTRA_RPMS | tr -d '"' | tr ',' ' ') && \
     if [[ -n "$GENERAL_EXTRA_RPMS" ]] ; then \
-        echo "INFO: contrail-general-base: install $GENERAL_EXTRA_RPMS" && \
-        yum install -y $GENERAL_EXTRA_RPMS ; \
+        pkgs+=" $GENERAL_EXTRA_RPMS" ; \
     fi && \
+    if [[ "$ID" == 'rhel' && "$VERSION_ID" == '8.4' ]] ; then \
+        pkgs+=" python2 glibc-langpack-en compat-openssl10" ; \
+    fi && \
+    yum install -y $pkgs && \
     wget -nv -c --tries=3 -O /tmp/get-pip.py ${SITE_MIRROR:-"https://bootstrap.pypa.io"}/pip/2.7/get-pip.py && \
     python2 /tmp/get-pip.py 'pip==20.1' && \
     type -p pip || alternatives --verbose --install /usr/bin/pip pip $(type -p pip2) 100 && \

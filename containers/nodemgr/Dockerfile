@@ -13,10 +13,16 @@ LABEL name=$CONTAINER_NAME \
 
 # for building from rpms
 # install chrony, ntp and iputils-clockdiff to enable checking time sync by nodemgr
-RUN   yum install -y contrail-nodemgr python2-docker-2.4.2-1.2.el7.noarch chrony ntp python3-contrail podman && \
+RUN   \
+      pkgs="contrail-nodemgr python2-docker-2.4.2-1.2.el7.noarch chrony python3-contrail podman" && \
+      source /etc/os-release && \
+      if [[ "$ID" != 'rhel' || "$VERSION_ID" != '8.4' ]] ; then \ 
+            pkgs+=" ntp" ; \
+      fi && \
+      yum install -y $pkgs && \
+      python2 -m pip install --no-compile grpcio==1.29.0 protobuf==3.12.1 && \
       yum clean all -y && \
-      rm -rf /var/cache/yum && \
-      pip2 install --no-compile grpcio==1.29.0 protobuf==3.12.1
+      rm -rf /var/cache/yum
 
 COPY *.sh /
 ENTRYPOINT ["/entrypoint.sh"]

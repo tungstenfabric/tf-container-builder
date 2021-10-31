@@ -11,8 +11,8 @@ LABEL name=$CONTAINER_NAME \
 
 COPY vrouter-port-control *.sh /
 
-RUN rpm -Uvh --nodeps $(repoquery --location contrail-vrouter-agent) && \
-    rpm -Uvh --nodeps $(repoquery --location contrail-nova-vif) && \
+RUN rpm -Uvh --nodeps $(repoquery -q --location contrail-vrouter-agent) && \
+    rpm -Uvh --nodeps $(repoquery -q --location contrail-nova-vif) && \
     mkdir -p /opt/contrail/bin /opt/contrail/site-packages && \
     mv /vrouter-port-control /opt/contrail/bin/vrouter-port-control && \
     chmod a+x /opt/contrail/bin/vrouter-port-control && \

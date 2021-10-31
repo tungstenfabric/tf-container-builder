@@ -18,7 +18,7 @@ RUN \
     mkdir -p /opt/contrail/site-packages && \
     python2 -m pip install --no-compile --target=/opt/contrail/site-packages future && \
     python2 -m pip install 'pbr>=2.0' && \
-    rpm -Uvh --nodeps $(repoquery --location python-contrail) && \
+    rpm -Uvh --nodeps $(repoquery -q --location python-contrail) && \
     yum install -y git && \
     for i in {1..3} ; do \
         res=0 && \

@@ -11,11 +11,6 @@ LABEL name=$CONTAINER_NAME \
       $VENDOR_DOMAIN".service"=$SERVICE_NAME \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
-# contrail-config-openstack contains svc_monitor and vnc_openstack modules
-RUN yum install -y python-neutron-lib && \
-    yum clean all -y && \
-    rm -rf /var/cache/yum
-
 COPY *.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]

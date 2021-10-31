@@ -9,10 +9,11 @@ LABEL name=$CONTAINER_NAME \
       description="Display a list of all components of a Contrail server node and report their current status of active or inactive." \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
-RUN yum install -y python2-docker PyYAML podman contrail-nodemgr && \
+RUN \
+    yum install -y python2-docker podman contrail-nodemgr && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
-    pip2 install --no-compile grpcio==1.29.0 protobuf==3.12.1
+    python2 -m pip install --no-compile "grpcio==1.29.0" "protobuf==3.12.1"
 
 COPY contrail-status.py /root
 COPY entrypoint.sh /

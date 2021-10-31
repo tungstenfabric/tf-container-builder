@@ -16,12 +16,20 @@ ARG SITE_MIRROR
 #   from the yum repo install via BASE_EXTRA_RPMS. pip2 is to installed BEFORE python3 that installs pip3
 #   byt dependencies. 
 # NOTE! all other deps must be installed in the container that requires such deps.
-RUN BASE_EXTRA_RPMS=$(echo $BASE_EXTRA_RPMS | tr -d '"' | tr ',' ' ') && \
+RUN \
+    BASE_EXTRA_RPMS=$(echo $BASE_EXTRA_RPMS | tr -d '"' | tr ',' ' ') && \
     if [[ -n "$BASE_EXTRA_RPMS" ]] ; then \
         echo "INFO: contrail-base: install $BASE_EXTRA_RPMS" ; \
         yum install -y $BASE_EXTRA_RPMS ; \
         echo "INFO: importing gpg keys from any newly installed repos" ; \
         [ -d /etc/pki/rpm-gpg ] && rpm --import /etc/pki/rpm-gpg/* ; \
+    fi && \
+    source /etc/os-release && \
+    if [[ "$ID" == 'rhel' && "$VERSION_ID" == '8.4' ]] ; then \
+        devel_pkgs="gcc make redhat-rpm-config python2-devel" ; \
+        yum install -y $devel_pkgs ; \
+        python2 -m pip install --no-compile "gevent>=1.0" greenlet && \
+        yum autoremove -y $devel_pkgs ; \
     fi && \
     yum install -y contrail-lib contrail-setup contrail-utils python-contrail && \
     python3 -m pip install --no-compile "future==0.18.2" "six==1.13.0" && \
