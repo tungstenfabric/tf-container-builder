@@ -129,6 +129,7 @@ if [[ "$LINUX_DISTR" =~ 'rhel' ]] ; then
       RHEL_HOST_REPOS+=",codeready-builder-for-rhel-8-x86_64-rpms"
       RHEL_HOST_REPOS+=",openstack-$rhel_os_repo_num-for-rhel-8-x86_64-rpms"
       RHEL_HOST_REPOS+=",ansible-2-for-rhel-8-x86_64-rpms"
+      RHEL_HOST_REPOS+=",rhocp-4.6-for-rhel-8-x86_64-rpms"
     else
       # generic repos
       RHEL_HOST_REPOS+=",rhel-7-server-rpms,rhel-7-server-extras-rpms,rhel-7-server-optional-rpms"

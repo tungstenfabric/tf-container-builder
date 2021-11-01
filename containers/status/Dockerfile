@@ -10,10 +10,10 @@ LABEL name=$CONTAINER_NAME \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 RUN \
-    yum install -y python2-docker podman contrail-nodemgr && \
+    yum install -y podman contrail-nodemgr && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
-    python2 -m pip install --no-compile "grpcio==1.29.0" "protobuf==3.12.1"
+    python2 -m pip install --no-compile "docker==2.4.2" "grpcio==1.29.0" "protobuf==3.12.1"
 
 COPY contrail-status.py /root
 COPY entrypoint.sh /
