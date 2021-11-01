@@ -13,7 +13,7 @@ LABEL name=$CONTAINER_NAME \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 RUN   yum install -y \
-            java-1.7.0-openjdk \
+            java-1.8.0-openjdk \
             libcontrail-java-api libcontrail-vijava \
             libcontrail-vrouter-java-api contrail-vcenter-plugin \
       yum clean all -y && \
