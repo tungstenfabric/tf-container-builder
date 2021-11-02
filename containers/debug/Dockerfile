@@ -8,7 +8,10 @@ LABEL name=$CONTAINER_NAME \
       description="The image contains debug symbols for build and may be used to debug Contrail processes." \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
-RUN yum install -y contrail-debuginfo contrail-vrouter-dpdk-debuginfo contrail-manifest && \
+# TODO: debug packages are unavailable in CI jobs, ignore errors
+RUN \
+    yum install -y contrail-debuginfo contrail-vrouter-dpdk-debuginfo || true && \
+    yum install -y contrail-manifest && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
     ln -s /opt/contrail/manifest.xml /manifest.xml
