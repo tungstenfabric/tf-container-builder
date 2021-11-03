@@ -26,10 +26,8 @@ RUN \
     fi && \
     source /etc/os-release && \
     if [[ "$ID" == 'rhel' && "$VERSION_ID" == '8.4' ]] ; then \
-        devel_pkgs="gcc make redhat-rpm-config python2-devel" ; \
-        yum install -y $devel_pkgs ; \
         python2 -m pip install --no-compile "gevent>=1.0,<1.5.0" greenlet && \
-        yum autoremove -y $devel_pkgs ; \
+        yum install -y python-kazoo python2-requests ; \
     fi && \
     yum install -y contrail-lib contrail-setup contrail-utils python-contrail && \
     python3 -m pip install --no-compile "future==0.18.2" "six==1.13.0" && \
