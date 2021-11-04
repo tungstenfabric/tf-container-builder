@@ -26,7 +26,7 @@ RUN \
     fi && \
     source /etc/os-release && \
     if [[ "$ID" == 'rhel' && "$VERSION_ID" == '8.4' ]] ; then \
-        python2 -m pip install --no-compile "gevent>=1.0,<1.5.0" greenlet && \
+        python2 -m pip install --no-compile "gevent==1.1.2"  greenlet && \
         yum install -y python-kazoo python2-requests ; \
     fi && \
     yum install -y contrail-lib contrail-setup contrail-utils python-contrail && \
