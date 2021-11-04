@@ -39,6 +39,3 @@ wget -nv -t3 -P tungstenfabric/tf-third-party-cache/blob/master/redis https://gi
 wget -nv -t3 -P tungstenfabric/tf-third-party-cache/blob/master/redis https://github.com/tungstenfabric/tf-third-party-cache/blob/master/redis/redis-6.0.15-1.el7.remi.x86_64.rpm?raw=true
 
 wget -nv -t3 -P Juniper/ansible-junos-stdlib/archive https://github.com/Juniper/ansible-junos-stdlib/archive/2.4.2.tar.gz
-
-# test-base contianer
-wget -nv -t3 -P 2.34 http://chromedriver.storage.googleapis.com/2.34/chromedriver_linux64.zip
