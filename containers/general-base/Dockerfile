@@ -40,6 +40,7 @@ COPY *.repo /etc/yum.repos.d/
 
 RUN \
     source /etc/os-release && \
+    echo "el${VERSION_ID//\.*/}" > /etc/yum/vars/tpcrelease && \
     YUM_ENABLE_REPOS=$(echo $YUM_ENABLE_REPOS | tr -d '"') && \
     if [[ -n "$YUM_ENABLE_REPOS" ]] ; then \
         echo "INFO: contrail-general-base: enable repos $YUM_ENABLE_REPOS" && \
