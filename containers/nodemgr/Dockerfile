@@ -14,8 +14,8 @@ LABEL name=$CONTAINER_NAME \
 # for building from rpms
 # install chrony, ntp and iputils-clockdiff to enable checking time sync by nodemgr
 RUN   \
-      yum install -y contrail-nodemgr python3-contrail chrony podman && \
       python2 -m pip install --no-compile "docker==2.4.2" "grpcio==1.29.0" "protobuf==3.12.1" && \
+      yum install -y contrail-nodemgr python3-contrail chrony podman && \
       yum clean all -y && \
       rm -rf /var/cache/yum
 
