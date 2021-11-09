@@ -9,7 +9,7 @@ LABEL name=$CONTAINER_NAME \
       description="DPDK Mellanox kernel module for RedHat." \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
-RUN yum update -y && \
+RUN \
     yum install -y mstflint pciutils && \
     yum clean all -y && \
     rm -rf /var/cache/yum

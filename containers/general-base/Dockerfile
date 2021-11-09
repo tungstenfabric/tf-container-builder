@@ -49,13 +49,13 @@ RUN \
         yum-config-manager --enable $YUM_ENABLE_REPOS && \
         yum clean metadata ; \
     fi && \
-    yum update -y && \
+    yum update -y -x "redhat-release*" && \
     pkgs="hostname iproute less wget openssl" && \
     GENERAL_EXTRA_RPMS=$(echo $GENERAL_EXTRA_RPMS | tr -d '"' | tr ',' ' ') && \
     if [[ -n "$GENERAL_EXTRA_RPMS" ]] ; then \
         pkgs+=" $GENERAL_EXTRA_RPMS" ; \
     fi && \
-    if [[ "$ID" == 'rhel' && "$VERSION_ID" == '8.4' ]] ; then \
+    if [[ "$ID" == 'rhel' && "${PLATFORM_ID//*:/}" == 'el8' ]] ; then \
         pkgs+=" python2 glibc-langpack-en compat-openssl10" ; \
     fi && \
     yum install -y $pkgs && \

@@ -14,7 +14,7 @@ LABEL name=$CONTAINER_NAME \
 RUN \
       source /etc/os-release && \
       pkgs='sudo openssh-clients bzip2 contrail-tools contrail-vrouter-dpdk-tools' && \
-      if [[ "$ID" != 'rhel' || "$VERSION_ID" != '8.4' ]] ; then \
+      if [[ "$ID" != 'rhel' || "${PLATFORM_ID//*:/}" == 'el8' ]] ; then \
             pkgs+=' python-paramiko python-yaml python-crypto' ; \
       else \
             python2 -m pip install --no-compile crypto paramiko "PyYAML>=5.1" ; \

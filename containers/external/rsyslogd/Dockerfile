@@ -16,7 +16,7 @@ COPY *.sh /
 RUN \
     /bin/bash -c 'for item in `ls /__*` ; do mv $item /${item:3} ; done' && \
     source /etc/os-release && \
-    if [[ "$ID" == 'rhel' && "$VERSION_ID" == '8.4' ]] ; then \
+    if [[ "$ID" == 'rhel' && "${PLATFORM_ID//*:/}" == 'el8' ]] ; then \
         RSYSLOG_VERSION=8.37.0 ; \
     else \
         RSYSLOG_VERSION=8.24.0 ; \

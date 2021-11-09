@@ -25,7 +25,7 @@ RUN \
         [ -d /etc/pki/rpm-gpg ] && rpm --import /etc/pki/rpm-gpg/* ; \
     fi && \
     source /etc/os-release && \
-    if [[ "$ID" == 'rhel' && "$VERSION_ID" == '8.4' ]] ; then \
+    if [[ "$ID" == 'rhel' && "${PLATFORM_ID//*:/}" == 'el8' ]] ; then \
         python2 -m pip install --no-compile "gevent==1.1.2"  greenlet && \
         yum install -y python-kazoo python2-requests ; \
     fi && \
