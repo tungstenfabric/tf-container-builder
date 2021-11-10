@@ -61,10 +61,11 @@ if ((\$? == 0)); then
 fi
 u=\$(which ctr 2>/dev/null)
 if ((\$? == 0)); then
-    if ! \$u --namespace k8s.io image list | grep -q ${CONTRAIL_STATUS_IMAGE} ; then
-      \$u --namespace k8s.io image pull ${CONTRAIL_STATUS_IMAGE} &>/dev/null
+    if ! \$u --namespace ${CONTAINERD_NAMESPACE} image list | grep -q ${CONTRAIL_STATUS_IMAGE} ; then
+      \$u --namespace ${CONTAINERD_NAMESPACE} image pull ${CONTRAIL_STATUS_IMAGE} &>/dev/null
     fi
-    r="\$u --namespace k8s.io run --rm --privileged --net-host"
+    r="\$u --namespace ${CONTAINERD_NAMESPACE} run --rm --privileged --net-host"
+    r+=" --env CONTAINERD_NAMESPACE=${CONTAINERD_NAMESPACE}"
     r+=' --mount type=bind,src=/etc/localtime,dst=/etc/localtime,options=rbind:ro'
     r+=' --mount type=bind,src=/etc/hosts,dst=/etc/hosts,options=rbind:ro'
     r+=' --mount type=bind,src=/run/containerd,dst=/run/containerd,options=rbind:rw'
