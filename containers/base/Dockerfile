@@ -25,8 +25,9 @@ RUN BASE_EXTRA_RPMS=$(echo $BASE_EXTRA_RPMS | tr -d '"' | tr ',' ' ') && \
     fi && \
     wget -nv -c --tries=3 -O /tmp/get-pip.py ${SITE_MIRROR:-"https://bootstrap.pypa.io"}/pip/2.7/get-pip.py && \
     python2 /tmp/get-pip.py 'pip==20.1' && \
+    python2 -m pip install remote-pdb && \
     yum install -y contrail-lib contrail-setup contrail-utils python-contrail python3 && \
-    python3 -m pip install --no-compile "future==0.18.2" "six==1.13.0" && \
+    python3 -m pip install --no-compile "future==0.18.2" "six==1.13.0" remote-pdb && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
     ldconfig
