@@ -24,13 +24,14 @@ RUN \
         echo "INFO: importing gpg keys from any newly installed repos" ; \
         [ -d /etc/pki/rpm-gpg ] && rpm --import /etc/pki/rpm-gpg/* ; \
     fi && \
+    python2 -m pip install --no-compile remote-pdb && \
     source /etc/os-release && \
     if [[ "$ID" == 'rhel' && "$VERSION_ID" == '8.4' ]] ; then \
         python2 -m pip install --no-compile "gevent==1.1.2"  greenlet && \
         yum install -y python-kazoo python2-requests ; \
     fi && \
     yum install -y contrail-lib contrail-setup contrail-utils python-contrail && \
-    python3 -m pip install --no-compile "future==0.18.2" "six==1.13.0" && \
+    python3 -m pip install --no-compile "future==0.18.2" "six==1.13.0" remote-pdb && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
     ldconfig
