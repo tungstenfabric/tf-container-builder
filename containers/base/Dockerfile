@@ -26,7 +26,7 @@ RUN \
     fi && \
     python2 -m pip install --no-compile remote-pdb && \
     source /etc/os-release && \
-    if [[ "$ID" == 'rhel' && "$VERSION_ID" == '8.4' ]] ; then \
+    if [[ "$ID" == 'rhel' && "${PLATFORM_ID//*:/}" == 'el8' ]] ; then \
         python2 -m pip install --no-compile "gevent==1.1.2"  greenlet && \
         yum install -y python-kazoo python2-requests ; \
     fi && \
