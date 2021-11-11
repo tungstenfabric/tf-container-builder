@@ -36,7 +36,10 @@ COPY *.repo /etc/yum.repos.d/
 COPY *.list /etc/apt/
 
 #TODO: need to get rid of apt-get update
-RUN mkdir -p /opt/contrail/src /contrail_tools /vrouter_src && \
+# tpc repo is not to be used as it os dependend
+RUN \
+    rm -f /etc/yum.repos.d/tpc.repo && \
+    mkdir -p /opt/contrail/src /contrail_tools /vrouter_src && \
     contrail_version=${CONTRAIL_VERSION:-$CONTRAIL_CONTAINER_TAG} && \
     echo "${contrail_version}" > /contrail_version && \
     export DEBIAN_FRONTEND=noninteractive && \
