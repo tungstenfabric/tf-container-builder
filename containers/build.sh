@@ -90,7 +90,8 @@ function process_container() {
   local build_arg_opts='--network host'
   if [[ "$LINUX_ID" == 'rhel' && "${LINUX_VER_ID//.[0-9]*/}" == '8' ]] ; then
     # podman case
-    build_arg_opts+=' --cap-add=all --security-opt label=disable  --security-opt seccomp=unconfined'
+    build_arg_opts+=' --format docker'
+    build_arg_opts+=' --cap-add=all --security-opt label=disable --security-opt seccomp=unconfined'
     build_arg_opts+=' -v /etc/resolv.conf:/etc/resolv.conf:ro'
     # to make posible use subscription inside container run from container in podman
     if [ -e /run/secrets/etc-pki-entitlement ] ; then
