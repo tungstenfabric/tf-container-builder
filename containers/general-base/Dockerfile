@@ -56,7 +56,7 @@ RUN \
         pkgs+=" $GENERAL_EXTRA_RPMS" ; \
     fi && \
     if [[ "$ID" == 'rhel' && "${PLATFORM_ID//*:/}" == 'el8' ]] ; then \
-        pkgs+=" python2 glibc-langpack-en compat-openssl10" ; \
+        pkgs+=" yum-utils python2 glibc-langpack-en compat-openssl10" ; \
     fi && \
     yum install -y $pkgs && \
     wget -nv -c --tries=3 -O /tmp/get-pip.py ${SITE_MIRROR:-"https://bootstrap.pypa.io"}/pip/2.7/get-pip.py && \
