@@ -30,26 +30,36 @@ get_lists_kernels_versions () {
 }
 
 install_kernel_modules () {
+
   local modules=$1
   local kernels=$2
   local sorted_list
   local kernel_prefix_regex
   local d
+
   for d in $kernels ; do
     # Enable module if we have equal version
     if echo "$modules" | grep -q "$d" ; then
       enable_kernel_module "$d" "$d"
       continue
     fi
-    kernel_prefix_regex="^$(echo $d | cut -d. -f1,2)"
+
+    kernel_prefix_regex="^$(echo $d | cut -d. -f1,2,3)"
+
+    # Check if minor version modules exist. If not - use major version
+    if ! echo "$modules" | grep $kernel_prefix_regex | grep -vq "$d" ; then
+      kernel_prefix_regex="^$(echo $d | cut -d. -f1,2)"
+    fi
+
     # Add OS kernel version to list of available and sort them
     sorted_list=$(echo -e "${modules}\n${d}" | grep $kernel_prefix_regex | sed 's/\.el/ el/' | sort -V | sed 's/ /./1')
-    if ! echo "$sorted_list" | grep -B1 "$d" | grep -vq "$d" ; then
+
+    if ! echo "$sorted_list" | grep -B1 -A1 "$d" | grep -vq "$d" ; then
       # Enable first installed module if current kernel is upper all modules that we have
       enable_kernel_module $(echo "$modules" | grep $kernel_prefix_regex | head -1) "$d"
     else
-      # Enable upper version kernel module
-      enable_kernel_module $(echo "$sorted_list" | grep -B1 "$d" | grep -v "$d") "$d"
+      # Enable upper version kernel module if exists or lower version if not
+      enable_kernel_module $(echo "$sorted_list" | grep -B1 -A1 "$d" | grep -v "$d" | head -1 ) "$d"
     fi
   done
 }
