@@ -20,6 +20,7 @@ from urllib3.exceptions import SubjectAltNameWarning
 import yaml
 from nodemgr.common import utils as utils
 from nodemgr.common import cri_containers as cri
+from nodemgr.common import containerd_containers as ctr
 
 warnings.filterwarnings('ignore', category=SubjectAltNameWarning)
 warnings.filterwarnings('ignore', ".*SNIMissingWarning.*")
@@ -200,12 +201,12 @@ class PodmanContainersInterface:
         return None
 
 
-class CriContainersInterface:
-    def __init__(self, cri_):
-        self._cri = cri_
+class ContainerdContainersInterface:
+    def __init__(self, containerd_):
+        self._containerd = containerd_
 
     def list(self, filter_):
-        x = self._cri.list(True)
+        x = self._containerd.list(True)
         y = [i for i in x if filter_ in i['Labels']]
         # NB. openshift list doesn't contain required labels.
         # we duplicate the labels values in ct env. we use the envs
@@ -214,7 +215,7 @@ class CriContainersInterface:
         return x if 0 < len(x) and len(y) == 0 else y
 
     def inspect(self, id_):
-        return self._cri.inspect(id_)
+        return self._containerd.inspect(id_)
 
 
 debug_output = False
@@ -730,17 +731,17 @@ def craft_client():
         # absence make another attempt after the timeout to detect
         # a ct engine hoping CRIO has created the file finally.
         try:
-            return CriContainersInterface(
-                cri.CriContainersInterface.craft_containerd_peer())
+            return ContainerdContainersInterface(
+                ctr.ContainerdContainersInterface.craft_containerd_peer())
         except LookupError:
             time.sleep(3)
 
     if not os.path.exists('/run/.containerenv'):
-        return CriContainersInterface(
-            cri.CriContainersInterface.craft_containerd_peer())
+        return ContainerdContainersInterface(
+            ctr.ContainerdContainersInterface.craft_containerd_peer())
 
     try:
-        return CriContainersInterface(
+        return ContainerdContainersInterface(
             cri.CriContainersInterface.craft_crio_peer())
     except LookupError:
         return PodmanContainersInterface()
