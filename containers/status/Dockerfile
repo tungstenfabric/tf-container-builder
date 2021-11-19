@@ -13,7 +13,7 @@ RUN \
     yum install -y podman contrail-nodemgr && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
-    python2 -m pip install --no-compile "docker==2.4.2" "grpcio==1.29.0" "protobuf==3.12.1"
+    python2 -m pip install --no-compile --no-binary=protobuf "docker==2.4.2" "grpcio==1.29.0" "protobuf==3.17.3" "containerd==1.5.2"
 
 COPY contrail-status.py /root
 COPY entrypoint.sh /
