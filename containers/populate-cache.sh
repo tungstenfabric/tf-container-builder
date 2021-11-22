@@ -32,7 +32,9 @@ wget -nv -t3 -P dist/zookeeper/zookeeper-3.7.0 https://archive.apache.org/dist/z
 # up to 2011.L1
 wget -nv -t3 -P tungstenfabric/tf-third-party-cache/blob/master/kafka https://github.com/tungstenfabric/tf-third-party-cache/blob/master/kafka/kafka_2.11-2.3.1.tgz?raw=true
 # from 2011.L2, 21.3
-wget -nv -t3 -P apache/kafka/2.6.2 https://mirror.linux-ia64.org/apache/kafka/2.6.2/kafka_2.12-2.6.2.tgz
+# kafka 2.6.2 was moved to archive
+#wget -nv -t3 -P apache/kafka/2.6.2 https://mirror.linux-ia64.org/apache/kafka/2.6.2/kafka_2.12-2.6.2.tgz
+wget -nv -t3 -P dist/kafka/2.6.2 https://archive.apache.org/dist/kafka/2.6.2/kafka_2.12-2.6.2.tgz
 
 wget -nv -t3 -P tungstenfabric/tf-third-party-cache/blob/master/redis https://github.com/tungstenfabric/tf-third-party-cache/blob/master/redis/redis40u-4.0.14-2.el7.ius.x86_64.rpm?raw=true
 # from 2011.L3, 21.3
