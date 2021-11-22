@@ -13,7 +13,7 @@ LABEL name=$CONTAINER_NAME \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
 ARG KAFKA_DISTRO_NAME="kafka_2.12-2.6.2"
-ARG KAFKA_URL="${SITE_MIRROR:-'https://mirror.linux-ia64.org'}/apache/kafka/2.6.2"
+ARG KAFKA_URL="${SITE_MIRROR:-'https://archive.apache.org'}/dist/kafka/2.6.2"
 
 ENV KAFKA_DIR=/opt/kafka \
     KAFKA_CONF_DIR=/opt/kafka/config \
