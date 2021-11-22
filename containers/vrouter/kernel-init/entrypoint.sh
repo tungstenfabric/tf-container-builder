@@ -2,6 +2,9 @@
 
 # these next folders must be mounted to compile vrouter.ko in ubuntu: /usr/src /lib/modules
 
+# to save output logs to correct place
+export SERVICE_NAME=kernel-init
+
 source /common.sh
 source /agent-functions.sh
 source /kernel-init-functions.sh
