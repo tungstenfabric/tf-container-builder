@@ -18,8 +18,9 @@ COPY *.sh /
 
 # vim-common is needed because of xxd tool
 RUN /bin/bash -c 'for item in `ls /__*` ; do mv $item /${item:3} ; done' && \
-    wget -nv -t3 -O erlang-21.3.8.21-1.el7.x86_64.rpm  ${SITE_MIRROR:-"https://packagecloud.io"}/rabbitmq/erlang/packages/el/7/erlang-21.3.8.21-1.el7.x86_64.rpm/download.rpm && \
-    wget -nv -t3 -O rabbitmq-server-3.7.20-1.el7.noarch.rpm ${SITE_MIRROR:-"https://packagecloud.io"}/rabbitmq/rabbitmq-server/packages/el/7/rabbitmq-server-3.7.20-1.el7.noarch.rpm/download.rpm && \
+    source /functions.sh && \
+    download_package https://packagecloud.io rabbitmq/erlang/packages/el/7/erlang-21.3.8.21-1.el7.x86_64.rpm/download.rpm erlang-21.3.8.21-1.el7.x86_64.rpm && \
+    download_package https://packagecloud.io rabbitmq/rabbitmq-server/packages/el/7/rabbitmq-server-3.7.20-1.el7.noarch.rpm/download.rpm rabbitmq-server-3.7.20-1.el7.noarch.rpm && \
     yum install -y erlang-21.3.8.21-1.el7.x86_64.rpm rabbitmq-server-3.7.20-1.el7.noarch.rpm vim-common && \
     usermod -a -G $CONTRAIL_GID rabbitmq && \
     usermod -d /var/lib/rabbitmq rabbitmq && \

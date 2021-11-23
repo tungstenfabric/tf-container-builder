@@ -12,9 +12,6 @@ LABEL name=$CONTAINER_NAME \
       $VENDOR_DOMAIN".service"=$SERVICE_NAME \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
-ARG KAFKA_DISTRO_NAME="kafka_2.12-2.6.2"
-ARG KAFKA_URL="${SITE_MIRROR:-'https://archive.apache.org'}/dist/kafka/2.6.2"
-
 ENV KAFKA_DIR=/opt/kafka \
     KAFKA_CONF_DIR=/opt/kafka/config \
     LOG_DIR=/var/log/kafka \
@@ -24,9 +21,12 @@ ENV KAFKA_DIR=/opt/kafka \
 
 COPY *.sh /
 
-RUN for item in `ls /__*` ; do mv $item /${item:3} ; done && \
+RUN \
+    KAFKA_DISTRO_NAME="kafka_2.12-2.6.2" && \
+    for item in `ls /__*` ; do mv $item /${item:3} ; done && \
     yum install -y java java-1.8.0-openjdk && \
-    wget -nv --tries=3 -c -O $KAFKA_DISTRO_NAME.tgz ${KAFKA_URL}/$KAFKA_DISTRO_NAME.tgz --no-check-certificate && \
+    source /functions.sh && \
+    download_package https://archive.apache.org dist/kafka/2.6.2/$KAFKA_DISTRO_NAME.tgz $KAFKA_DISTRO_NAME.tgz --no-check-certificate && \
     tar -xvf $KAFKA_DISTRO_NAME.tgz && \
     mkdir -p $KAFKA_CONF_DIR $LOG_DIR && \
     mv $KAFKA_DISTRO_NAME/* $KAFKA_DIR && \

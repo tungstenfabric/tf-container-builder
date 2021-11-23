@@ -36,7 +36,8 @@ RUN python2 -m pip install --no-compile \
     yum install -y git iputils && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
-    wget -nv --tries=3 -c -O Juniper.junos ${SITE_MIRROR:-"https://github.com"}/Juniper/ansible-junos-stdlib/archive/2.4.2.tar.gz && \
+    source /functions.sh && \
+    download_package https://github.com Juniper/ansible-junos-stdlib/archive/2.4.2.tar.gz Juniper.junos && \
     ansible-galaxy install Juniper.junos
 
 COPY *.sh /

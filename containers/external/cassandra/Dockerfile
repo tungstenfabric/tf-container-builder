@@ -22,16 +22,16 @@ ENV CASSANDRA_HOME=/opt/cassandra \
     CASSANDRA_GID=2000 \
     PATH="/opt/cassandra/bin:$PATH"
 
-ARG CASSANDRA_VERSION=3.11.3
-ARG DIST_URL="${SITE_MIRROR:-'https://archive.apache.org'}/dist/cassandra/$CASSANDRA_VERSION/apache-cassandra-$CASSANDRA_VERSION-bin.tar.gz"
-
 COPY *.sh /
 
-RUN set -eux && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
+RUN \
+    CASSANDRA_VERSION=3.11.3 && \ 
+    set -ex && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
     yum install -y java java-1.8.0-openjdk numactl which jemalloc -y && \
     groupadd -f -g ${CASSANDRA_GID} ${CASSANDRA_GROUP} && adduser -u ${CASSANDRA_UID} -M -g ${CASSANDRA_GROUP} ${CASSANDRA_USER} && \
     usermod -a -G $CONTRAIL_GID ${CASSANDRA_USER} && \
-    wget -nv --tries=3 -c $DIST_URL && \
+    source /functions.sh && \
+    download_package https://archive.apache.org dist/cassandra/$CASSANDRA_VERSION/apache-cassandra-$CASSANDRA_VERSION-bin.tar.gz apache-cassandra-$CASSANDRA_VERSION-bin.tar.gz && \
     mkdir -p ${CASSANDRA_HOME} && \
     tar -xzf apache-cassandra-$CASSANDRA_VERSION-bin.tar.gz -C ${CASSANDRA_HOME} --strip-components 1 && \
     rm -rf  apache-cassandra-$CASSANDRA_VERSION-bin.tar.gz && \

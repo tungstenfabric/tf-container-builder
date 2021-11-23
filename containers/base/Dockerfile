@@ -4,7 +4,6 @@ ARG CONTRAIL_REGISTRY
 ARG CONTRAIL_CONTAINER_TAG
 FROM ${CONTRAIL_REGISTRY}/contrail-general-base:${CONTRAIL_CONTAINER_TAG}
 ARG BASE_EXTRA_RPMS=""
-ARG SITE_MIRROR
 
 # note: ldconfig looks strange. contrail-lib installs shared libraries but do not call it...
 # note: we decide to install python3 packages by pip because they are absent in RHEL7/CentOS7 repos.

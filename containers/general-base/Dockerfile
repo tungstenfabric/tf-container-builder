@@ -4,6 +4,7 @@ ARG LINUX_DISTR=centos
 ARG LINUX_DISTR_VER=7.4.1708
 FROM $LINUX_DISTR:$LINUX_DISTR_VER
 
+ARG SITE_MIRROR
 ARG VENDOR_NAME
 ARG VENDOR_DOMAIN
 ARG CONTRAIL_CONTAINER_TAG
@@ -37,6 +38,8 @@ ENV VENDOR_DOMAIN=$VENDOR_DOMAIN \
 
 # this copy should be before yum install
 COPY *.repo /etc/yum.repos.d/
+COPY pip.conf /etc/
+COPY *.sh /
 
 RUN \
     source /etc/os-release && \
@@ -59,7 +62,8 @@ RUN \
         pkgs+=" yum-utils python2 glibc-langpack-en compat-openssl10" ; \
     fi && \
     yum install -y $pkgs && \
-    wget -nv -c --tries=3 -O /tmp/get-pip.py ${SITE_MIRROR:-"https://bootstrap.pypa.io"}/pip/2.7/get-pip.py && \
+    source /functions.sh && \
+    download_package https://bootstrap.pypa.io pip/2.7/get-pip.py /tmp/get-pip.py && \
     python2 /tmp/get-pip.py 'pip==20.1' && \
     type -p pip || alternatives --verbose --install /usr/bin/pip pip $(type -p pip2) 100 && \
     type -p python || alternatives --verbose --set python /usr/bin/python2 && \
@@ -68,8 +72,5 @@ RUN \
     rm -rf /var/cache/yum && \
     groupadd --gid $CONTRAIL_GID --system $CONTRAIL_USER && \
     useradd -md /home/contrail --uid $CONTRAIL_UID --shell /sbin/nologin --system --gid $CONTRAIL_GID $CONTRAIL_USER
-
-COPY *.sh /
-COPY pip.conf /etc/
 
 CMD ["/usr/bin/tail","-f","/dev/null"]

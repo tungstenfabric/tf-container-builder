@@ -10,7 +10,9 @@ LABEL name=$CONTAINER_NAME \
       description="Contrail supports Mesosphere Container Network Interface." \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
-RUN curl -sSL --retry 5 -o /opt/cni-v0.3.0.tgz ${SITE_MIRROR:-"https://github.com"}/containernetworking/cni/releases/download/v0.3.0/cni-v0.3.0.tgz && \
+RUN \
+    source /functions.sh && \
+    download_package https://github.com containernetworking/cni/releases/download/v0.3.0/cni-v0.3.0.tgz /opt/cni-v0.3.0.tgz && \
     yum install -y contrail-mesos-cni && \
     yum clean all -y && \
     rm -rf /var/cache/yum

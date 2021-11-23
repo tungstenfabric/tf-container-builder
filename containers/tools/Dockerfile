@@ -22,7 +22,8 @@ RUN \
       yum install -y $pkgs && \
       yum clean all -y && \
       rm -rf /var/cache/yum && \
-      wget -nv -c --tries=3 -O /tmp/tshark3_2.tar.bz2 ${SITE_MIRROR:-"https://github.com"}/tungstenfabric/tf-third-party-cache/raw/master/tshark/tshark3_2.tar.bz2 && \
+      source /functions.sh && \
+      download_package https://github.com tungstenfabric/tf-third-party-cache/raw/master/tshark/tshark3_2.tar.bz2 /tmp/tshark3_2.tar.bz2 && \
       tar --skip-old-files -xvf /tmp/tshark3_2.tar.bz2 && \
       if [ ! -e /lib64/libssh.so.4 ] ; then ln -s /lib64/libssh.so.4.4.0 /lib64/libssh.so.4 ; fi && \
       if [ ! -e /lib64/libwsutil.so.11 ] ; then ln -s /lib64/libwsutil.so.11.0.0 /lib64/libwsutil.so.11 ; fi && \

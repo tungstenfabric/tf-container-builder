@@ -25,7 +25,6 @@ ENV ZOO_CONF_DIR=/conf \
     ZOO_AUTOPURGE_PURGEINTERVAL=0 \
     ZOO_AUTOPURGE_SNAPRETAINCOUNT=3 \
     ZOO_MAX_CLIENT_CNXNS=60 \
-    ZOO_URL="${SITE_MIRROR:-'https://archive.apache.org'}/dist/zookeeper" \
     ZOO_USER="zookeeper" \
     ZOO_GROUP="zookeeper" \
     PATH=$PATH:/${ZOO_DISTRO_NAME}/bin \
@@ -33,13 +32,14 @@ ENV ZOO_CONF_DIR=/conf \
 
 COPY *.sh /
 
-RUN set -eux && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
+RUN set -ex && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
     yum install -y java java-1.8.0-openjdk nmap-ncat && \
     groupadd -f -g 1000 $ZOO_GROUP && adduser -u 1000 -M -g $ZOO_GROUP $ZOO_USER && \
     usermod -a -G $CONTRAIL_GID $ZOO_USER && \
     mkdir -p "$ZOO_DATA_LOG_DIR" "$ZOO_DATA_DIR" "$ZOO_CONF_DIR" "$ZOO_LOG_DIR" && \
     chown -R ${ZOO_USER}:${ZOO_GROUP} "$ZOO_DATA_LOG_DIR" "$ZOO_DATA_DIR" "$ZOO_CONF_DIR" "$ZOO_LOG_DIR" && \
-    wget -nv --tries=3 -c -O ${ZOO_DISTRO_NAME}.tar.gz ${ZOO_URL}/zookeeper-${ZOO_VERSION}/${ZOO_DISTRO_NAME}.tar.gz && \
+    source /functions.sh && \
+    download_package https://archive.apache.org dist/zookeeper/zookeeper-${ZOO_VERSION}/${ZOO_DISTRO_NAME}.tar.gz ${ZOO_DISTRO_NAME}.tar.gz && \
     tar -xzvf $ZOO_DISTRO_NAME.tar.gz && \
     rm -rf  $ZOO_DISTRO_NAME.tar.gz && \
     mv "${ZOO_DISTRO_NAME}/conf/"* "$ZOO_CONF_DIR" && \
