@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# to save output logs to correct place
+export SERVICE_NAME=node-init
+
 ret=0
 
 /sysctl-init.sh || ret=1

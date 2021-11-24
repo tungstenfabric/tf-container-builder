@@ -34,4 +34,10 @@ fi
 [ -n "$REDIS_PROTECTED_MODE" ] && redis_opts+=" --protected-mode $REDIS_PROTECTED_MODE"
 
 echo "INFO: redis cmd options: $redis_opts"
-exec /docker-entrypoint.sh $redis_opts
+
+CONTRAIL_UID=$( id -u redis )
+CONTRAIL_GID=$( id -g redis )
+
+find . \! -user redis -exec chown redis '{}' +
+
+do_run_service $@ $redis_opts

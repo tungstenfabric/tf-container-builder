@@ -2,14 +2,21 @@
 
 # Logging
 LOG_LEVEL=${LOG_LEVEL:-SYS_NOTICE}
-LOG_DIR=${LOG_DIR:-"/var/log/contrail"}
-export CONTAINER_LOG_DIR=${CONTAINER_LOG_DIR:-${LOG_DIR}/${NODE_TYPE}-${SERVICE_NAME}}
-
-LOG_LOCAL=${LOG_LOCAL:-1}
-
 if [[ "${LOG_LEVEL}" == "SYS_DEBUG" ]] ; then
   set -x
 fi
+
+LOG_DIR=${LOG_DIR:-"/var/log/contrail"}
+export CONTAINER_LOG_DIR=${CONTAINER_LOG_DIR:-${LOG_DIR}/${NODE_TYPE+${NODE_TYPE}-}${SERVICE_NAME}}
+
+mkdir -p $CONTAINER_LOG_DIR
+log_file="$CONTAINER_LOG_DIR/console.log"
+touch "$log_file"
+chmod 600 $log_file
+exec &> >(tee -a "$log_file")
+echo "INFO: =================== $(date) ==================="
+
+LOG_LOCAL=${LOG_LOCAL:-1}
 
 source /functions.sh
 source /contrail-functions.sh

@@ -2,6 +2,16 @@
 
 # these next folders must be mounted to compile vrouter.ko in ubuntu: /usr/src /lib/modules
 
+LOG_DIR=${LOG_DIR:-"/var/log/contrail"}
+export CONTAINER_LOG_DIR=${CONTAINER_LOG_DIR:-${LOG_DIR}/vrouter-kernel-build-init}
+
+mkdir -p $CONTAINER_LOG_DIR
+log_file="$CONTAINER_LOG_DIR/console.log"
+touch "$log_file"
+chmod 600 $log_file
+exec &> >(tee -a "$log_file")
+echo "INFO: =================== $(date) ==================="
+
 echo "INFO: Compiling vrouter kernel module for ubuntu..."
 current_kver=`uname -r`
 echo "INFO: Detected kernel version is $current_kver"
