@@ -4,8 +4,6 @@ set -e
 
 source /common.sh
 
-ulimit -n 4096
-
 : ${KAFKA_LISTEN_ADDRESS='auto'}
 my_ip=''
 my_index=1
