@@ -390,6 +390,8 @@ introspect_ssl_insecure=${INTROSPECT_SSL_INSECURE}
 sandesh_ssl_enable=${SANDESH_SSL_ENABLE}
 sandesh_keyfile=${SANDESH_KEYFILE}
 sandesh_certfile=${SANDESH_CERTFILE}
+sandesh_server_keyfile=${SANDESH_SERVER_KEYFILE}
+sandesh_server_certfile=${SANDESH_SERVER_CERTFILE}
 sandesh_ca_cert=${SANDESH_CA_CERTFILE}
 EOM
     else
