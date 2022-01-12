@@ -200,7 +200,7 @@ function download_package() {
   if [ -n "$SITE_MIRROR" ]; then
     wget -nv --tries=3 -c -O $output_name $SITE_MIRROR/$site_path || /bin/true
   fi
-  if [ ! -f $output_name ]; then
+  if [ ! -s $output_name ]; then
     wget -nv --tries=3 -c $add_opts -O $output_name $original_site/$site_path
   fi
 }
