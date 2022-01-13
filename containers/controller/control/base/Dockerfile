@@ -6,6 +6,8 @@ ENV NODE_TYPE=control
 LABEL $VENDOR_DOMAIN".pod"=$NODE_TYPE
 
 RUN yum install -y contrail-control contrail-dns python3-contrail && \
+    mkdir -p /opt/contrail_dns && \
+    cp -r /etc/contrail/dns/* /opt/contrail_dns/ && \
     yum clean all -y && \
     rm -rf /var/cache/yum
 
