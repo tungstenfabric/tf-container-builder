@@ -234,7 +234,6 @@ function update_apt_repos() {
   local rfile="$my_dir/../sources.list"
   if [ -e "$rfile" ]; then
     local content=$(cat "$rfile")
-    update_file "vrouter/kernel-build-init/sources.list" "$content"
     update_file "vrouter/plugin/mellanox/init/ubuntu/sources.list" "$content"
   fi
 }
