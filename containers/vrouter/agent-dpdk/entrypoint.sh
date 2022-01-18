@@ -3,8 +3,14 @@
 source /common.sh
 source /agent-functions.sh
 
-if [[ -n "${DPDK_UIO_DRIVER}" && -f "/${DPDK_UIO_DRIVER}_defs" ]]; then
-  source "/${DPDK_UIO_DRIVER}_defs"
+if [[ -n "${DPDK_UIO_DRIVER}" ]]; then
+    if [[ -f "/${DPDK_UIO_DRIVER}_defs" ]]; then
+        source "/${DPDK_UIO_DRIVER}_defs"
+    fi
+
+    if [[ -f "/etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}_defs" ]]; then
+        source "/etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}_defs"
+    fi
 fi
 
 echo "INFO: dpdk started"
@@ -68,6 +74,11 @@ done
 # multiple kthreads for port monitoring
 if ! load_kernel_module rte_kni kthread_mode=multiple ; then
     echo "WARNING: rte_ini kernel module is unavailable. Please install/insert it for Ubuntu 14.04 manually."
+fi
+
+if [[ -n "${DPDK_UIO_DRIVER}" && \
+      -f "/etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}-init.sh" ]]; then
+    source "/etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}-init.sh"
 fi
 
 if ! read_and_save_dpdk_params ; then
