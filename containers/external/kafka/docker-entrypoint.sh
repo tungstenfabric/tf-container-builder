@@ -47,6 +47,22 @@ KAFKA_delete_topic_enable=${KAFKA_delete_topic_enable:-true}
 KAFKA_KEY_PASSWORD=${KAFKA_KEY_PASSWORD:-c0ntrail123}
 KAFKA_STORE_PASSWORD=${KAFKA_STORE_PASSWORD:-c0ntrail123}
 
+LOGCONFIG="$KAFKA_CONF_DIR/log4j.properties"
+sed -i "s/DailyRollingFileAppender/RollingFileAppender/g" ${LOGCONFIG}
+LINE='log4j.appender.kafkaAppender.MaxFileSize=100MB
+log4j.appender.kafkaAppender.MaxBackupIndex=10
+log4j.appender.controllerAppender.MaxFileSize=100MB
+log4j.appender.controllerAppender.MaxBackupIndex=10
+log4j.appender.stateChangeAppender.MaxFileSize=100MB
+log4j.appender.stateChangeAppender.MaxBackupIndex=10
+log4j.appender.requestAppender.MaxFileSize=100MB
+log4j.appender.requestAppender.MaxBackupIndex=10
+log4j.appender.cleanerAppender.MaxFileSize=100MB
+log4j.appender.cleanerAppender.MaxBackupIndex=10
+log4j.appender.authorizerAppender.MaxFileSize=100MB
+log4j.appender.authorizerAppender.MaxBackupIndex=10'
+grep -qF -- "$LINE" "$LOGCONFIG" || echo "$LINE" >> "$LOGCONFIG"
+
 CONFIG="$KAFKA_CONF_DIR/server.properties"
 sed -i "s/^broker.id=.*$/broker.id=$KAFKA_BROKER_ID/g" ${CONFIG}
 sed -i "s/#port=.*$/port=$KAFKA_LISTEN_PORT/g" ${CONFIG}
