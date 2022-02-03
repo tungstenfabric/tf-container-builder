@@ -43,3 +43,5 @@ wget -nv -t3 -P tungstenfabric/tf-third-party-cache/blob/master/redis https://gi
 wget -nv -t3 -P Juniper/ansible-junos-stdlib/archive https://github.com/Juniper/ansible-junos-stdlib/archive/2.4.2.tar.gz
 
 wget -nv -t3 -P 30590/eng https://downloadmirror.intel.com/30590/eng/800%20series%20comms%20binary%20package%201.3.30.0.zip
+
+wget -nv -t3 -P linux/centos/7/x86_64/stable/Packages https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.4.12-3.1.el7.x86_64.rpm
