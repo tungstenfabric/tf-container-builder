@@ -45,6 +45,7 @@ RUN YUM_ENABLE_REPOS=$(echo $YUM_ENABLE_REPOS | tr -d '"') && \
         yum clean metadata ; \
     fi && \
     yum update -y && \
+    yum -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
     yum install -y hostname iproute less wget && \
     GENERAL_EXTRA_RPMS=$(echo $GENERAL_EXTRA_RPMS | tr -d '"' | tr ',' ' ') && \
     if [[ -n "$GENERAL_EXTRA_RPMS" ]] ; then \
