@@ -66,6 +66,7 @@ cassandra_server_list=$cassandra_server_list
 cassandra_use_ssl=${CASSANDRA_SSL_ENABLE,,}
 cassandra_ca_certs=$CASSANDRA_SSL_CA_CERTFILE
 zk_server_ip=$ZOOKEEPER_SERVERS
+contrail_version=$CONTRAIL_VERSION
 
 $config_api_certs_config
 
