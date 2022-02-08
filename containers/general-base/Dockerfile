@@ -53,6 +53,7 @@ RUN \
         yum clean metadata ; \
     fi && \
     yum update -y -x "redhat-release*" && \
+    yum -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
     pkgs="hostname iproute less wget openssl" && \
     GENERAL_EXTRA_RPMS=$(echo $GENERAL_EXTRA_RPMS | tr -d '"' | tr ',' ' ') && \
     if [[ -n "$GENERAL_EXTRA_RPMS" ]] ; then \
