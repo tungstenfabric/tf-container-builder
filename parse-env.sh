@@ -35,7 +35,7 @@ if [[ -z "$LINUX_DISTR_VER" ]] ; then
   fi
 fi
 
-# ubuntu version for vrouter kernel build init and mellanox ubuntu containers
+# ubuntu version for mellanox ubuntu container
 export UBUNTU_DISTR=${UBUNTU_DISTR:-ubuntu}
 export UBUNTU_DISTR_VERSION=${UBUNTU_DISTR_VER:-18.04}
 

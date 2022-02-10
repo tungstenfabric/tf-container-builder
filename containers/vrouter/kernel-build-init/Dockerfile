@@ -1,6 +1,4 @@
-ARG UBUNTU_DISTR=ubuntu
-ARG UBUNTU_DISTR_VERSION=18.04
-FROM $UBUNTU_DISTR:$UBUNTU_DISTR_VERSION
+FROM registry.access.redhat.com/ubi8:8.4
 
 ARG VENDOR_NAME
 ARG VENDOR_DOMAIN
@@ -31,37 +29,21 @@ COPY __licensing.txt /licenses/licensing.txt
 
 # this copy should be before yum install
 COPY *.repo /etc/yum.repos.d/
-# user can put sources.list here which is mirrors definition
-# to let copy all files we have to create empty fake.list
-COPY *.list /etc/apt/
 
-#TODO: need to get rid of apt-get update
-# tpc repo is not to be used as it os dependend
 RUN \
-    rm -f /etc/yum.repos.d/tpc.repo && \
-    mkdir -p /opt/contrail/src /contrail_tools /vrouter_src && \
+    mkdir -p /opt/contrail/src /vrouter_src && \
     contrail_version=${CONTRAIL_VERSION:-$CONTRAIL_CONTAINER_TAG} && \
     echo "${contrail_version}" > /contrail_version && \
-    export DEBIAN_FRONTEND=noninteractive && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends dkms && \
-    apt-get install -y --no-install-recommends yum yum-utils rpm2cpio cpio ca-certificates && \
-    yum install -y contrail-vrouter-source && \
+    yum -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
+    yum install -y hostname module-init-tools make gcc gcc-c++ && \
+    yum install -y contrail-vrouter-source contrail-vrouter-utils && \
     mv /usr/src/* /opt/contrail/src/ && \
     vrouter_path=$(find /opt/contrail/src -type f -name "contrail-vrouter-*.tar.gz") && \
     cd  /vrouter_src && \
     tar -xf "${vrouter_path}" && \
-    cd /contrail_tools && \
-    yumdownloader contrail-vrouter-utils && \
-    rpm2cpio $(ls contrail-vrouter-utils*.rpm) | cpio -iuvd && \
-    rm -f $(ls contrail-vrouter-utils*.rpm) && \
-    cd .. && \
     yum clean all -y && \
-    rm -rf /var/cache/yum && \
-    apt-get purge -y yum yum-utils rpm2cpio cpio ca-certificates && \
-    apt-get autoremove -y
+    rm -rf /var/cache/yum
 
-COPY dkms.conf /opt/contrail/src/
 COPY entrypoint.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
