@@ -43,6 +43,7 @@ fi
 
 log "Target platform: $LINUX_DISTR:$LINUX_DISTR_VER"
 log "External Web Cache: $SITE_MIRROR"
+log "Containers name prefix: $CONTAINER_NAME_PREFIX"
 log "Contrail container tag: $CONTRAIL_CONTAINER_TAG"
 log "Contrail registry: $CONTRAIL_REGISTRY"
 log "Contrail repository: $CONTRAIL_REPOSITORY"
@@ -77,7 +78,7 @@ function process_container() {
   # use CONTRAIL_CONTAINER_NAME for build the only conainer
   if [[ -z "${CONTRAIL_CONTAINER_NAME}" ]] ; then
     local container_name=`echo ${dir#"./"} | tr "/" "-"`
-    local container_name="contrail-${container_name}"
+    local container_name="${CONTAINER_NAME_PREFIX}-${container_name}"
   else
     local container_name=${CONTRAIL_CONTAINER_NAME}
   fi

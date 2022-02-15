@@ -61,7 +61,8 @@ else
   export OPENSTACK_VERSION=${OPENSTACK_VERSION:-'queens'}
 fi
 
-# CONTRAIL_VERSION is depricated.
+export CONTAINER_NAME_PREFIX=${CONTAINER_NAME_PREFIX:-'contrail'}
+# CONTRAIL_VERSION is deprecated.
 # For Compatibility with Juniper CI. Will be removed.
 [ -z "$CONTRAIL_CONTAINER_TAG" ] && [ -n "$CONTRAIL_VERSION" ] && CONTRAIL_CONTAINER_TAG=$CONTRAIL_VERSION
 export CONTRAIL_CONTAINER_TAG=${CONTRAIL_CONTAINER_TAG:-'dev'}
