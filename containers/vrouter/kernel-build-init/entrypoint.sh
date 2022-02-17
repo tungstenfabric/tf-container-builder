@@ -36,7 +36,7 @@ mkdir -p /lib/modules/$current_kver/updates/dkms
 echo "INFO: run build for current kernel $current_kver"
 cd /usr/src/vrouter-"${contrail_version}"
 ./utils/dkms/gen_build_info.sh "${contrail_version}" /vrouter/"${contrail_version}"/build
-make -d -C . KERNELDIR=/lib/modules/$current_kver/build
+make -d -C . KERNELDIR=/lib/modules/$current_kver/build &>> $log_file
 cp vrouter.* /lib/modules/$current_kver/updates/dkms/
 
 kernel_modules=$(ls /lib/modules)
@@ -44,7 +44,7 @@ for kver in $kernel_modules ; do
   if [[ $kver != $current_kver ]]; then
     echo "INFO: run builds for kernel $kver"
     mkdir -p /lib/modules/$kver/updates/dkms
-    make -d -C . KERNELDIR=/lib/modules/$kver/build
+    make -d -C . KERNELDIR=/lib/modules/$kver/build &>> $log_file
     cp vrouter.* /lib/modules/$kver/updates/dkms/
   fi
 done
