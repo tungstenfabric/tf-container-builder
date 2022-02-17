@@ -87,7 +87,7 @@ CONTRAIL_SERVICES_TO_SANDESH_SVC = {
         'plugin': None,
     },
     'toragent': {
-        'tor-agent': None,
+        'tor-agent': 'contrail-tor-agent',
     }
 }
 
