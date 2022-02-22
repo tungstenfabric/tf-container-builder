@@ -39,7 +39,7 @@ function setup_ifcfg {
     get_pf0_address
     local pf_addr=${PF0_ADDR}
 
-    if [[ -n "${BIND_INT}" && "${BIND_INT}" == "${pf_addr}" ]]; then
+    if [[ -n "${BIND_INT}" ]]; then
         if [[ -f /sys/bus/pci/devices/${pf_addr}/virtio*/net/* ]]; then
             local pf0_ifname=$(realpath -e /sys/bus/pci/devices/${pf_addr}/virtio*/net/* 2>/dev/null | awk -F/ '{print $NF}')
             if [[ -f /etc/sysconfig/network-scripts/ifcfg-${pf0_ifname} ]]; then
@@ -267,11 +267,18 @@ function configure_n3000 {
         echo -e "INFO: Starting Intel PAC N3000 configuration \nFPGA PCI address: ${fpga_pci_addr}"
 
         unbind_n3000_xxv710
+
+        sleep 0.5
         PYTHONPATH=/var/lib/contrail/vrouter/n3000/site_packages /var/lib/contrail/vrouter/n3000/fecmode -B ${fpga_pci_addr_short} --rsu no
 
+        sleep 0.5
         fpga_pci_addr=$(lspci -nnD | awk '/8086:0b30/ { print $1 }')
         unbind_n3000_xxv710
+
+        sleep 0.5
         PYTHONPATH=/var/lib/contrail/vrouter/n3000/site_packages /var/lib/contrail/vrouter/n3000/rsu bmcimg "${fpga_pci_addr}"
+
+        sleep 0.5
         unbind_n3000_xxv710
 
         get_pf0_address
