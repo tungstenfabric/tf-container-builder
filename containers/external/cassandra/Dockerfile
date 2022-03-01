@@ -25,7 +25,7 @@ ENV CASSANDRA_HOME=/opt/cassandra \
 COPY *.sh /
 
 RUN \
-    CASSANDRA_VERSION=3.11.3 && \ 
+    CASSANDRA_VERSION=3.11.12 && \
     set -ex && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
     yum install -y java java-1.8.0-openjdk numactl which jemalloc -y && \
     groupadd -f -g ${CASSANDRA_GID} ${CASSANDRA_GROUP} && adduser -u ${CASSANDRA_UID} -M -g ${CASSANDRA_GROUP} ${CASSANDRA_USER} && \

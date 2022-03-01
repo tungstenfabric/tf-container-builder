@@ -22,6 +22,8 @@ wget -nv -t3 -P rabbitmq/rabbitmq-server/packages/el/7/rabbitmq-server-3.7.20-1.
 wget -nv -t3 -P pip/2.7 https://bootstrap.pypa.io/pip/2.7/get-pip.py
 
 wget -nv -t3 -P dist/cassandra/3.11.3 https://archive.apache.org/dist/cassandra/3.11.3/apache-cassandra-3.11.3-bin.tar.gz
+# from 21.4
+wget -nv -t3 -P dist/cassandra/3.11.12 https://archive.apache.org/dist/cassandra/3.11.12/apache-cassandra-3.11.12-bin.tar.gz
 
 # up to 2011.L1
 wget -nv -t3 -P dist/zookeeper/zookeeper-3.6.1 https://archive.apache.org/dist/zookeeper/zookeeper-3.6.1/apache-zookeeper-3.6.1-bin.tar.gz
