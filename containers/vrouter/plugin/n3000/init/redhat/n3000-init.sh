@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [[ -f /etc/sysconfig/network-scripts/n3000/n3000-env ]]; then
+    . /etc/sysconfig/network-scripts/n3000/n3000-env
+fi
+
 export N3000_VFs_NUM=${N3000_VFs_NUM:-"16"}
 export N3000_VFs_QUEUE_NUM=${N3000_VFs_QUEUE_NUM:-"1"}
 export N3000_VDPA_ENABLED=${N3000_VDPA_ENABLED:-"true"}
