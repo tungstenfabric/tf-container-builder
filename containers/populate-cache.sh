@@ -49,3 +49,6 @@ wget -nv -t3 -P 30590/eng https://downloadmirror.intel.com/30590/eng/800%20serie
 wget -nv -t3 -P linux/centos/7/x86_64/stable/Packages https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.4.12-3.1.el7.x86_64.rpm
 
 wget -nv -t3 -P pub/archive/epel/8.4/Everything/x86_64/Packages/s https://archives.fedoraproject.org/pub/archive/epel/8.4/Everything/x86_64/Packages/s/sshpass-1.06-9.el8.x86_64.rpm
+
+wget -nv -t3 -P maven2/org/apache/thrift/libthrift/0.12.0 https://repo1.maven.org/maven2/org/apache/thrift/libthrift/0.12.0/libthrift-0.12.0.jar
+wget -nv -t3 -P maven2/io/netty/netty-all/4.1.39.Final https://repo1.maven.org/maven2/io/netty/netty-all/4.1.39.Final/netty-all-4.1.39.Final.jar
