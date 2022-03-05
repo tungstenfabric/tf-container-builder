@@ -11,12 +11,22 @@ LABEL name=$CONTAINER_NAME \
       $VENDOR_DOMAIN".service"=$SERVICE_NAME \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
-RUN  yum install -y dhclient NetworkManager contrail-vrouter-agent haproxy libvirt-client \
-     python-opencontrail-vrouter-netns python-contrail-vrouter-api && \
-     rpm -qi contrail-vrouter-agent | awk '/Version/{print($3)}' > /contrail_build_version && \
-     yum clean all -y && \
-     rm -rf /var/cache/yum /etc/sysconfig/network-scripts && \
-     ldconfig
+RUN \
+    source /etc/os-release && \
+    pkgs='dhclient NetworkManager contrail-vrouter-agent haproxy libvirt-client' && \
+    pkgs+=' python-opencontrail-vrouter-netns python-contrail-vrouter-api' && \
+    if [[ "$ID" == 'rhel' && "${PLATFORM_ID//*:/}" == 'el8' ]] ; then \
+        pkgs="network-scripts $pkgs" ; \
+    fi && \
+    yum install -y $pkgs && \
+    rpm -qi contrail-vrouter-agent | awk '/Version/{print($3)}' > /contrail_build_version && \
+    yum clean all -y && \
+    if [[ "$ID" == 'rhel' && "${PLATFORM_ID//*:/}" == 'el8' ]] ; then \
+        rm -f /usr/sbin/ifup /usr/sbin/ifdown && \
+        cp /etc/sysconfig/network-scripts/ifup /etc/sysconfig/network-scripts/ifdown /usr/sbin/ ; \
+    fi && \
+    rm -rf /var/cache/yum /etc/sysconfig/network-scripts && \
+    ldconfig
 
 COPY *.sh /
 # /etc/dhcp/dhclient-script is allowed by apparmor to execute
