@@ -26,8 +26,18 @@ RUN \
     rm -rf /usr/tmp/*ice* && \
     yum remove -y unzip
 
-RUN yum install -y dhclient NetworkManager contrail-vrouter-dpdk && \
+RUN \
+    source /etc/os-release && \
+    pkgs='dhclient NetworkManager contrail-vrouter-dpdk' && \
+    if [[ "$ID" == 'rhel' && "${PLATFORM_ID//*:/}" == 'el8' ]] ; then \
+        pkgs="network-scripts $pkgs" ; \
+    fi && \
+    yum install -y $pkgs && \
     yum clean all -y && \
+    if [[ "$ID" == 'rhel' && "${PLATFORM_ID//*:/}" == 'el8' ]] ; then \
+        rm -f /usr/sbin/ifup /usr/sbin/ifdown && \
+        cp /etc/sysconfig/network-scripts/ifup /etc/sysconfig/network-scripts/ifdown /usr/sbin/ ; \
+    fi && \
     rm -rf /var/cache/yum /etc/sysconfig/network-scripts && \
     ldconfig
 
