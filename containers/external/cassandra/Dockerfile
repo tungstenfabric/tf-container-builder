@@ -42,8 +42,8 @@ RUN \
     ln -sT ${CASSANDRA_LIB} "${CASSANDRA_HOME}/data" && \
     ln -sT ${CASSANDRA_LOG} "${CASSANDRA_HOME}/logs" && \
     rm -f /opt/cassandra/lib/netty-all-* /opt/cassandra/lib/libthrift-* && \
-    LIBTHRIFT_PACKAGE=libthrift-0.12.0.jar && \
-    download_package https://repo1.maven.org maven2/org/apache/thrift/libthrift/0.12.0/${LIBTHRIFT_PACKAGE} ${LIBTHRIFT_PACKAGE} && \
+    LIBTHRIFT_PACKAGE=libthrift-0.13.0.jar && \
+    download_package https://github.com tungstenfabric/tf-third-party-cache/blob/master/libthrift/${LIBTHRIFT_PACKAGE}?raw=true ${LIBTHRIFT_PACKAGE} && \
     mv ${LIBTHRIFT_PACKAGE} /opt/cassandra/lib/ && \
     NETTY_ALL_PACKAGE=netty-all-4.1.39.Final.jar && \
     download_package https://repo1.maven.org maven2/io/netty/netty-all/4.1.39.Final/${NETTY_ALL_PACKAGE} ${NETTY_ALL_PACKAGE} && \
