@@ -27,18 +27,9 @@ RUN \
     yum remove -y unzip
 
 RUN \
-    source /etc/os-release && \
-    pkgs='dhclient NetworkManager contrail-vrouter-dpdk' && \
-    if [[ "$ID" == 'rhel' && "${PLATFORM_ID//*:/}" == 'el8' ]] ; then \
-        pkgs="network-scripts $pkgs" ; \
-    fi && \
-    yum install -y $pkgs && \
+    yum install -y dhclient contrail-vrouter-dpdk && \
     yum clean all -y && \
-    if [[ "$ID" == 'rhel' && "${PLATFORM_ID//*:/}" == 'el8' ]] ; then \
-        rm -f /usr/sbin/ifup /usr/sbin/ifdown && \
-        cp /etc/sysconfig/network-scripts/ifup /etc/sysconfig/network-scripts/ifdown /usr/sbin/ ; \
-    fi && \
-    rm -rf /var/cache/yum /etc/sysconfig/network-scripts && \
+    rm -rf /var/cache/yum && \
     ldconfig
 
 COPY entrypoint.sh /
