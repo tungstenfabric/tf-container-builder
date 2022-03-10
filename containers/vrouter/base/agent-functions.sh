@@ -53,11 +53,28 @@ function create_vhost_network_functions() {
     popd
 }
 
+function prepare_network_scripts() {
+    # copy requried ifup scripts if missed
+    # (on rhel8 system network-script rpm might be not installed)
+    local dst=$1
+    local src='/opt/contrail/network-scripts'
+    if [ ! -d $src ] || [ ! -d $dst ] ; then
+        return
+    fi
+    local i
+    for i in $(ls $src) ; do
+        if [ ! -e ${dst}/$i ] ; then
+            cp -r ${src}/$i ${dst}/$i
+        fi
+    done
+}
+
 function copy_agent_tools_to_host() {
     # copy ifup-vhost
     local netscript_dir='/etc/sysconfig/network-scripts'
     if [[ -d "$netscript_dir" ]] ; then
         create_vhost_network_functions "$netscript_dir"
+        prepare_network_scripts "$netscript_dir"
     fi
     # copy vif util
     /bin/cp -f /bin/vif /host/bin/vif
