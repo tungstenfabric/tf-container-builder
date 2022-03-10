@@ -41,17 +41,18 @@ RUN \
     chown -R ${CASSANDRA_USER}:${CASSANDRA_GROUP} ${CASSANDRA_CONFIG} ${CASSANDRA_LOG} ${CASSANDRA_LIB} && \
     ln -sT ${CASSANDRA_LIB} "${CASSANDRA_HOME}/data" && \
     ln -sT ${CASSANDRA_LOG} "${CASSANDRA_HOME}/logs" && \
-    rm -f /opt/cassandra/lib/netty-all-* /opt/cassandra/lib/libthrift-* && \
-    LIBTHRIFT_PACKAGE=libthrift-0.13.0.jar && \
-    download_package https://github.com tungstenfabric/tf-third-party-cache/blob/master/libthrift/${LIBTHRIFT_PACKAGE}?raw=true ${LIBTHRIFT_PACKAGE} && \
-    mv ${LIBTHRIFT_PACKAGE} /opt/cassandra/lib/ && \
-    NETTY_ALL_PACKAGE=netty-all-4.1.39.Final.jar && \
-    download_package https://repo1.maven.org maven2/io/netty/netty-all/4.1.39.Final/${NETTY_ALL_PACKAGE} ${NETTY_ALL_PACKAGE} && \
-    mv ${NETTY_ALL_PACKAGE} /opt/cassandra/lib/ && \
+    rm -f /opt/cassandra/lib/libthrift-* && \
+    download_package https://github.com tungstenfabric/tf-third-party-cache/blob/master/libthrift/libthrift-0.13.0.jar?raw=true /opt/cassandra/lib/libthrift-0.13.0.jar && \
+    rm -f /opt/cassandra/lib/netty-all-* && \
+    download_package https://repo1.maven.org maven2/io/netty/netty-all/4.1.39.Final/netty-all-4.1.39.Final.jar /opt/cassandra/lib/netty-all-4.1.39.Final.jar && \
+    rm -f /opt/cassandra/lib/logback-* && \
+    LOGBACK_VERSION=1.2.0 && \
+    download_package https://repo1.maven.org maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar /opt/cassandra/lib/logback-classic-1.2.0.jar && \
+    download_package https://repo1.maven.org maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar /opt/cassandra/lib/logback-core-1.2.0.jar && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
 # smoke test
-	cassandra -v
+    cassandra -v
 
 VOLUME $CASSANDRA_LIB
 

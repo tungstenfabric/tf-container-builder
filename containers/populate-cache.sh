@@ -50,8 +50,9 @@ wget -nv -t3 -P linux/centos/7/x86_64/stable/Packages https://download.docker.co
 
 wget -nv -t3 -P pub/archive/epel/8.4/Everything/x86_64/Packages/s https://archives.fedoraproject.org/pub/archive/epel/8.4/Everything/x86_64/Packages/s/sshpass-1.06-9.el8.x86_64.rpm
 
-wget -nv -t3 -P maven2/org/apache/thrift/libthrift/0.12.0 https://repo1.maven.org/maven2/org/apache/thrift/libthrift/0.12.0/libthrift-0.12.0.jar
 wget -nv -t3 -P maven2/io/netty/netty-all/4.1.39.Final https://repo1.maven.org/maven2/io/netty/netty-all/4.1.39.Final/netty-all-4.1.39.Final.jar
+wget -nv -t3 -P maven2/ch/qos/logback/logback-classic/1.2.0 https://repo1.maven.org/maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar
+wget -nv -t3 -P maven2/ch/qos/logback/logback-core/1.2.0 https://repo1.maven.org/maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar
 
 wget -nv -t3 -P centos/7/os/x86_64/Packages http://mirror.centos.org/centos/7/os/x86_64/Packages/ntpdate-4.2.6p5-29.el7.centos.2.x86_64.rpm
 wget -nv -t3 -P centos/7/os/x86_64/Packages http://mirror.centos.org/centos/7/os/x86_64/Packages/ntp-4.2.6p5-29.el7.centos.2.x86_64.rpm
