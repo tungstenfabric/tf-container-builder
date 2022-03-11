@@ -46,9 +46,8 @@ RUN \
     rm -f /opt/cassandra/lib/netty-all-* && \
     download_package https://repo1.maven.org maven2/io/netty/netty-all/4.1.39.Final/netty-all-4.1.39.Final.jar /opt/cassandra/lib/netty-all-4.1.39.Final.jar && \
     rm -f /opt/cassandra/lib/logback-* && \
-    LOGBACK_VERSION=1.2.0 && \
-    download_package https://repo1.maven.org maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar /opt/cassandra/lib/logback-classic-1.2.0.jar && \
-    download_package https://repo1.maven.org maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar /opt/cassandra/lib/logback-core-1.2.0.jar && \
+    download_package https://repo1.maven.org maven2/ch/qos/logback/logback-classic/1.2.9/logback-classic-1.2.9.jar /opt/cassandra/lib/logback-classic-1.2.9.jar && \
+    download_package https://repo1.maven.org maven2/ch/qos/logback/logback-core/1.2.9/logback-core-1.2.9.jar /opt/cassandra/lib/logback-core-1.2.9.jar && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
 # smoke test
