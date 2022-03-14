@@ -16,7 +16,7 @@ LABEL name=$CONTAINER_NAME \
 RUN   \
       source /functions.sh && \
       python2 -m pip install --no-compile --no-binary=protobuf "docker==2.4.2" "grpcio==1.29.0" "protobuf==3.17.3" "containerd==1.5.2" && \
-      yum install -y contrail-nodemgr python3-contrail chrony podman && \
+      yum install -y contrail-nodemgr python3-contrail autogen-libopts.x86_64 chrony podman && \
       CONTAINERD_RPM_NAME=containerd.io-1.4.12-3.1.el7.x86_64.rpm && \
       download_package https://download.docker.com linux/centos/7/x86_64/stable/Packages/${CONTAINERD_RPM_NAME} ${CONTAINERD_RPM_NAME} && \
       rpm -Uvh --nodeps --replacepkgs ${CONTAINERD_RPM_NAME} && \
