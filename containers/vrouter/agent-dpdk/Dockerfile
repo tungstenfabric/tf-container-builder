@@ -23,8 +23,7 @@ RUN \
     cp /usr/tmp/ice-1.3.30.0/ice.pkg /lib/firmware/updates/intel/ice/ddp/ && \
     cd /lib/firmware/updates/intel/ice/ddp && \
     ln -sf ice_comms-1.3.30.0.pkg ice.pkg && \
-    rm -rf /usr/tmp/*ice* && \
-    yum remove -y unzip
+    rm -rf /usr/tmp/*ice*
 
 RUN \
     yum install -y dhclient contrail-vrouter-dpdk && \
