@@ -10,7 +10,7 @@ RUN \
     source /etc/os-release && \
     pkgs='NetworkManager initscripts ethtool pciutils sudo contrail-vrouter-utils' && \
     if [[ "$ID" == 'rhel' && "${PLATFORM_ID//*:/}" == 'el8' ]] ; then \
-        pkgs="network-scripts net-tools $pkgs" ; \
+        pkgs="network-scripts $pkgs" ; \
     fi && \
     yum install -y $pkgs && \
     yum clean all -y && \
