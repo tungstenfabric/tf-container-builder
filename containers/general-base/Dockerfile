@@ -1,7 +1,7 @@
 # This is the general base for all: non-contrail specfic like external and for contrail specific
 
 ARG LINUX_DISTR=centos
-ARG LINUX_DISTR_VER=7.4.1708
+ARG LINUX_DISTR_VER=7.9.2009
 FROM $LINUX_DISTR:$LINUX_DISTR_VER
 
 ARG VENDOR_NAME
