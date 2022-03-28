@@ -41,6 +41,8 @@ COPY *.repo /etc/yum.repos.d/
 COPY pip.conf /etc/
 COPY *.sh /
 
+# do not upgrade coreutils: https://bugzilla.redhat.com/show_bug.cgi?id=1764152
+
 RUN \
     source /etc/os-release && \
     YUM_ENABLE_REPOS=$(echo $YUM_ENABLE_REPOS | tr -d '"') && \
@@ -52,7 +54,7 @@ RUN \
         yum-config-manager --enable $YUM_ENABLE_REPOS && \
         yum clean metadata ; \
     fi && \
-    yum update -y -x "redhat-release*" && \
+    yum update -y -x "redhat-release*" -x "coreutils*" && \
     yum -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
     pkgs="hostname iproute less wget openssl" && \
     GENERAL_EXTRA_RPMS=$(echo $GENERAL_EXTRA_RPMS | tr -d '"' | tr ',' ' ') && \
