@@ -38,7 +38,8 @@ RUN python2 -m pip install --no-compile \
     rm -rf /var/cache/yum && \
     source /functions.sh && \
     download_package https://github.com Juniper/ansible-junos-stdlib/archive/2.4.2.tar.gz Juniper.junos && \
-    ansible-galaxy install Juniper.junos
+    ansible-galaxy install Juniper.junos && \
+    rm -f Juniper.junos
 
 COPY *.sh /
 

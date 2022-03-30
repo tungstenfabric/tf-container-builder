@@ -33,7 +33,8 @@ RUN \
       if [ ! -e /lib64/libzstd.so.1 ] ; then ln -s /lib64/libzstd.so.1.4.5 /lib64/libzstd.so.1 ; fi && \
       if [ ! -e /lib64/libnghttp2.so.14 ] ; then ln -s /lib64/libnghttp2.so.14.16.1 /lib64/libnghttp2.so.14 ; fi && \
       if [ ! -e /lib64/libwireshark.so.13 ] ; then ln -s /lib64/libwireshark.so.13.0.2 /lib64/libwireshark.so.13 ; fi && \
-      if [ ! -e /lib64/libbrotlidec.so.1 ] ; then ln -s /lib64/libbrotlidec.so.1.0.7 /lib64/libbrotlidec.so.1 ; fi
+      if [ ! -e /lib64/libbrotlidec.so.1 ] ; then ln -s /lib64/libbrotlidec.so.1.0.7 /lib64/libbrotlidec.so.1 ; fi && \
+      rm -f /tmp/tshark3_2.tar.bz2
 
 ENV PS1="\033[1m($CONTAINER_NAME)\033[m\017[$(id -un)@$(hostname -s) $(pwd)]$ "
 

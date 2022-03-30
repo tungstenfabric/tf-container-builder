@@ -23,6 +23,7 @@ RUN yum install -y gcc make xz && \
     source /functions.sh && \
     download_package https://thekelleys.org.uk dnsmasq/dnsmasq-2.80.tar.xz dnsmasq-2.80.tar.xz "--no-check-certificate" && \
     tar -xvf dnsmasq-2.80.tar.xz && \
+    rm -f dnsmasq-2.80.tar.xz && \
     pushd dnsmasq-2.80 && \
     make && \
     make install && \
