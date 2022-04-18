@@ -14,4 +14,4 @@ LABEL name=$CONTAINER_NAME \
 COPY entrypoint.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/usr/bin/contrail-named","-f","-g","-u","contrail","-c","/etc/contrail/dns/contrail-named.conf"]
+CMD ["/usr/bin/contrail-named","-f","-u","contrail","-c","/etc/contrail/dns/contrail-named.conf"]
