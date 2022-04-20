@@ -10,7 +10,8 @@ LABEL name=$CONTAINER_NAME \
 
 # TODO: debug packages are unavailable in CI jobs, ignore errors
 RUN \
-    yum install -y contrail-debuginfo contrail-vrouter-dpdk-debuginfo || true && \
+    yum install -y contrail-debuginfo || true && \
+    yum install -y contrail-vrouter-dpdk-debuginfo || true && \
     yum install -y contrail-manifest && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
