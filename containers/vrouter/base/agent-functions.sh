@@ -380,17 +380,37 @@ function bind_devs_to_driver() {
     local ret=0
     local n=''
     for n in ${pci[@]} ; do
+        # save nic name before binding to dpdk driver
+        local nic=$(get_ifname_by_pci $n)
         echo "INFO: Binding device $n to driver $driver ..."
         save_pci_info $n
         if ! /opt/contrail/bin/dpdk_nic_bind.py --force --bind="$driver" $n ; then
             echo "ERROR: Failed to bind $n to driver $driver"
             return 1
         fi
+        [[ -z "$nic" ]] || bkp_ifcfg_file $nic
         if ! wait_device_for_driver $driver $n ; then
             echo "ERROR: Failed to wait device $n to appears for driver $driver"
             return 1
         fi
     done
+}
+
+function bkp_ifcfg_file() {
+    local d="/etc/sysconfig/network-scripts"
+    [[ -e $d ]] || return
+    pushd $d
+    local f="ifcfg-$1"
+    if [[ -e $f ]] ; then
+        if [[ ! -e contrail.org.$f ]] ; then
+            echo "INFO: backup $d/$f"
+            mv $f contrail.org.$f
+        else
+            echo "INFO: remove $d/$f"
+            rm -f $f
+        fi
+    fi
+    popd
 }
 
 function read_phys_int_mac_pci_dpdk() {

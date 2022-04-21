@@ -170,6 +170,7 @@ for phys_int in $phys_int_list; do
             echo "INFO: down $phys_int"
             ifdown $phys_int
         }
+        bkp_ifcfg_file $phys_int
     fi
     if [[ -n "$bond_data" ]] ; then
         _bond_nic=$phys_int
@@ -189,6 +190,7 @@ for phys_int in $phys_int_list; do
             ifdown $_bond_nic
             ip link del $_bond_nic
         }
+        bkp_ifcfg_file $_bond_nic
     fi
 
     # kill old dhcp clients if any
