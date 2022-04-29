@@ -10,7 +10,8 @@ cp /n3000-driver-mgmt.sh /etc/sysconfig/network-scripts/n3000/
 cp /n3000-offload-config.sh /etc/sysconfig/network-scripts/n3000/
 cp /n3000-init.sh /etc/sysconfig/network-scripts/n3000/
 cp /n3000-fw-manager.sh /etc/sysconfig/network-scripts/n3000/
-cp /n3000-env.sh /etc/sysconfig/network-scripts/n3000/
 cp /n3000-int-restore.sh /etc/sysconfig/network-scripts/n3000/
 
 cp -r /opt/n3000/* /var/lib/contrail/vrouter/n3000/
+
+. /n3000-env.sh

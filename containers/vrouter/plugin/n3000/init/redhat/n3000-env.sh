@@ -7,15 +7,6 @@ env_file="/etc/sysconfig/network-scripts/n3000/n3000-env"
 touch $env_file
 
 for var in ${env_vars[@]}; do
-    cached="$var=\"\${$var:-$(eval echo \${$var})}\""
-    echo $cached >> $env_file
+    evaled_var="export $var=\"\${$var:-$(eval echo \${$var})}\""
+    echo $evaled_var >> $env_file
 done
-
-source $env_file
-
-env_opts=""
-for var in ${env_vars[@]}; do
-    env_opts+=" -e \"$var=$(eval echo \${$var})\" "
-done
-
-export DPDK_UIO_DRIVER_ENV=${env_opts}
