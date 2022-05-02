@@ -17,7 +17,7 @@ LABEL name=$CONTAINER_NAME \
 RUN pip install --no-compile \
         "markdown==3.1.1" \
         "markupSafe==1.1.1" \
-        "ansible==2.6.13" \
+        "ansible==2.8.2" \
         "colorama==0.4.3" \
         "configparser==4.0.2" \
         "icdiff==1.9.1" \
