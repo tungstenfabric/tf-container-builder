@@ -24,10 +24,13 @@ ENV CASSANDRA_HOME=/opt/cassandra \
 
 COPY *.sh /
 
+# TODO: pin jdk version
+# https://issues.apache.org/jira/projects/CASSANDRA/issues/CASSANDRA-17581?filter=allissues
+# (it can be unpinned after cassandra be upgraded >= 3.11.13)
 RUN \
-    CASSANDRA_VERSION=3.11.3 && \ 
+    CASSANDRA_VERSION=3.11.3 && \
     set -ex && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
-    yum install -y java java-1.8.0-openjdk numactl which jemalloc -y && \
+    yum install -y "java-1.8.0-openjdk < 1:1.8.0_332" numactl which jemalloc -y && \
     groupadd -f -g ${CASSANDRA_GID} ${CASSANDRA_GROUP} && adduser -u ${CASSANDRA_UID} -M -g ${CASSANDRA_GROUP} ${CASSANDRA_USER} && \
     usermod -a -G $CONTRAIL_GID ${CASSANDRA_USER} && \
     source /functions.sh && \
