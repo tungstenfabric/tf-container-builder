@@ -707,7 +707,9 @@ function init_vhost0() {
     fi
 
     local ret=0
-    if [[ -e /etc/sysconfig/network-scripts/ifcfg-${phys_int} || -e /etc/sysconfig/network-scripts/ifcfg-vhost0 ]]; then
+    if [[ -e /etc/sysconfig/network-scripts/ifcfg-${phys_int} || \
+        -e /etc/sysconfig/network-scripts/contrail.org.ifcfg-${phys_int} || \
+        -e /etc/sysconfig/network-scripts/ifcfg-vhost0 ]]; then
         echo "INFO: creating ifcfg-vhost0 and initialize it via ifup"
         if ! is_dpdk ; then
             ifdown ${phys_int}
@@ -801,7 +803,8 @@ function init_vhost0_l3mh() {
             echo "ERROR: MTU(=$_mtu) for interface $phys_int != MTU(=$mtu) of interface ${phys_int_arr[0]}"
             exit 1
         fi
-        if [[ ! -e /etc/sysconfig/network-scripts/ifcfg-${phys_int} ]]; then
+        if [[ ! -e /etc/sysconfig/network-scripts/ifcfg-${phys_int} && \
+            ! -e /etc/sysconfig/network-scripts/contrail.org.ifcfg-${phys_int} ]]; then
             ifcfg_files=0
         fi
     done
