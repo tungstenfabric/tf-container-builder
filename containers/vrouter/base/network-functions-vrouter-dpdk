@@ -360,7 +360,8 @@ function prepare_ifcfg_l3mh() {
     local pci
     local binding_data_dir='/var/run/vrouter'
     for phys_int in $(echo $phys_ints | tr ',' ' ') ; do
-        if [[ ! -e /etc/sysconfig/network-scripts/ifcfg-${phys_int} ]]; then
+        if [[ ! -e /etc/sysconfig/network-scripts/ifcfg-${phys_int} && \
+            ! -e /etc/sysconfig/network-scripts/contrail.org.ifcfg-${phys_int} ]]; then
             ifcfg_files=0
         fi
         if [[ -f ${binding_data_dir}/${phys_int}_pci ]]; then
