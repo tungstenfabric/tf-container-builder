@@ -258,7 +258,9 @@ function prepare_ifcfg() {
     local bind_type=$2
     local bind_int=$3
     local netscript_dir='/etc/sysconfig/network-scripts'
-    if [[ ! -e "${netscript_dir}/ifcfg-${phys_int}" && ! -e "${netscript_dir}/ifcfg-vhost0" ]] ; then
+    if [[ ! -e "${netscript_dir}/ifcfg-${phys_int}" && \
+        ! -e ${netscript_dir}/contrail.org.ifcfg-${phys_int} && \
+        ! -e "${netscript_dir}/ifcfg-vhost0" ]] ; then
         return 0
     fi
     local ret=0
