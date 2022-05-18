@@ -174,10 +174,15 @@ function restore_phys_int() {
     echo "INFO: restore bind interface $phys_int"
     if [ -d "$netscript_dir" ] && ls ${netscript_dir}/contrail.org.ifcfg-* ; then
         pushd "$netscript_dir"
-        declare i
+        declare i nics
+        # recover files
         for i in $(ls | grep 'contrail\.org\.ifcfg\-' | sed 's/contrail\.org\.ifcfg\-//g') ; do
             echo "INFO: restore ifcfg-$i from contrail.org.ifcfg-$i"
             mv -f contrail.org.ifcfg-$i ifcfg-$i
+            nics+="$i "
+        done
+        # reinit nics
+        for i in $nics ; do
             echo "INFO: reinit $i"
             ifdown $i >/dev/null 2>&1
             ifup $i
