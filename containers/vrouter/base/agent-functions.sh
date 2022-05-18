@@ -488,15 +488,15 @@ function read_and_save_dpdk_params_for_phys_int() {
             pci=$BIND_INT
             _slave=$(echo ${slaves//,/ } | cut -d ',' -f 1)
             bond_numa=$(get_bond_numa $_slave)
-	        echo "0000:00:00.0"  > $binding_data_dir/${nic}_pci
+            echo "$pci"  > $binding_data_dir/${nic}_pci
             lacp_rate=${LACP_RATE:-0}
         fi
     else
         # read from system
         if is_bonding $phys_int ; then
             wait_bonding_slaves $phys_int
-	        echo "0000:00:00.0"  > $binding_data_dir/${nic}_pci
             IFS=' ' read -r mode policy slaves pci bond_numa lacp_rate <<< $(get_bonding_parameters $phys_int)
+            echo "$pci" > $binding_data_dir/${nic}_pci
         fi
     fi
     if [ -n "$mode" ] ; then
