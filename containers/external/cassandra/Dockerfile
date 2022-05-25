@@ -29,7 +29,8 @@ COPY *.sh /
 # https://issues.apache.org/jira/projects/CASSANDRA/issues/CASSANDRA-17581?filter=allissues
 # (it can be unpinned after cassandra be upgraded >= 3.11.13)
 RUN set -eux && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
-    yum install -y "java-1.8.0-openjdk < 1:1.8.0_332" numactl python3 openssl which jemalloc -y && \
+    yum install -y numactl python3 openssl which jemalloc  && \
+    yum install -y --exclude="*slowdebug*" --exclude="*fastdebug*" "java-1.8.0-openjdk < 1:1.8.0_332" && \
     groupadd -f -g 999 ${CASSANDRA_GROUP} && adduser -u 999 -M -g ${CASSANDRA_GROUP} ${CASSANDRA_USER} && \
     usermod -a -G $CONTRAIL_GID ${CASSANDRA_USER} && \
     wget -nv --tries=3 -c $DIST_URL && \
