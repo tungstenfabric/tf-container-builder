@@ -4,6 +4,8 @@ source /common.sh
 
 CONFIG=/etc/cassandra/cassandra.yaml
 JVM_OPTIONS_CONFIG=/etc/cassandra/jvm.options
+cp /etc/cassandra/cassandra.origin $CONFIG
+cp /etc/cassandra/jvm.options.origin $JVM_OPTIONS_CONFIG
 change_variable()
 {
   local VARIABLE_NAME=$1
@@ -47,6 +49,7 @@ export JVM_EXTRA_OPTS="${JVM_EXTRA_OPTS} -Dcassandra.rpc_port=${CASSANDRA_PORT} 
   -Dcassandra.storage_port=${CASSANDRA_STORAGE_PORT} \
   -Dcassandra.jmx.local.port=${CASSANDRA_JMX_LOCAL_PORT}"
 
+# restore original config
 if is_enabled $CASSANDRA_SSL_ENABLE ; then
   jks_dir='/usr/local/lib/cassandra/conf'
   mkdir -p $jks_dir
