@@ -55,7 +55,10 @@ RUN \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
 # smoke test
-    cassandra -v
+    cassandra -v && \
+# save original config
+    cp ${CASSANDRA_CONFIG}/cassandra.yaml ${CASSANDRA_CONFIG}/cassandra.origin && \
+    cp ${CASSANDRA_CONFIG}/jvm.options ${CASSANDRA_CONFIG}/jvm.options.origin
 
 VOLUME $CASSANDRA_LIB
 
