@@ -19,9 +19,11 @@ COPY *.sh /
 # vim-common is needed because of xxd tool
 RUN /bin/bash -c 'for item in `ls /__*` ; do mv $item /${item:3} ; done' && \
     source /functions.sh && \
-    download_package https://packagecloud.io rabbitmq/erlang/packages/el/7/erlang-21.3.8.21-1.el7.x86_64.rpm/download.rpm erlang-21.3.8.21-1.el7.x86_64.rpm && \
-    download_package https://packagecloud.io rabbitmq/rabbitmq-server/packages/el/7/rabbitmq-server-3.7.20-1.el7.noarch.rpm/download.rpm rabbitmq-server-3.7.20-1.el7.noarch.rpm && \
-    yum install -y erlang-21.3.8.21-1.el7.x86_64.rpm rabbitmq-server-3.7.20-1.el7.noarch.rpm vim-common && \
+    source /etc/os-release && \
+    ver=$(echo $VERSION_ID | cut -d '.' -f 1) && \
+    download_package https://packagecloud.io rabbitmq/erlang/packages/el/${ver}/erlang-21.3.8.21-1.el${ver}.x86_64.rpm/download.rpm erlang.rpm && \
+    download_package https://packagecloud.io rabbitmq/rabbitmq-server/packages/el/${ver}/rabbitmq-server-3.7.28-1.el${ver}.noarch.rpm/download.rpm rabbitmq-server.rpm && \
+    yum install -y erlang.rpm rabbitmq-server.rpm vim-common && \
     usermod -a -G $CONTRAIL_GID rabbitmq && \
     usermod -d /var/lib/rabbitmq rabbitmq && \
     rabbitmq-plugins enable --offline rabbitmq_management && \
