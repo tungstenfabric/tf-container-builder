@@ -55,6 +55,8 @@ collectors=$COLLECTOR_SERVERS
 $sandesh_client_config
 EOM
 
+add_ini_params_from_env FABRIC_ANSIBLE /etc/contrail/contrail-fabric-ansible.conf
+
 set_third_party_auth_config
 set_vnc_api_lib_ini
 
