@@ -12,7 +12,7 @@ LABEL name=$CONTAINER_NAME \
       $VENDOR_DOMAIN".service"=$SERVICE_NAME \
       $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
 
-ARG ZOO_VERSION="3.7.0"
+ARG ZOO_VERSION="3.7.1"
 ARG ZOO_DISTRO_NAME="apache-zookeeper-${ZOO_VERSION}-bin"
 
 ENV ZOO_CONF_DIR=/conf \
