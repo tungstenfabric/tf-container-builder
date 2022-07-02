@@ -182,6 +182,15 @@ function start_dpdk_container() {
     [ -n "$LOG_LEVEL" ] && env_options+=" -e \"LOG_LEVEL=$LOG_LEVEL\""
     [ -n "$VROUTER_GATEWAY" ] && env_options+=" -e \"VROUTER_GATEWAY=$VROUTER_GATEWAY\""
 
+    # Logging driver for the container.
+    # Depends on container engine. E.g. for podman - available options are k8s-file,
+    #  journald, and none, with json-file aliased to k8s-file for scripting compatibility
+    [ -n "$CONTAINER_LOG_DRIVER" ] && env_options+=" --log-driver=\"$CONTAINER_LOG_DRIVER\""
+    # Logging driver specific options, e.g.
+    #    path: specify a path to the log file
+    #    --log-opt path=/var/log/container/mycontainer.json
+    [ -n "$CONTAINER_LOG_OPT" ] && env_options+=" --log-opt \"$CONTAINER_LOG_OPT\""
+
     local cmd=$(which podman 2>/dev/null || echo docker)
     local container_name=${CONTRAIL_VROUTER_AGENT_DPDK_CONTAINER_NAME:-'contrail-vrouter-agent-dpdk'}
     if $cmd inspect $container_name 2>&1 | grep -io 'status.*running' ; then
