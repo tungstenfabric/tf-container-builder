@@ -615,7 +615,9 @@ function init_vhost0() {
     fi
 
     local ret=0
-    if [[ -e /etc/sysconfig/network-scripts/ifcfg-${phys_int} || -e /etc/sysconfig/network-scripts/ifcfg-vhost0 ]]; then
+    if [[ -e /etc/sysconfig/network-scripts/ifcfg-${phys_int} || \
+        -e /etc/sysconfig/network-scripts/contrail.org.ifcfg-${phys_int} || \
+        -e /etc/sysconfig/network-scripts/ifcfg-vhost0 ]]; then
         echo "INFO: creating ifcfg-vhost0 and initialize it via ifup"
         if ! is_dpdk ; then
             ifdown ${phys_int}
