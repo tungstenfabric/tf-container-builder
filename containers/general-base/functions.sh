@@ -187,3 +187,21 @@ function run_service() {
   fi
   do_run_service "$@"
 }
+
+# build time functions
+
+function download_package() {
+  # tries to download from SITE_MIRROR, then from upstream if SITE_MIRROR is empty var or package is not there
+  local original_site=$1
+  local site_path=$2
+  local output_name=$3
+  local add_opts="$4"
+
+  if [ -n "$SITE_MIRROR" ]; then
+    wget -nv --tries=3 -c -O $output_name $SITE_MIRROR/$site_path || /bin/true
+  fi
+  if [ ! -s $output_name ]; then
+    wget -nv --tries=3 -c $add_opts -O $output_name $original_site/$site_path
+  fi
+}
+

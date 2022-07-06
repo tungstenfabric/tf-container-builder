@@ -30,3 +30,4 @@ wget -nv -t3 -P dist/zookeeper/zookeeper-3.7.1 https://archive.apache.org/dist/z
 
 wget -nv -t3 -P tungstenfabric/tf-third-party-cache/blob/master/kafka https://github.com/tungstenfabric/tf-third-party-cache/blob/master/kafka/kafka_2.11-2.3.1.tgz?raw=true
 wget -nv -t3 -P tungstenfabric/tf-third-party-cache/blob/master/redis https://github.com/tungstenfabric/tf-third-party-cache/blob/master/redis/redis40u-4.0.14-2.el7.ius.x86_64.rpm?raw=true
+wget -nv -t3 -P 30590/eng https://downloadmirror.intel.com/30590/eng/800%20series%20comms%20binary%20package%201.3.30.0.zip
