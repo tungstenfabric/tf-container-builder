@@ -551,16 +551,16 @@ def vcenter_plugin(container, options):
         print_debug('{0}: VCenterPluginStruct not found'.format(svc_name))
         return "initializing (vcenter-plugin is not ready)"
 
-    master = yaml.load(node_status.get('master', 'false'))
+    master = yaml.load(node_status.get('master', 'false'), Loader=yaml.Loader)
     if not master:
         return "backup"
 
     description = list()
     api_server = node_status.get('ApiServerInfo', dict()).get('ApiServerStruct', dict())
-    if not yaml.load(api_server.get('connected', 'false')):
+    if not yaml.load(api_server.get('connected', 'false'), Loader=yaml.Loader):
         description.append("API server connection is not ready")
     vcenter_server = node_status.get('VCenterServerInfo', dict()).get('VCenterServerStruct', dict())
-    if not yaml.load(vcenter_server.get('connected', 'false')):
+    if not yaml.load(vcenter_server.get('connected', 'false'), Loader=yaml.Loader):
         description.append("VCenter server connection is not ready")
     if description:
         return "initializing (" + ", ".join(description) + ")"
@@ -766,7 +766,7 @@ def main():
     if not debug_output:
         requests.packages.urllib3.disable_warnings()
 
-    ssl_enabled = yaml.load(os.getenv('INTROSPECT_SSL_ENABLE', 'False'))
+    ssl_enabled = yaml.load(os.getenv('INTROSPECT_SSL_ENABLE', 'False'), Loader=yaml.Loader)
     if not isinstance(ssl_enabled, bool):
         ssl_enabled = False
 
