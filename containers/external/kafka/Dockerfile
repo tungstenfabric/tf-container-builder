@@ -22,11 +22,11 @@ ENV KAFKA_DIR=/opt/kafka \
 COPY *.sh /
 
 RUN \
-    KAFKA_DISTRO_NAME="kafka_2.12-2.6.2" && \
+    KAFKA_DISTRO_NAME="kafka_2.12-2.6.3" && \
     for item in `ls /__*` ; do mv $item /${item:3} ; done && \
     yum install -y java java-1.8.0-openjdk && \
     source /functions.sh && \
-    download_package https://archive.apache.org dist/kafka/2.6.2/$KAFKA_DISTRO_NAME.tgz $KAFKA_DISTRO_NAME.tgz --no-check-certificate && \
+    download_package https://archive.apache.org dist/kafka/2.6.3/$KAFKA_DISTRO_NAME.tgz $KAFKA_DISTRO_NAME.tgz --no-check-certificate && \
     tar -xvf $KAFKA_DISTRO_NAME.tgz && \
     mkdir -p $KAFKA_CONF_DIR $LOG_DIR && \
     mv $KAFKA_DISTRO_NAME/* $KAFKA_DIR && \
