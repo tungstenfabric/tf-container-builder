@@ -41,6 +41,7 @@ wget -nv -t3 -P tungstenfabric/tf-third-party-cache/blob/master/kafka https://gi
 # kafka 2.6.2 was moved to archive
 #wget -nv -t3 -P apache/kafka/2.6.2 https://mirror.linux-ia64.org/apache/kafka/2.6.2/kafka_2.12-2.6.2.tgz
 wget -nv -t3 -P dist/kafka/2.6.2 https://archive.apache.org/dist/kafka/2.6.2/kafka_2.12-2.6.2.tgz
+wget -nv -t3 -P dist/kafka/2.6.3 https://archive.apache.org/dist/kafka/2.6.3/kafka_2.12-2.6.3.tgz
 
 wget -nv -t3 -P tungstenfabric/tf-third-party-cache/blob/master/redis https://github.com/tungstenfabric/tf-third-party-cache/blob/master/redis/redis40u-4.0.14-2.el7.ius.x86_64.rpm?raw=true
 # from 2011.L3, 21.3
