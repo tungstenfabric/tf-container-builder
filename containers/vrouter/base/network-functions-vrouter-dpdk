@@ -106,6 +106,7 @@ function start_dpdk_container() {
     [ -n "$LACP_RATE" ] && env_options+=" -e \"LACP_RATE=$LACP_RATE\""
     [ -n "$LOG_LEVEL" ] && env_options+=" -e \"LOG_LEVEL=$LOG_LEVEL\""
     [ -n "$VROUTER_GATEWAY" ] && env_options+=" -e \"VROUTER_GATEWAY=$VROUTER_GATEWAY\""
+    [ -n "$KERNEL_INIT_VHOST0" ] && env_options+=" -e \"KERNEL_INIT_VHOST0=$KERNEL_INIT_VHOST0\""
 
     # Logging driver for the container.
     # Depends on container engine. E.g. for podman - available options are k8s-file,
