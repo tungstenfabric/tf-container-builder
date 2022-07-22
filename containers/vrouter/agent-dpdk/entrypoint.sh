@@ -13,7 +13,10 @@ if [[ -n "${DPDK_UIO_DRIVER}" ]]; then
     fi
 fi
 
-echo "INFO: dpdk started"
+# it is set to false for RHOSP context
+export KERNEL_INIT_VHOST0=${KERNEL_INIT_VHOST0:-"true"}
+
+echo "INFO: $(date): dpdk started (is_rhosp_context=$KERNEL_INIT_VHOST0)"
 
 function trap_dpdk_agent_quit() {
     local res=0

@@ -397,6 +397,10 @@ function bind_devs_to_driver() {
 }
 
 function bkp_ifcfg_file() {
+    if [[ "${KERNEL_INIT_VHOST0,,}" == 'true' ]] ; then
+        echo "INFO: non-rhosp context, dont touch initial ifcfg-$1 file"
+        return
+    fi
     local d="/etc/sysconfig/network-scripts"
     [[ -e $d ]] || return
     pushd $d
