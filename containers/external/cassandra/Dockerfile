@@ -29,7 +29,7 @@ RUN \
     CASSANDRA_VERSION=3.11.3 && \
     set -ex && for item in `ls /__*` ; do mv $item /${item:3} ; done && \
     yum install -y numactl python3 openssl which jemalloc  && \
-    yum install -y --exclude="*slowdebug*" --exclude="*fastdebug*" "java-1.8.0-openjdk < 1:1.8.0_332" && \
+    yum install -y --exclude="*debug*" "java-1.8.0-openjdk < 1:1.8.0_332" && \
     groupadd -f -g 999 ${CASSANDRA_GROUP} && adduser -u 999 -M -g ${CASSANDRA_GROUP} ${CASSANDRA_USER} && \
     usermod -a -G $CONTRAIL_GID ${CASSANDRA_USER} && \
     source /functions.sh && \
