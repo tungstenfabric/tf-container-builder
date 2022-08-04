@@ -56,8 +56,13 @@ if ((\$? == 0)); then
     r+=' -v /etc/containers:/etc/containers:ro'
     r+=' -v /usr/share/containers:/usr/share/containers:ro'
     r+=' --security-opt seccomp=unconfined'
-    \$r \$tmp_suffix
-    exit \$?
+    cmd=\$(\$r \$tmp_suffix 2>&1 )
+    ret=\$?
+    if [ \$ret == 0 ] ; then
+      cmd=\$(echo "\$cmd" | grep -vi warning)
+    fi
+    echo "\$cmd"
+    exit \$ret
 fi
 u=\$(which ctr 2>/dev/null)
 if ((\$? == 0)); then
