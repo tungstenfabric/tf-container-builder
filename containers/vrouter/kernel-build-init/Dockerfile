@@ -44,7 +44,7 @@ RUN \
     echo "${contrail_version}" > /contrail_version && \
     export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
-    apt-get install -y --no-install-recommends dkms && \
+    apt-get install -y --no-install-recommends dkms libelf1 && \
     apt-get install -y --no-install-recommends yum yum-utils rpm2cpio cpio ca-certificates && \
     yum install -y contrail-vrouter-source && \
     mv /usr/src/* /opt/contrail/src/ && \
