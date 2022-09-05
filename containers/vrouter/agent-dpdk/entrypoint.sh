@@ -70,6 +70,17 @@ set_ctl net.ipv4.tcp_keepalive_probes 5
 set_ctl net.ipv4.tcp_keepalive_intvl 1
 set_ctl net.core.wmem_max 9160000
 
+if [[ -n "${DPDK_UIO_DRIVER}" ]]; then
+    for i in {0..5} ; do
+        echo "INFO: Waiting for plugin-init container to place scripts ...($i/5)"
+        [[ -f "/etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}-pre-dev-prepare-init.sh" ]] && source "/etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}-pre-dev-prepare-init.sh" && break;
+        if (( i == 5 )) ; then
+            echo "WARNING: Time for plugin-init container script placement exceeded."
+        fi
+        sleep 1
+    done
+fi
+
 for driver in $(echo $dpdk_drivers_to_load | tr ',' ' ') ; do
     load_kernel_module $driver
 done
@@ -77,11 +88,6 @@ done
 # multiple kthreads for port monitoring
 if ! load_kernel_module rte_kni kthread_mode=multiple ; then
     echo "WARNING: rte_ini kernel module is unavailable. Please install/insert it for Ubuntu 14.04 manually."
-fi
-
-if [[ -n "${DPDK_UIO_DRIVER}" && \
-      -f "/etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}-init.sh" ]]; then
-    source "/etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}-init.sh"
 fi
 
 if ! read_and_save_dpdk_params ; then
@@ -97,7 +103,7 @@ function assert_file() {
     fi
 }
 
-cmd="$@ --no-daemon $DPDK_COMMAND_ADDITIONAL_ARGS"
+cmd="$@ --no-daemon"
 # update command with taskset options (core mask)
 # TODO: consider to avoid taskset here and leave to manage by Docker
 if [[ -n "$CPU_CORE_MASK" ]] ; then
@@ -207,6 +213,13 @@ for phys_int in $phys_int_list; do
         fi
     fi
 done
+
+if [[ -n "${DPDK_UIO_DRIVER}" && \
+      -f "/etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}-post-dev-prepare-init.sh" ]]; then
+    source "/etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}-post-dev-prepare-init.sh"
+fi
+
+cmd+=" $DPDK_COMMAND_ADDITIONAL_ARGS"
 
 echo "INFO: start '$cmd'"
 $cmd &
