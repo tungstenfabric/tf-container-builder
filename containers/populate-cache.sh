@@ -52,6 +52,8 @@ wget -nv -t3 -P Juniper/ansible-junos-stdlib/archive https://github.com/Juniper/
 wget -nv -t3 -P 30590/eng https://downloadmirror.intel.com/30590/eng/800%20series%20comms%20binary%20package%201.3.30.0.zip
 
 wget -nv -t3 -P linux/centos/7/x86_64/stable/Packages https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.4.12-3.1.el7.x86_64.rpm
+#from 2011.L5
+wget -nv -t3 -P linux/centos/7/x86_64/stable/Packages https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.6.7-3.1.el7.x86_64.rpm
 
 wget -nv -t3 -P pub/archive/epel/8.4/Everything/x86_64/Packages/s https://archives.fedoraproject.org/pub/archive/epel/8.4/Everything/x86_64/Packages/s/sshpass-1.06-9.el8.x86_64.rpm
 
