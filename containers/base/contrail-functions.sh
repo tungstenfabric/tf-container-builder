@@ -156,6 +156,9 @@ EOM
   if [[ -n "$KEYSTONE_AUTH_SYNC_ON_DEMAND" ]] ; then
     echo "keystone_sync_on_demand = $KEYSTONE_AUTH_SYNC_ON_DEMAND" >> $tmp_file
   fi
+  if [[ -n "$KEYSTONE_AUTH_INTERFACE" ]] ; then
+    echo "interface = $KEYSTONE_AUTH_INTERFACE" >> $tmp_file
+  fi
   mv -f $tmp_file /etc/contrail/contrail-keystone-auth.conf
 }
 
