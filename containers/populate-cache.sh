@@ -22,6 +22,9 @@ wget -nv -t3 -P rabbitmq/rabbitmq-server/packages/el/7/rabbitmq-server-3.7.20-1.
 wget -nv -t3 -P rabbitmq/erlang/packages/el/8/erlang-21.3.8.21-1.el8.x86_64.rpm https://packagecloud.io/rabbitmq/erlang/packages/el/8/erlang-21.3.8.21-1.el8.x86_64.rpm/download.rpm
 wget -nv -t3 -P rabbitmq/rabbitmq-server/packages/el/7/rabbitmq-server-3.7.28-1.el7.noarch.rpm https://packagecloud.io/rabbitmq/rabbitmq-server/packages/el/7/rabbitmq-server-3.7.28-1.el7.noarch.rpm/download.rpm
 wget -nv -t3 -P rabbitmq/rabbitmq-server/packages/el/8/rabbitmq-server-3.7.28-1.el8.noarch.rpm https://packagecloud.io/rabbitmq/rabbitmq-server/packages/el/8/rabbitmq-server-3.7.28-1.el8.noarch.rpm/download.rpm
+# for ubi8 rabbit 3.10
+wget -nv -t3 -P rabbitmq/rabbitmq-server/packages/el/8/rabbitmq-server-3.10.7-1.el8.noarch.rpm https://packagecloud.io/rabbitmq/rabbitmq-server/packages/el/8/rabbitmq-server-3.10.7-1.el8.noarch.rpm/download.rpm
+wget -nv -t3 -P rabbitmq/erlang/packages/el/8/erlang-25.0.4-1.el8.x86_64.rpm https://packagecloud.io/rabbitmq/erlang/packages/el/8/erlang-25.0.4-1.el8.x86_64.rpm/download.rpm
 
 wget -nv -t3 -P pip/2.7 https://bootstrap.pypa.io/pip/2.7/get-pip.py
 
