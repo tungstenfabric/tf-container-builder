@@ -17,12 +17,20 @@ LABEL name=$CONTAINER_NAME \
 COPY *.sh /
 
 # vim-common is needed because of xxd tool
+
 RUN /bin/bash -c 'for item in `ls /__*` ; do mv $item /${item:3} ; done' && \
     source /functions.sh && \
     source /etc/os-release && \
     ver=$(echo $VERSION_ID | cut -d '.' -f 1) && \
-    download_package https://packagecloud.io rabbitmq/erlang/packages/el/${ver}/erlang-21.3.8.21-1.el${ver}.x86_64.rpm/download.rpm erlang.rpm && \
-    download_package https://packagecloud.io rabbitmq/rabbitmq-server/packages/el/${ver}/rabbitmq-server-3.7.28-1.el${ver}.noarch.rpm/download.rpm rabbitmq-server.rpm && \
+    if [[ ${ver} == 8 ]]; then \
+        RABBITMQ_VERSION="3.10.7" && \
+        ERLANG_VERSION="25.0.4"; \
+    else \
+        RABBITMQ_VERSION="3.7.28" && \
+        ERLANG_VERSION="21.3.8.21"; \
+    fi && \
+    download_package https://packagecloud.io rabbitmq/erlang/packages/el/${ver}/erlang-${ERLANG_VERSION}-1.el${ver}.x86_64.rpm/download.rpm erlang.rpm && \
+    download_package https://packagecloud.io rabbitmq/rabbitmq-server/packages/el/${ver}/rabbitmq-server-${RABBITMQ_VERSION}-1.el${ver}.noarch.rpm/download.rpm rabbitmq-server.rpm && \ 
     yum install -y erlang.rpm rabbitmq-server.rpm vim-common && \
     usermod -a -G $CONTRAIL_GID rabbitmq && \
     usermod -d /var/lib/rabbitmq rabbitmq && \
