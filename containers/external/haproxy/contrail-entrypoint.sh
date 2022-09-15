@@ -7,10 +7,7 @@ global
         tune.bufsize 16384
         maxconn 10000
         spread-checks 4
-        log /dev/log    local0
-        log /dev/log    local1 notice
         stats timeout 30s
-        daemon
         user haproxy
         group haproxy
 
