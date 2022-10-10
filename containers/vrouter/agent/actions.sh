@@ -4,6 +4,7 @@
 # To run these functions, source agent_functions.sh and common.sh before
 
 export PARAMETERS_FILE='/parameters.sh'
+export PARAMETERS_FILE_TEMPLATE='/parameters-template.sh'
 
 function prepare_agent_config_vars() {
     echo "INFO: Start prepare_agent_config_vars"
@@ -181,7 +182,7 @@ function prepare_agent_config_vars() {
 
     local result_params=""
     local key line
-    local params=$(cat $PARAMETERS_FILE)
+    local params=$(cat $PARAMETERS_FILE_TEMPLATE)
     while read line; do
         key=$(echo $line | cut -d '=' -f 1)
         if [[ -n "${key[0]}" ]]; then
