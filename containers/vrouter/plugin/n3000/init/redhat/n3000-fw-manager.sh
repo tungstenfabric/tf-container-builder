@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source /etc/sysconfig/network-scripts/n3000/n3000-driver-mgmt.sh
+source /etc/sysconfig/network-scripts/n3000/n3000-mgmt.sh
 
 function show_firmware_version {
 # Expected argument:
