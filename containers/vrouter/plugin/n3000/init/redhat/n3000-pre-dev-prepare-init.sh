@@ -1,20 +1,7 @@
 #!/usr/bin/env bash
 
 source /etc/sysconfig/network-scripts/n3000/n3000-mgmt.sh
-
-perma_work_dir="/var/lib/contrail/n3000/"
-temp_work_dir="/var/run/n3000"
-n3000_env_file="${perma_work_dir}/n3000-env"
-init_lock_file="${perma_work_dir}/n3000-plugin-init-done"
-
-function source_env() {
-    if [[ -f "${n3000_env_file}" ]]; then
-        echo "INFO: Sourcing env"
-        echo "INFO: Source env file content:"
-        echo "$(cat ${n3000_env_file})"
-        . "${n3000_env_file}"
-    fi
-}
+source /etc/sysconfig/network-scripts/n3000/n3000-common.sh
 
 if [[ -f "${init_lock_file}" ]]; then
     source_env
@@ -31,11 +18,22 @@ else
     done
 
     echo "Waiting for n3000-init container to finish done."
-    if [[ -f "${n3000_env_file}" ]]; then
+    if [[ -f "${env_file}" ]]; then
         source_env
     else
         echo "WARNING: n3000-env file not found"
     fi
 fi
 
-mkdir -p "${temp_work_dir}" || true
+[[ ! -d "${temp_work_dir}" ]] && mkdir -p "${temp_work_dir}"
+
+
+fpga_mode_found="$(get_image_mode)"
+if [[ "${fpga_mode_found}" == "user" ]]; then
+    user_mode_found="$(verify_user_mode_config)"
+    if [[ "${user_mode_found}" == "unconfigured" ]]; then
+        setup_factory_mode "${env_file}"
+
+        preconfig_dataplane "store" "${N3000_CONF}" "${env_file}" "${ifcfg_dir}"
+    fi
+fi

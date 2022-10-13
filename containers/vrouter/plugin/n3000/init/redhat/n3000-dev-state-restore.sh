@@ -1,14 +1,19 @@
 #!/usr/bin/env bash
 
 source /etc/sysconfig/network-scripts/n3000/n3000-mgmt.sh
+source /etc/sysconfig/network-scripts/n3000/n3000-common.sh
 
-temp_work_dir="/var/run/n3000"
-perma_work_dir="/var/lib/contrail/n3000/"
-env_file="${perma_work_dir}/n3000-env"
-ifcfg_dir="${perma_data_dir}/ifcfgs"
+echo "INFO: n3000-dev-state-restore.sh called"
 
-. ${env_file}
+[[ -f "${dev_state_restored_lock_file}" ]] && \
+    echo "INFO: Dev state restore already called for this deinitialization procedure. Skipping next invocation." && exit
+
+touch "${dev_state_restored_lock_file}"
+
+source_env
 
 /etc/sysconfig/network-scripts/n3000/n3000-offload-config.sh "disable" "${temp_work_dir}" "${ifcfg_dir}" "${env_file}"
 
-preconfig_dataplane "noop" "${N3000_CONF}" "${env_file}" "${ifcfg_dir}"
+preconfig_dataplane "restore" "${N3000_CONF}" "${env_file}" "${ifcfg_dir}"
+
+rebind_factory "vfio-pci"

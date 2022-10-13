@@ -262,8 +262,6 @@ function setup_user_mode {
 
         configure_pf_and_vfs "${vfs_num}" "$(get_pf0_address)"
 
-        restore_ifcfg "${ifcfg_dir}"
-
         fetch_vrouter_info
 
         echo "INFO: Intel PAC N3000 configured"
@@ -292,6 +290,9 @@ function enable_user_mode() {
 
     echo "INFO: Setup of N3000 user image mode"
     setup_user_mode "${VFs_NUM}" "${user_mode_config}" "${ifcfg_dir}"
+
+    echo "INFO: Restoring ifcfg"
+    restore_ifcfg "$ifcfg_dir"
 
     echo "INFO: N3000-vRouter CLI argument preparation"
     prepare_n3000_args ${VFs_NUM} ${PF1_DRIVER} "${temp_data_dir}" "$(get_pf0_address)"

@@ -25,8 +25,8 @@ RUN yes | python3 -m pip install intelhex || true                          && \
     yumdownloader --destdir=/opt/opae/ opae-intel-fpga-driver              && \
     mkdir -p /opt/n3000/site_packages                                      && \
     cp -r /usr/lib/python2.7/site-packages/opae* /opt/n3000/site_packages/ && \
-    cp /usr/bin/fecmode /opt/n3000/fecmode                                 && \
-    cp /usr/bin/rsu /opt/n3000/rsu                                         && \
+    mv /usr/bin/fecmode /opt/n3000/fecmode                                 && \
+    mv /usr/bin/rsu /opt/n3000/rsu                                         && \
     yum clean all -y                                                       && \
     rm -rf /var/cache/yum
 

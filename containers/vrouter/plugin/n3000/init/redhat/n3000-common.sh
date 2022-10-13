@@ -1,0 +1,6 @@
+temp_work_dir="/var/run/n3000"
+perma_work_dir="/var/lib/contrail/n3000/"
+env_file="${perma_work_dir}/n3000-env"
+init_lock_file="${perma_work_dir}/n3000-plugin-init-done"
+ifcfg_dir="${perma_work_dir}/ifcfgs"
+dev_state_restored_lock_file="${perma_work_dir}/n3000-dev-state-restored"
