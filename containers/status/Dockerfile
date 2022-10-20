@@ -12,7 +12,7 @@ LABEL name=$CONTAINER_NAME \
 RUN \
     source /functions.sh && \
     yum install -y podman contrail-nodemgr && \
-    CONTAINERD_RPM_NAME=containerd.io-1.4.12-3.1.el7.x86_64.rpm && \
+    CONTAINERD_RPM_NAME=containerd.io-1.6.7-3.1.el7.x86_64.rpm && \
     download_package https://download.docker.com linux/centos/7/x86_64/stable/Packages/${CONTAINERD_RPM_NAME} ${CONTAINERD_RPM_NAME} && \
     rpm -Uvh --nodeps --replacepkgs ${CONTAINERD_RPM_NAME} && \
     rm -f ${CONTAINERD_RPM_NAME} && \
