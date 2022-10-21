@@ -524,13 +524,15 @@ function check_vrouter_agent_settings() {
         return 1
     fi
 
-    local iface=`get_gateway_nic_for_ip ${nodes[0]}`
+    local resolved_ip=$(resolve_host_ip ${nodes[0]})
+    local iface=$(get_gateway_nic_for_ip $resolved_ip)
     if [[ "$iface" != 'vhost0' ]]; then
         echo "WARNING: First control node isn't accessible via vhost0 (or via interface that vhost0 is based on). It's valid for gateway mode and invalid for normal mode."
     fi
     if (( ${#nodes} > 1 )); then
         for node in ${nodes[@]} ; do
-            local cur_iface=`get_gateway_nic_for_ip $node`
+            local resolved_ip=$(resolve_host_ip $node)
+            local cur_iface=$(get_gateway_nic_for_ip $resolved_ip)
             if [[ "$iface" != "$cur_iface" ]]; then
                 echo "ERROR: Control node $node is accessible via different interface ($cur_iface) than first control node ${nodes[0]} ($iface)."
                 echo "ERROR: Please define CONTROL_NODES list correctly."
