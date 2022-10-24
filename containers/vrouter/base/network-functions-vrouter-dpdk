@@ -221,8 +221,8 @@ function restore_iface_driver() {
     local binding_data_dir='/var/run/vrouter'
     [ ! -d "$binding_data_dir" ] && return
 
-    if [[ -f /etc/sysconfig/network-scripts/${dpdk_drv}/${dpdk_drv}-int-restore.sh ]]; then
-        source /etc/sysconfig/network-scripts/${dpdk_drv}/${dpdk_drv}-int-restore.sh
+    if [[ -f /etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}-dev-state-restore.sh ]]; then
+        /etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}-dev-state-restore.sh
         return
     fi
 
@@ -294,7 +294,7 @@ function restore_phys_int_dpdk_l3mh() {
     if [ -f "$binding_data_dir/static_dpdk_routes" ] && grep -q nexthop "$binding_data_dir/static_dpdk_routes"; then
         local static_routes=$(cat ${binding_data_dir}/static_dpdk_routes)
         for ((i=0; i<3; ++i)) ; do
-            echo "INFO: Restoring static routes. try $i out of 3"      
+            echo "INFO: Restoring static routes. try $i out of 3"
             sleep 10
             if ip route add $static_routes ; then
                 break
