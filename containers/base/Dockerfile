@@ -26,7 +26,7 @@ RUN \
     python2 -m pip install --no-compile remote-pdb && \
     source /etc/os-release && \
     if [[ "$ID" == 'rhel' && "${PLATFORM_ID//*:/}" == 'el8' ]] ; then \
-        python2 -m pip install --no-compile "gevent==1.1.2"  greenlet && \
+        python2 -m pip install --no-compile "gevent==1.1.2"  "greenlet<2.0.0" && \
         yum install -y python-kazoo python2-requests ; \
     fi && \
     yum install -y contrail-lib contrail-setup contrail-utils python-contrail && \
