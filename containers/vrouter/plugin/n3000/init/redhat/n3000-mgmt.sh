@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
+source /etc/sysconfig/network-scripts/n3000/n3000-common.sh
+
+function source_env() {
+    if [[ -f "${env_file}" ]]; then
+        echo "INFO: Sourcing env"
+        echo "INFO: Source env file content:"
+        echo "$(cat ${env_file})"
+        . "${env_file}"
+    fi
+}
+
 function unbind_driver()
 {
 # Expected argument:
@@ -27,15 +38,20 @@ function get_pf0_address() {
 }
 
 function get_image_mode {
-    local env_file=$1
-    local fpgainfo_file="/usr/bin/fpgainfo"
+    local fpga_loaded_image_file="/sys/class/fpga/intel-fpga-dev.0/intel-fpga-fme.0/spi-altera.0.auto/spi_master/spi0/spi0.0/fpga_flash_ctrl/fpga_image_load"
 
-    if [[ -f "${fpgainfo_file}" ]]; then
-        # plugin container
-        echo -n "$(/usr/bin/fpgainfo fme | awk '/Boot Page/ { print $4; }')"
+    if [[ ! -f "${fpga_loaded_image_file}" ]]; then
+        #TODO: If this happens, device is in bad state
+        echo -n "ERROR: FPGA bad state"
+        exit -1
+    fi
+
+    local mode_id="$(cat ${fpga_loaded_image_file})"
+
+    if [[ "${mode_id}" == "0" ]]; then
+        echo -n "factory"
     else
-        # agent-dpdk container
-        echo -n "$(cat ${env_file} | awk -F= '/N3000_FPGA_MODE_CONFIGURED/ { print $2; }')"
+        echo -n "user"
     fi
 }
 
@@ -119,7 +135,10 @@ function unbind_n3000_xxv710()
         if [[ -d "/sys/bus/pci/devices/${pci_addr}/net" ]]; then
         current_device_ifname=$(ls /sys/bus/pci/devices/${pci_addr}/net 2>/dev/null)
         if [[ -n "${current_device_ifname}" && -f "/etc/sysconfig/network-scripts/ifcfg-${current_device_ifname}" ]]; then
-            rm -f /etc/sysconfig/network-scripts/ifcfg-"${current_device_ifname}"
+            echo "INFO: Moving ifcfg for ${current_device_ifname} to ${ifcfg_dir}"
+
+            [[ ! -f "${ifcfg_dir}/ifcfg-${current_device_ifname}" ]] && \
+                mv -f "/etc/sysconfig/network-scripts/ifcfg-${current_device_ifname}" "${ifcfg_dir}/ifcfg-${current_device_ifname}"
         fi
         fi
         unbind_driver "${pci_addr}"
@@ -173,19 +192,6 @@ function get_config() {
     declare -p config
 }
 
-function store_ifcfg() {
-    local ifcfg_dir=$1
-    local ifname=$2
-
-    if [[ ! -f "/etc/sysconfig/network-scripts/ifcfg-$ifname" ]]; then
-        echo "WARNING: /etc/sysconfig/network-scripts/ifcfg-$ifname not found"
-    fi
-
-    [[ ! -d "$ifcfg_dir" ]] && mkdir -p "$ifcfg_dir"
-
-    cp "/etc/sysconfig/network-scripts/ifcfg-$ifname" "$ifcfg_dir/ifcfg-$ifname"
-}
-
 function restore_ifcfg() {
     local ifcfg_dir=$1
 
@@ -200,11 +206,13 @@ function restore_ifcfg() {
         local ifile="$(echo $ifcfg_file | awk -F/ '{ print $NF; }')"
 
         if [[ -f "/etc/sysconfig/network-scripts/$ifile" ]]; then
-            echo "WARNING: /etc/sysconfig/network-scripts/$ifile exists - should be absent at this point"
+            echo "INFO: /etc/sysconfig/network-scripts/$ifile exists - skipping"
             continue
         fi
 
         cp "$ifcfg_file" "/etc/sysconfig/network-scripts/$ifile"
+
+        echo "INFO: /etc/sysconfig/network-scripts/$ifile restored"
     done
 
     shopt -u nullglob
@@ -232,16 +240,14 @@ function preconfig_dataplane() {
             local ifname_key="phy${i}_ifname"
             local requested_ifname="${config[${ifname_key}]}"
             echo "INFO: phy_addr=$phy_addr, ifname found: $phy_ifname, requested ifname: $requested_ifname"
-
-            if [[ "$phy_ifname" != "$requested_ifname" ]]; then
-                ip link set dev $phy_ifname name $requested_ifname
-            fi
+            ip link set "${phy_ifname}" down
+            ip link set "${phy_ifname}" name "${requested_ifname}"
 
             set_network_info_for_device "${requested_ifname}" "${phy_addr}"
 
-            /usr/sbin/ifup $requested_ifname
+            [ -n "${N3000_TRIPLEO_L3MH_ROUTE}" ] && echo "${N3000_TRIPLEO_L3MH_ROUTE}" > "/etc/sysconfig/network-scripts/route-${requested_ifname}"
 
-            [[ "${ifcfg_op}" != "noop" ]] && store_ifcfg "$ifcfg_dir" "$requested_ifname"
+            /usr/sbin/ifup $requested_ifname
         done
     }
 
@@ -253,15 +259,18 @@ function preconfig_dataplane() {
         if [[ $phy_id == "0" || $phy_id == "1" ]]; then
             local phy_addr="$(lspci -d :0d58 -D | awk '{print $1}' | awk "NR == $(( phy_id + 1 ))")"
             local phy_ifname=$(realpath -e /sys/bus/pci/devices/${phy_addr}/net/* 2>/dev/null | awk -F/ '{print $NF}')
+            local requested_ifname="${PHYSICAL_INTERFACE}"
+            if [[ -z "${PHYSICAL_INTERFACE}" ]]; then
+                requested_ifname="$(cat /var/run/vrouter/nic)"
+            fi
 
+            echo "INFO: phy_addr=$phy_addr, ifname found: $phy_ifname, requested ifname: $requested_ifname"
             ip link set "${phy_ifname}" down
-            ip link set "${phy_ifname}" name "${PHYSICAL_INTERFACE}"
+            ip link set "${phy_ifname}" name "${requested_ifname}"
 
-            set_network_info_for_device "${PHYSICAL_INTERFACE}" "${phy_addr}"
+            set_network_info_for_device "${requested_ifname}" "${phy_addr}"
 
-            ip link set "${PHYSICAL_INTERFACE}" up
-
-            [[ "${ifcfg_op}" != "noop" ]] && store_ifcfg "$ifcfg_dir" "${PHYSICAL_INTERFACE}"
+            ip link set "${requested_ifname}" up
         fi
     }
 
@@ -270,15 +279,18 @@ function preconfig_dataplane() {
 
         local phy_addr="$(lspci -d :0d58 -D | awk '{print $1}' | awk "NR == 1")"
         local phy_ifname=$(realpath -e /sys/bus/pci/devices/${phy_addr}/net/* 2>/dev/null | awk -F/ '{print $NF}')
+        local requested_ifname="${PHYSICAL_INTERFACE}"
+        if [[ -z "${PHYSICAL_INTERFACE}" ]]; then
+            requested_ifname="$(cat /var/run/vrouter/nic)"
+        fi
 
+        echo "INFO: phy_addr=$phy_addr, ifname found: $phy_ifname, requested ifname: $requested_ifname"
         ip link set "${phy_ifname}" down
-        ip link set "${phy_ifname}" name "${PHYSICAL_INTERFACE}"
+        ip link set "${phy_ifname}" name "${requested_ifname}"
 
-        set_network_info_for_device "${PHYSICAL_INTERFACE}" "${phy_addr}"
+        set_network_info_for_device "${requested_ifname}" "${phy_addr}"
 
-        ip link set "${PHYSICAL_INTERFACE}" up
-
-        [[ "${ifcfg_op}" != "noop" ]] && store_ifcfg "$ifcfg_dir" "${PHYSICAL_INTERFACE}"
+        ip link set "${requested_ifname}" up
     }
 
     local ifcfg_op=$1
@@ -295,6 +307,8 @@ function preconfig_dataplane() {
     eval $(get_config "${n3000_conf}")
     echo "INFO: Config:"
     declare -p config
+
+    [[ "${ifcfg_op}" == "restore" ]] && restore_ifcfg "$ifcfg_dir"
 
     prepare_$config_type
 }
@@ -340,7 +354,7 @@ function verify_user_mode_config {
 function switch_fpga_mode() {
     local requested_mode=$1
     local env_file=$2
-    local found_mode=$(get_image_mode "${env_file}")
+    local found_mode="$(get_image_mode)"
 
     if [[ "${found_mode}" == "user" ]]; then
         local user_mode_config="$(verify_user_mode_config)"
@@ -358,16 +372,20 @@ function switch_fpga_mode() {
         # However the deployment logic requires to only switch between modes -
         # that is: factory to known user mode state and unknown user mode to factory mode.
         # so there is no need for a logic for unknown user mode state to known user mode state
+        echo "INFO: ${requested_mode} mode already present"
         return
     fi
 
     N3000_SWITCH_MODE="${requested_mode}" /etc/sysconfig/network-scripts/n3000/n3000-mode-manager.sh
+}
 
-    if [[ -n "$(grep N3000_FPGA_MODE_CONFIGURED ${env_file})" ]]; then
-        sed -i "s/N3000_FPGA_MODE_CONFIGURED=*/N3000_FPGA_MODE_CONFIGURED=${requested_mode}/g" ${env_file}
-    else
-        echo "N3000_FPGA_MODE_CONFIGURED=${requested_mode}" >> ${env_file}
-    fi
+function rebind_factory {
+    local driver=$1
+    for i in $(seq 1 2); do
+        phy_addr=$( lspci -d :0d58 -D | awk '{print $1}' | awk "NR == $i" )
+
+        override_driver "${phy_addr}" "${driver}"
+    done
 }
 
 function setup_factory_mode {
@@ -375,9 +393,5 @@ function setup_factory_mode {
 
     switch_fpga_mode "factory" "${env_file}"
 
-    for i in $(seq 1 2); do
-        phy_addr=$( lspci -d :0d58 -D | awk '{print $1}' | awk "NR == $i" )
-
-        override_driver "${phy_addr}" "i40e"
-    done
+    rebind_factory "i40e"
 }

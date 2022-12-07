@@ -73,7 +73,10 @@ set_ctl net.core.wmem_max 9160000
 if [[ -n "${DPDK_UIO_DRIVER}" ]]; then
     for i in {0..5} ; do
         echo "INFO: Waiting for plugin-init container to place scripts ...($i/5)"
-        [[ -f "/etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}-pre-dev-prepare-init.sh" ]] && source "/etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}-pre-dev-prepare-init.sh" && break;
+        if [[ -f "/etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}-pre-dev-prepare-init.sh" ]]; then
+            source "/etc/sysconfig/network-scripts/${DPDK_UIO_DRIVER}/${DPDK_UIO_DRIVER}-pre-dev-prepare-init.sh"
+            break
+        fi
         if (( i == 5 )) ; then
             echo "WARNING: Time for plugin-init container script placement exceeded."
         fi
