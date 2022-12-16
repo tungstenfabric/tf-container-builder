@@ -62,3 +62,5 @@ wget -nv -t3 -P maven2/io/netty/netty-all/4.1.39.Final https://repo1.maven.org/m
 
 wget -nv -t3 -P centos/7/os/x86_64/Packages http://mirror.centos.org/centos/7/os/x86_64/Packages/ntpdate-4.2.6p5-29.el7.centos.2.x86_64.rpm
 wget -nv -t3 -P centos/7/os/x86_64/Packages http://mirror.centos.org/centos/7/os/x86_64/Packages/ntp-4.2.6p5-29.el7.centos.2.x86_64.rpm
+
+wget -nv -t3 -P thelastpickle/cassandra-reaper/releases/download/3.2.1 https://github.com/thelastpickle/cassandra-reaper/releases/download/3.2.1/reaper-3.2.1-1.x86_64.rpm

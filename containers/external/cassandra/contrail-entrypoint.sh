@@ -49,6 +49,13 @@ export JVM_EXTRA_OPTS="${JVM_EXTRA_OPTS} -Dcassandra.rpc_port=${CASSANDRA_PORT} 
   -Dcassandra.storage_port=${CASSANDRA_STORAGE_PORT} \
   -Dcassandra.jmx.local.port=${CASSANDRA_JMX_LOCAL_PORT}"
 
+if is_enabled ${CASSANDRA_REAPER_ENABLED} ; then
+    export LOCAL_JMX=no
+    export JVM_EXTRA_OPTS="${JVM_EXTRA_OPTS} \
+      -Dcom.sun.management.jmxremote.access.file=/etc/cassandra/jmxremote.access \
+      -Dcassandra.jmx.remote.port=${CASSANDRA_JMX_LOCAL_PORT}"
+fi
+
 # restore original config
 if is_enabled $CASSANDRA_SSL_ENABLE ; then
   jks_dir='/usr/local/lib/cassandra/conf'
@@ -110,9 +117,17 @@ certfile = $CASSANDRA_SSL_CA_CERTFILE
 version = SSLv23
 EOM
 
+  if is_enabled $CASSANDRA_REAPER_ENABLED ; then
+      export JVM_EXTRA_OPTS="${JVM_EXTRA_OPTS} -Dcom.sun.management.jmxremote.ssl=true \
+        -Dcom.sun.management.jmxremote.ssl.need.client.auth=true \
+        -Djavax.net.ssl.keyStore=${jks_dir}/server-keystore.jks \
+        -Djavax.net.ssl.keyStorePassword=${CASSANDRA_SSL_KEYSTORE_PASSWORD} \
+        -Djavax.net.ssl.trustStore=${jks_dir}/server-truststore.jks \
+        -Djavax.net.ssl.trustStorePassword=${CASSANDRA_SSL_TRUSTSTORE_PASSWORD}"
+  fi
 fi
 
-#explicitly set 
+#explicitly set
 cat <<EOF >>$CONFIG
 #change datafile directory
 data_file_directories:
@@ -140,6 +155,22 @@ log_level=${log_levels_map[$LOG_LEVEL]}
 if [ -n "$log_level" ] ; then
   sed -i "s/\(<logger.*org.apache.cassandra.*level=\"\).*\(\".*\)/\1${log_level}\2/g" /etc/cassandra/logback.xml
 fi
+
+# cassandra-reaper
+if is_enabled ${CASSANDRA_REAPER_ENABLED} ; then
+  # Create cassandra jmx files
+  cat <<EOF >/etc/cassandra/jmxremote.password
+cassandra cassandra
+${CASSANDRA_REAPER_JMX_AUTH_USERNAME} ${CASSANDRA_REAPER_JMX_AUTH_PASSWORD}
+EOF
+
+  cat <<EOF >/etc/cassandra/jmxremote.access
+cassandra readwrite
+${CASSANDRA_REAPER_JMX_AUTH_USERNAME} readwrite
+EOF
+
+  exec /run-reaper.sh
+fi &
 
 echo "INFO: CASSANDRA_SEEDS=$CASSANDRA_SEEDS CASSANDRA_LISTEN_ADDRESS=$CASSANDRA_LISTEN_ADDRESS JVM_EXTRA_OPTS=$JVM_EXTRA_OPTS"
 echo "INFO: exec /docker-entrypoint.sh $@"
