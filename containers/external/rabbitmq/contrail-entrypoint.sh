@@ -219,8 +219,10 @@ if is_enabled $RABBITMQ_USE_SSL && [[ "$1" == rabbitmq* ]]; then
   export RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS="${RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS:-} $sslErlArgs"
   export RABBITMQ_CTL_ERL_ARGS="${RABBITMQ_CTL_ERL_ARGS:-} $sslErlArgs"
 fi
-mkdir -p /var/log/rabbitmq
+mkdir -p /var/log/rabbitmq /var/log/contrail/config-database-rabbitmq
 chown -R rabbitmq:rabbitmq /var/log/rabbitmq
+chown -R rabbitmq:rabbitmq /var/log/contrail/config-database-rabbitmq
+ln -s /var/log/contrail/config-database-rabbitmq /var/log/rabbitmq/console
 function setup_log_dir() {
 
   local path=$1
