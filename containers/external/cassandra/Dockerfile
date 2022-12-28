@@ -20,7 +20,8 @@ ENV CASSANDRA_HOME=/opt/cassandra \
     CASSANDRA_GROUP=cassandra \
     CASSANDRA_UID=2000 \
     CASSANDRA_GID=2000 \
-    PATH="/opt/cassandra/bin:$PATH"
+    PATH="/opt/cassandra/bin:$PATH" \
+    CASSANDRA_REAPER_CONFIG=/etc/cassandra-reaper
 
 COPY *.sh /
 
@@ -52,13 +53,20 @@ RUN \
     rm -f /opt/cassandra/lib/logback-* && \
     download_package https://repo1.maven.org maven2/ch/qos/logback/logback-classic/1.2.9/logback-classic-1.2.9.jar /opt/cassandra/lib/logback-classic-1.2.9.jar && \
     download_package https://repo1.maven.org maven2/ch/qos/logback/logback-core/1.2.9/logback-core-1.2.9.jar /opt/cassandra/lib/logback-core-1.2.9.jar && \
+# install cassandra-reaper
+    REAPER_VERSION=3.2.1 && \
+    REAPER_RPM_NAME=reaper-${REAPER_VERSION}-1.x86_64.rpm && \
+    download_package https://github.com thelastpickle/cassandra-reaper/releases/download/${REAPER_VERSION}/${REAPER_RPM_NAME} ${REAPER_RPM_NAME} && \
+    rpm -Uvh --nodeps --replacepkgs ${REAPER_RPM_NAME} && \
+    rm -f ${REAPER_RPM_NAME} && \
     yum clean all -y && \
     rm -rf /var/cache/yum && \
 # smoke test
     cassandra -v && \
 # save original config
     cp ${CASSANDRA_CONFIG}/cassandra.yaml ${CASSANDRA_CONFIG}/cassandra.origin && \
-    cp ${CASSANDRA_CONFIG}/jvm.options ${CASSANDRA_CONFIG}/jvm.options.origin
+    cp ${CASSANDRA_CONFIG}/jvm.options ${CASSANDRA_CONFIG}/jvm.options.origin && \
+    cp ${CASSANDRA_REAPER_CONFIG}/cassandra-reaper.yaml ${CASSANDRA_REAPER_CONFIG}/cassandra-reaper.origin
 
 VOLUME $CASSANDRA_LIB
 
