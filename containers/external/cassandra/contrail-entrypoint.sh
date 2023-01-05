@@ -53,7 +53,8 @@ if is_enabled ${CASSANDRA_REAPER_ENABLED} ; then
     export LOCAL_JMX=no
     export JVM_EXTRA_OPTS="${JVM_EXTRA_OPTS} \
       -Dcom.sun.management.jmxremote.access.file=/etc/cassandra/jmxremote.access \
-      -Dcassandra.jmx.remote.port=${CASSANDRA_JMX_LOCAL_PORT}"
+      -Dcassandra.jmx.remote.port=${CASSANDRA_JMX_LOCAL_PORT} \
+      -Dcom.sun.management.jmxremote.rmi.port=${CASSANDRA_JMX_LOCAL_PORT}"
 fi
 
 # restore original config
