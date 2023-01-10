@@ -23,18 +23,7 @@ RUN \
       yum clean all -y && \
       rm -rf /var/cache/yum && \
       source /functions.sh && \
-      download_package https://github.com tungstenfabric/tf-third-party-cache/raw/master/tshark/tshark3_2.tar.bz2 /tmp/tshark3_2.tar.bz2 && \
-      tar --skip-old-files -xvf /tmp/tshark3_2.tar.bz2 && \
-      if [ ! -e /lib64/libssh.so.4 ] ; then ln -s /lib64/libssh.so.4.4.0 /lib64/libssh.so.4 ; fi && \
-      if [ ! -e /lib64/libwsutil.so.11 ] ; then ln -s /lib64/libwsutil.so.11.0.0 /lib64/libwsutil.so.11 ; fi && \
-      if [ ! -e /lib64/libbrotlicommon.so.1 ] ; then ln -s /lib64/libbrotlicommon.so.1.0.7 /lib64/libbrotlicommon.so.1 ; fi && \
-      if [ ! -e /lib64/libwiretap.so.10 ] ; then ln -s /lib64/libwiretap.so.10.0.2 /lib64/libwiretap.so.10 ; fi && \
-      if [ ! -e /lib64/libsnappy.so.1 ] ; then ln -s /lib64/libsnappy.so.1.1.4 /lib64/libsnappy.so.1 ; fi && \
-      if [ ! -e /lib64/libzstd.so.1 ] ; then ln -s /lib64/libzstd.so.1.4.5 /lib64/libzstd.so.1 ; fi && \
-      if [ ! -e /lib64/libnghttp2.so.14 ] ; then ln -s /lib64/libnghttp2.so.14.16.1 /lib64/libnghttp2.so.14 ; fi && \
-      if [ ! -e /lib64/libwireshark.so.13 ] ; then ln -s /lib64/libwireshark.so.13.0.2 /lib64/libwireshark.so.13 ; fi && \
-      if [ ! -e /lib64/libbrotlidec.so.1 ] ; then ln -s /lib64/libbrotlidec.so.1.0.7 /lib64/libbrotlidec.so.1 ; fi && \
-      rm -f /tmp/tshark3_2.tar.bz2
+      ln -s /usr/bin/tshark /usr/sbin/tshark3_2
 
 ENV PS1="\033[1m($CONTAINER_NAME)\033[m\017[$(id -un)@$(hostname -s) $(pwd)]$ "
 
