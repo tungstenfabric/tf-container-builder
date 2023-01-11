@@ -28,6 +28,9 @@ if [ -z "$my_ip" ]; then
   exit -1
 fi
 
+# get info about all cassandras for reaper
+export CASSANDRA_COUNT=$(echo $CASSANDRA_SEEDS | tr ',' ' ' | wc -w)
+export CASSANDRA_CONNECT_POINTS=$(echo $CASSANDRA_SEEDS | sed 's/,/", "/g')
 # use first two servers as seeds
 export CASSANDRA_SEEDS=$(echo $CASSANDRA_SEEDS | cut -d ',' -f 1,2)
 export CASSANDRA_LISTEN_ADDRESS=$my_ip
