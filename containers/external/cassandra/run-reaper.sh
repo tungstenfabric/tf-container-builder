@@ -5,14 +5,11 @@ source /common.sh
 cp /etc/cassandra-reaper/cassandra-reaper.origin /etc/cassandra-reaper/cassandra-reaper.yaml
 chmod 666 /var/log/cassandra-reaper/reaper.log
 
-# get info about all cassandras for reaper
-CASSANDRA_COUNT=$(echo $CASSANDRA_SEEDS | tr ',' ' ' | wc -w)
-CASSANDRA_CONNECT_POINTS=$(echo $CASSANDRA_SEEDS | sed 's/,/", "/g')
-
 # edit cassandra-reaper config
 REAPER_CONFIG=${CASSANDRA_REAPER_CONFIG}/cassandra-reaper.yaml
 sed -i "s/port: 8080/port: ${CASSANDRA_REAPER_APP_PORT}/g" ${REAPER_CONFIG}
 sed -i "s/port: 8081/port: ${CASSANDRA_REAPER_ADM_PORT}/g" ${REAPER_CONFIG}
+sed -i "s/level: INFO/level: DEBUG/g" ${REAPER_CONFIG}
 sed -i 's%classpath:shiro.ini%file:/etc/cassandra-reaper/configs/shiro.ini%g' ${REAPER_CONFIG}
 
   cat <<EOF >>${REAPER_CONFIG}
@@ -97,7 +94,7 @@ if is_enabled $CASSANDRA_SSL_ENABLE ; then
     type: jdk
 EOF
 
-  jks_dir='/usr/local/lib/cassandra/conf'
+  jks_dir=${JKS_DIR:-'/usr/local/lib/cassandra/conf'}
   cat <<EOF >/etc/cassandra-reaper/cassandra-reaper-ssl.properties
 -Dssl.enable=true
 -Djavax.net.ssl.keyStore=${jks_dir}/server-keystore.jks
