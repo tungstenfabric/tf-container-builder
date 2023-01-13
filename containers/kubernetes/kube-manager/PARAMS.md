@@ -69,7 +69,7 @@
 | RABBITMQ_CLIENT_SSL_CACERTFILE    | $RABBITMQ_SSL_CACERTFILE                            |
 | RABBITMQ_CLIENT_SSL_CERTFILE      | $RABBITMQ_SSL_CERTFILE                              |
 | RABBITMQ_CLIENT_SSL_KEYFILE       | $RABBITMQ_SSL_KEYFILE                               |
-| RABBITMQ_HEARTBEAT_INTERVAL       | 10                                                  |
+| RABBITMQ_HEARTBEAT_INTERVAL       | 60                                                  |
 | RABBITMQ_NODES                    | $CONFIGDB_NODES                                     |
 | RABBITMQ_NODE_PORT                | 5673                                                |
 | RABBITMQ_PASSWORD                 | guest                                               |

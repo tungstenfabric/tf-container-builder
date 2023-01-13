@@ -50,7 +50,7 @@
 | RABBITMQ_CLIENT_SSL_CACERTFILE    | $RABBITMQ_SSL_CACERTFILE                       |
 | RABBITMQ_CLIENT_SSL_CERTFILE      | $RABBITMQ_SSL_CERTFILE                         |
 | RABBITMQ_CLIENT_SSL_KEYFILE       | $RABBITMQ_SSL_KEYFILE                          |
-| RABBITMQ_HEARTBEAT_INTERVAL       | 10                                             |
+| RABBITMQ_HEARTBEAT_INTERVAL       | 60                                             |
 | RABBITMQ_PASSWORD                 | guest                                          |
 | RABBITMQ_SERVERS                  | $RABBITMQ_NODES with $RABBITMQ_NODE_PORT       |
 | RABBITMQ_SSL_VER                  | sslv23                                         |

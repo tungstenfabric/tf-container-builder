@@ -9,7 +9,7 @@
 | *CONTROLLER_NODES*                  | IP address of the NIC performs default routing |
 | **RabbitMQ**                        |                                                |
 | RABBITMQ_ERLANG_COOKIE              |                                                |
-| RABBITMQ_HEARTBEAT_INTERVAL         | 10                                             |
+| RABBITMQ_HEARTBEAT_INTERVAL         | 60                                             |
 | RABBITMQ_CLUSTER_PARTITION_HANDLING | autoheal                                       |
 | RABBITMQ_NODES                      | $CONFIGDB_NODES                                |
 | RABBITMQ_NODE_PORT                  | 5673                                           |

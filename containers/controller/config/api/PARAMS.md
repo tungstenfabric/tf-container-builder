@@ -62,7 +62,7 @@
 | LOG_LEVEL                            | SYS_NOTICE                                     |
 | LOG_LOCAL                            | 1                                              |
 | **RabbitMQ**                         |                                                |
-| RABBITMQ_HEARTBEAT_INTERVAL          | 10                                             |
+| RABBITMQ_HEARTBEAT_INTERVAL          | 60                                             |
 | RABBITMQ_PASSWORD                    | guest                                          |
 | RABBITMQ_SERVERS                     | $RABBITMQ_NODES with $RABBITMQ_NODE_PORT       |
 | RABBITMQ_USER                        | guest                                          |
