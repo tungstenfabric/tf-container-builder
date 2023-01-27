@@ -106,23 +106,43 @@ EOF
 -Djavax.net.ssl.trustStorePassword=${CASSANDRA_SSL_TRUSTSTORE_PASSWORD}
 EOF
 
-SSL_OPT="--ssl"
+  SSL_OPT="--ssl"
 fi
 
-# wait until cqlsh will be available
-while ! cqlsh $CASSANDRA_LISTEN_ADDRESS $CASSANDRA_CQL_PORT $SSL_OPT -e "CREATE KEYSPACE IF NOT EXISTS reaper_db WITH replication = {'class': 'NetworkTopologyStrategy', 'datacenter1': $CASSANDRA_COUNT};" ; do
-    sleep 5
-done
+# NB. wait for starting reaper on the first server
+# otherwise we face a race with cassandra tables
+cassandra_connect_points=$(echo $CASSANDRA_CONNECT_POINTS | sed 's/", "/ /g')
+IFS=' ' read -r -a reaper_list <<< "$cassandra_connect_points"
+leader_node="${reaper_list[0]}"
+my_node=$CASSANDRA_LISTEN_ADDRESS
+reaper_url="http://$leader_node:${CASSANDRA_REAPER_APP_PORT}"
+
+if [[ "${leader_node}" == "$my_node" ]] ; then
+  # wait until cqlsh will be available
+  while ! cqlsh $CASSANDRA_LISTEN_ADDRESS $CASSANDRA_CQL_PORT $SSL_OPT -e "CREATE KEYSPACE IF NOT EXISTS reaper_db WITH replication = {'class': 'NetworkTopologyStrategy', 'datacenter1': $CASSANDRA_COUNT};" ; do
+      sleep 10
+  done
+else
+  # delay reaper start, it takes around 3 minutes
+  sleep 120
+  while ! curl $reaper_url/webui/login.html >/dev/null ; do
+    sleep 20
+  done
+fi
 
 # run reaper service
 export CASSANDRA_REAPER_JMX_KEY
 run_service cassandra-reaper &
 
-# add cluster
-reaper_url="http://$CASSANDRA_LISTEN_ADDRESS:${CASSANDRA_REAPER_APP_PORT}"
-# wait until up
-while ! curl $reaper_url/webui/login.html >/dev/null ; do
-  sleep 5
-done
-jsessionid=$(curl -v  -X POST -H "Content-Type: application/x-www-form-urlencoded" -d "username=${CASSANDRA_REAPER_JMX_AUTH_USERNAME}&password=${CASSANDRA_REAPER_JMX_AUTH_PASSWORD}" "${reaper_url}/login" 2>&1 | awk -F': ' '/JSESSIONID/ { print $2 }' | tr -d '\r')
-curl --cookie "$jsessionid" -H "Content-Type: application/json" -X POST "${reaper_url}/cluster?seedHost=$CASSANDRA_LISTEN_ADDRESS&jmxPort=${CASSANDRA_JMX_LOCAL_PORT}"
+if [[ "${leader_node}" == "$my_node" ]] ; then
+  # wait until up (around 3-4 minutes)
+  sleep 120
+  while ! curl $reaper_url/webui/login.html >/dev/null ; do
+    sleep 20
+  done
+  # add cluster
+  jsessionid=$(curl -v  -X POST -H "Content-Type: application/x-www-form-urlencoded" -d "username=${CASSANDRA_REAPER_JMX_AUTH_USERNAME}&password=${CASSANDRA_REAPER_JMX_AUTH_PASSWORD}" "${reaper_url}/login" 2>&1 | awk -F': ' '/JSESSIONID/ { print $2 }' | tr -d '\r')
+  curl --cookie "$jsessionid" -H "Content-Type: application/json" -X POST "${reaper_url}/cluster?seedHost=$CASSANDRA_LISTEN_ADDRESS&jmxPort=${CASSANDRA_JMX_LOCAL_PORT}"
+fi
+
+echo "Reaper started successfully"
