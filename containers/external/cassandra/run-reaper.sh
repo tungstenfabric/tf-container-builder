@@ -108,10 +108,23 @@ fi
 
 # NB. wait for starting reaper on the first server
 # otherwise we face a race with cassandra tables
-cassandra_connect_points=$(echo $CASSANDRA_CONNECT_POINTS | sed 's/", "/ /g')
-IFS=' ' read -r -a reaper_list <<< "$cassandra_connect_points"
-leader_node="${reaper_list[0]}"
-my_node=$CASSANDRA_LISTEN_ADDRESS
+my_ip=$CASSANDRA_LISTEN_ADDRESS
+server_names_list=()
+my_node=''
+for server in $(echo $CASSANDRA_CONNECT_POINTS | sed 's/", "/ /g'); do
+  server_hostname=$(resolve_hostname_by_ip $server | cut -d '.' -f 1)
+  if [[ -z "$server_hostname" ]] ; then
+    echo "ERROR: hostname for $server is not resolved properly, cluster can't be set up properly."
+    exit -1
+  fi
+  server_names_list=($server_names_list $server_hostname)
+  if server_ip=$(find_my_ip_and_order_for_node_list "$server" | cut -d ' ' -f 1) && [[ ",$server_ip," =~ ",$my_ip," ]] ; then
+    my_node=$server_hostname
+    echo "INFO: my_node=$server_hostname"
+  fi
+done
+
+leader_node="${server_names_list[0]}"
 reaper_url="http://$leader_node:${CASSANDRA_REAPER_APP_PORT}"
 
 if [[ "${leader_node}" == "$my_node" ]] ; then
@@ -121,7 +134,6 @@ if [[ "${leader_node}" == "$my_node" ]] ; then
   done
 else
   # delay reaper start, it takes around 3 minutes
-  sleep 120
   while ! curl $reaper_url/webui/login.html >/dev/null ; do
     sleep 20
   done
@@ -142,4 +154,17 @@ if [[ "${leader_node}" == "$my_node" ]] ; then
   curl --cookie "$jsessionid" -H "Content-Type: application/json" -X POST "${reaper_url}/cluster?seedHost=$CASSANDRA_LISTEN_ADDRESS&jmxPort=${CASSANDRA_JMX_LOCAL_PORT}"
 fi
 
-echo "Reaper started successfully"
+function check_reaper() {
+  for i in {1..30} ; do
+    if curl http://$my_node:${CASSANDRA_REAPER_APP_PORT}/webui/login.html >/dev/null ; then
+      echo "Reaper started successfully"
+      return 0
+    fi
+    sleep 2
+  done
+  return 1
+}
+if ! check_reaper ; then
+  echo "Reaper failed, please check the logs"
+  exit 1
+fi
