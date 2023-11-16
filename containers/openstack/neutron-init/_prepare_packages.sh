@@ -5,7 +5,7 @@
 
 pkd_dir="/opt/packages"
 mkdir -p $pkd_dir
-for version in newton ocata queens rocky stein; do
+for version in ocata queens rocky stein; do
   echo "INFO: Using $version"
   url=$(repoquery -q --location python-neutron-lbaas-${version})
   if [[ -z "$url" ]]; then
