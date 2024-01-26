@@ -11,6 +11,7 @@
 | **Host**                       |                                                |
 | PHYSICAL_INTERFACE             |                                                |
 | VROUTER_GATEWAY                |                                                |
+| VROUTER_MTU                    | 1500                                           |
 | **Kubernetes**                 |                                                |
 | KUBEMANAGER_NESTED_MODE        | 0                                              |
 | KUBERNETES_CLUSTER_NAME        | k8s                                            |
