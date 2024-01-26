@@ -2,6 +2,7 @@
 
 source /common.sh
 
+VROUTER_MTU=${VROUTER_MTU:-1500}
 VROUTER_PORT=${VROUTER_PORT:-9091}
 KUBEMANAGER_NESTED_MODE=${KUBEMANAGER_NESTED_MODE:-'0'}
 run_command="/bin/true"
@@ -43,7 +44,8 @@ cat << EOM > /host/etc_cni/net.d/10-contrail.conf
         "poll-timeout"  : 5,
         "poll-retries"  : 15,
         "log-file"      : "$LOG_DIR/cni/opencontrail.log",
-        "log-level"     : "4"
+        "log-level"     : "4",
+        "mtu"           : $VROUTER_MTU
     },
     "name": "contrail-k8s-cni",
     "type": "contrail-k8s-cni"
@@ -70,7 +72,8 @@ cat << EOM > /host/etc_cni/net.d/10-contrail.conf
        "poll-timeout"      : 5,
        "poll-retries"      : 15,
        "log-file"          : "$LOG_DIR/cni/opencontrail.log",
-       "log-level"         : "4"
+       "log-level"         : "4",
+       "mtu"               : $VROUTER_MTU
    },
    "name": "contrail-k8s-cni",
    "type": "contrail-k8s-cni"
