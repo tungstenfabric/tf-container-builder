@@ -95,15 +95,7 @@ function prepare_agent_config_vars() {
         add_k8s_pod_cidr_route
     fi
 
-    if [ "$CLOUD_ORCHESTRATOR" == "vcenter" ] && ! is_tsn; then
-        HYPERVISOR_TYPE=${HYPERVISOR_TYPE:-'vmware'}
-        local VMWARE_PHYS_INT=$(get_vmware_physical_iface)
-        disable_chksum_offload $PHYS_INT
-        disable_lro_offload $VMWARE_PHYS_INT
-    else
-        HYPERVISOR_TYPE=${HYPERVISOR_TYPE:-'kvm'}
-    fi
-
+    HYPERVISOR_TYPE=${HYPERVISOR_TYPE:-'kvm'}
     local AGENT_NAME=${VROUTER_HOSTNAME:-"$(resolve_hostname_by_ip $vrouter_ip)"}
     [ -z "$AGENT_NAME" ] && AGENT_NAME="$(get_default_hostname)"
 
@@ -220,13 +212,6 @@ function create_agent_config() {
         exit 1
     fi
     echo "INFO: Physical interface: nic=$PHYS_INT, mac=$PHYS_INT_MAC"
-
-    if [ "$CLOUD_ORCHESTRATOR" == "vcenter" ] && ! [[ -n "$TSN_AGENT_MODE" ]]; then
-        read -r -d '' vmware_options << EOM || true
-vmware_physical_interface = $VMWARE_PHYS_INT
-vmware_mode = vcenter
-EOM
-    fi
 
     local agent_mode_options="physical_interface_mac=$PHYS_INT_MAC"
     if [[ "$AGENT_MODE" == 'dpdk' ]]; then

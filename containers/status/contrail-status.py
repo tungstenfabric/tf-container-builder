@@ -79,15 +79,6 @@ CONTRAIL_SERVICES_TO_SANDESH_SVC = {
         'web': None,
         'job': None,
     },
-    'vcenter-fabric-manager': {
-        'fabric-manager': 'contrail-vcenter-fabric-manager',
-    },
-    'vcenter-manager': {
-        'manager': None,
-    },
-    'vcenter': {
-        'plugin': None,
-    },
     'toragent': {
         'tor-agent': 'contrail-tor-agent',
     }
@@ -533,46 +524,6 @@ def config_api(container, options):
 
 
 # predefined name as POD_SERVICE. shouldn't be changed.
-def vcenter_plugin(container, options):
-    svc_name = "vcenter-plugin"
-    try:
-        # Now check the NodeStatus UVE
-        svc_introspect = IntrospectUtil(8234, options)
-        node_status = svc_introspect.get_data("Snh_VCenterPluginInfo", 'VCenterPlugin')
-    except (requests.Timeout, socket.timeout) as te:
-        print_debug('Timeout error : %s' % (str(te)))
-        return "timeout"
-    except (requests.exceptions.ConnectionError, IOError) as e:
-        print_debug('Socket Connection error : %s' % (str(e)))
-        return "initializing"
-
-    if node_status is None:
-        print_debug('{0}: NodeStatusUVE not found'.format(svc_name))
-        return "initializing (vcenter-plugin is not ready)"
-    if not len(node_status):
-        print_debug('{0}: NodeStatusUVE is empty'.format(svc_name))
-        return "initializing (vcenter-plugin is not ready)"
-    node_status = node_status[0].get('VCenterPluginStruct')
-    if not node_status:
-        print_debug('{0}: VCenterPluginStruct not found'.format(svc_name))
-        return "initializing (vcenter-plugin is not ready)"
-
-    master = yaml.load(node_status.get('master', 'false'), Loader=yaml.Loader)
-    if not master:
-        return "backup"
-
-    description = list()
-    api_server = node_status.get('ApiServerInfo', dict()).get('ApiServerStruct', dict())
-    if not yaml.load(api_server.get('connected', 'false'), Loader=yaml.Loader):
-        description.append("API server connection is not ready")
-    vcenter_server = node_status.get('VCenterServerInfo', dict()).get('VCenterServerStruct', dict())
-    if not yaml.load(vcenter_server.get('connected', 'false'), Loader=yaml.Loader):
-        description.append("VCenter server connection is not ready")
-    if description:
-        return "initializing (" + ", ".join(description) + ")"
-    return "active"
-
-
 def contrail_pod_status(pod_name, pod_services, options):
     print_msg("== Contrail {} ==".format(pod_name))
     pod_map = CONTRAIL_SERVICES_TO_SANDESH_SVC.get(pod_name)
