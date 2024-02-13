@@ -28,27 +28,27 @@ mkdir -p $vrouter_dir
 cp -ap /vrouter_src/. ${vrouter_dir}/
 chmod -R 755  ${vrouter_dir}
 rm -rf /vrouter_src
+templ=$(cat /opt/contrail/src/dkms.conf)
+content=$(eval "echo \"$templ\"")
+echo "$content" > $vrouter_dir/dkms.conf
 
 mkdir -p /vrouter/${contrail_version}/build/include/
 mkdir -p /vrouter/${contrail_version}/build/dp-core
-mkdir -p /lib/modules/$current_kver/updates/dkms
+dkms --verbose add -m vrouter -v "${contrail_version}"
+echo "INFO: run dkms build for current kernel $current_kver"
+if ! dkms --verbose build -m vrouter -v "${contrail_version}" ; then
+  cat /var/lib/dkms/vrouter/${contrail_version}/build/make.log
+else
+  dkms --verbose install -m vrouter -v "${contrail_version}"
+fi
 
-echo "INFO: run build for current kernel $current_kver"
-cd /usr/src/vrouter-"${contrail_version}"
-./utils/dkms/gen_build_info.sh "${contrail_version}" /vrouter/"${contrail_version}"/build
-make -d -C . KERNELDIR=/lib/modules/$current_kver/build &>> $log_file
-cp vrouter.* /lib/modules/$current_kver/updates/dkms/
-
+echo "INFO: DKMS run autoinstall for other kernel versions"
 kernel_modules=$(ls /lib/modules)
 for kver in $kernel_modules ; do
   if [[ $kver != $current_kver ]]; then
-    echo "INFO: run builds for kernel $kver"
-    mkdir -p /lib/modules/$kver/updates/dkms
-    make -d -C . KERNELDIR=/lib/modules/$kver/build &>> $log_file
-    cp vrouter.* /lib/modules/$kver/updates/dkms/
+    dkms autoinstall -k $kver
   fi
 done
-
 depmod -a
 
 echo "INFO: check built modules:"
@@ -60,7 +60,7 @@ touch $vrouter_dir/module_compiled
 
 # copy vif util to host
 if [[ -d /host/bin && ! -f /host/bin/vif ]] ; then
-  /bin/cp -f /usr/bin/vif /host/bin/vif
+  /bin/cp -f /contrail_tools/usr/bin/vif /host/bin/vif
   chmod +x /host/bin/vif
 fi
 

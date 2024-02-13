@@ -1,4 +1,6 @@
-FROM registry.access.redhat.com/ubi8:8.4
+ARG UBUNTU_DISTR=ubuntu
+ARG UBUNTU_DISTR_VERSION=22.04
+FROM $UBUNTU_DISTR:$UBUNTU_DISTR_VERSION
 
 ARG VENDOR_NAME
 ARG VENDOR_DOMAIN
@@ -29,21 +31,37 @@ COPY __licensing.txt /licenses/licensing.txt
 
 # this copy should be before yum install
 COPY *.repo /etc/yum.repos.d/
+# user can put sources.list here which is mirrors definition
+# to let copy all files we have to create empty fake.list
+COPY *.list /etc/apt/
 
+#TODO: need to get rid of apt-get update
+# tpc repo is not to be used as it os dependend
 RUN \
-    mkdir -p /opt/contrail/src /vrouter_src && \
+    rm -f /etc/yum.repos.d/tpc.repo && \
+    mkdir -p /opt/contrail/src /contrail_tools /vrouter_src && \
     contrail_version=${CONTRAIL_VERSION:-$CONTRAIL_CONTAINER_TAG} && \
     echo "${contrail_version}" > /contrail_version && \
-    yum -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
-    yum install -y hostname module-init-tools make gcc gcc-c++ && \
-    yum install -y contrail-vrouter-source contrail-vrouter-utils && \
+    export DEBIAN_FRONTEND=noninteractive && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends dkms && \
+    apt-get install -y --no-install-recommends dnf rpm2cpio cpio ca-certificates && \
+    dnf install -y contrail-vrouter-source && \
     mv /usr/src/* /opt/contrail/src/ && \
     vrouter_path=$(find /opt/contrail/src -type f -name "contrail-vrouter-*.tar.gz") && \
     cd  /vrouter_src && \
     tar -xf "${vrouter_path}" && \
-    yum clean all -y && \
-    rm -rf /var/cache/yum
+    cd /contrail_tools && \
+    dnf install --downloadonly -y contrail-vrouter-utils && \
+    find /var/cache/dnf -name "contrail-vrouter-utils*.rpm" && \
+    rpm2cpio $(find /var/cache/dnf -name "contrail-vrouter-utils*.rpm") | cpio -iuvd && \
+    cd .. && \
+    dnf clean all -y && \
+    rm -rf /var/cache/dnf && \
+    apt-get purge -y dnf rpm2cpio cpio ca-certificates && \
+    apt-get autoremove -y
 
+COPY dkms.conf /opt/contrail/src/
 COPY entrypoint.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
